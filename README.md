@@ -14,3 +14,7 @@ Helper tool to rename images for batch cropping by ImageMagick.
 8. Repeat with next/any image
 9. Click 'Save Crops' to rename the cropped originals to include the directional crop region, e.g. `my-photo-[TL]`
 10. Run separate ImageMagick import script to crop images based on directional crop information in file names
+
+## Existing tools
+
+* <https://markerjs.com/docs/cropro/getting-started> - doesn't appear to offer preset size crops (only ratios)
