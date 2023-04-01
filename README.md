@@ -20,5 +20,6 @@ Helper tool to rename images for batch cropping by ImageMagick.
 Excluding anything that requires a subscription fee or complex serverside setup.
 
 * <https://markerjs.com/docs/cropro/getting-started> - doesn't appear to offer preset size crops (only ratios)
-* <https://fengyuanchen.github.io/jquery-cropper/> - `cropBoxResizable` option
+* <https://github.com/fengyuanchen/cropperjs> - `cropBoxResizable` option
+   * <https://github.com/danfickle/bulk-image-cropper> - no control over crop position
 * <https://pqina.nl/blog/rename-a-file-with-javascript/>
