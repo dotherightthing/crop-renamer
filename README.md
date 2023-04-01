@@ -21,6 +21,6 @@ Excluding anything that requires a subscription fee or complex serverside setup.
 
 * <https://markerjs.com/docs/cropro/getting-started> - doesn't appear to offer preset size crops (only ratios)
 * <https://github.com/fengyuanchen/cropperjs> - `cropBoxResizable` option
-   * <https://github.com/danfickle/bulk-image-cropper> - no control over crop position
+   * <https://github.com/danfickle/bulk-image-cropper> - no overview of crop position for multiple images (one at a time)
    * <https://w3codegenerator.com/code-snippets/javascript/how-to-crop-multiple-images-with-cropper-js>
 * <https://pqina.nl/blog/rename-a-file-with-javascript/>
