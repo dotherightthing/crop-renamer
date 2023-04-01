@@ -6,7 +6,7 @@ Helper tool to rename images for batch cropping by ImageMagick.
 
 1. Select a folder on your harddrive
 2. List grid of thumbnails
-3. Click a thumbnail to open cropping interface
+3. Click a thumbnail to open cropping interface in browser
 4. Enlargement of image appears with a 3x3 grid overlaid
 5. Select the appropriate grid region (by clicking on the focal point)
 6. Deselecting image adds a focal square overlay to the corresponding thumbnail
