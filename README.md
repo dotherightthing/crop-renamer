@@ -24,3 +24,35 @@ Excluding anything that requires a subscription fee or complex serverside setup.
    * <https://github.com/danfickle/bulk-image-cropper> - no overview of crop position for multiple images (one at a time)
    * <https://w3codegenerator.com/code-snippets/javascript/how-to-crop-multiple-images-with-cropper-js>
 * <https://pqina.nl/blog/rename-a-file-with-javascript/>
+
+## Considerations
+
+### Crops
+
+```js
+imagesSizes: {
+   type: Object,
+   default: () => ({
+      collapsed: {
+         width: 865,
+         height: 368
+      },
+      expanded: {
+         width: 865,
+      },
+      panorama: {
+         height: 368
+      },
+      thumbnail: {
+         width: 320,
+         height: 320
+      },
+   })
+},
+```
+
+### Approaches
+
+* Store XY crop offset rather than gravity, but would need multiple offsets for different crops
+* Crop around a crop point - requires knowing the width of the image so can move the crop box as necessary to avoid cropping off-canvas
+https://stackoverflow.com/questions/60995032/crop-and-resize-image-around-a-custom-focus-point (can also rotate which is the other feature I might need)
