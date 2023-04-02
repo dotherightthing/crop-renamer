@@ -1,0 +1,22 @@
+{
+  "name": "crop-renamer",
+  "version": "1.0.0",
+  "description": "Helper tool to rename images for batch cropping by ImageMagick.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dotherightthing/crop-renamer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dotherightthing/crop-renamer/issues"
+  },
+  "homepage": "https://github.com/dotherightthing/crop-renamer#readme",
+  "dependencies": {
+    "cropperjs": "^1.5.13"
+  }
+}
