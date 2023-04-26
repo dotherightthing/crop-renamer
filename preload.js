@@ -4,12 +4,10 @@
 // exposes privileged APIs to the renderer via the contextBridge API
 // sets up inter-process communication (IPC) interfaces to pass arbitrary messages between Electron's main and renderer processes
 
-const { contextBridge, ipcRenderer } = require('electron')
+const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('versions', {
-  node: () => process.versions.node,
-  chrome: () => process.versions.chrome,
-  electron: () => process.versions.electron,
-  ping: () => ipcRenderer.invoke('ping'),
-  // we can also expose variables, not just functions
-})
+contextBridge.exposeInMainWorld('electronAPI', {
+  // ipcRenderer.send() sends to ipcMain.on()
+  // ipcRenderer.invoke() invokes ipcMain.handle()
+  selectFolder: () => ipcRenderer.invoke('dialog:selectFolder')
+});

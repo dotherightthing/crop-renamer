@@ -56,3 +56,18 @@ imagesSizes: {
 * Store XY crop offset rather than gravity, but would need multiple offsets for different crops
 * Crop around a crop point - requires knowing the width of the image so can move the crop box as necessary to avoid cropping off-canvas
 https://stackoverflow.com/questions/60995032/crop-and-resize-image-around-a-custom-focus-point (can also rotate which is the other feature I might need)
+
+---
+
+### Electron
+
+Images need to be loaded into the cropping tool. As this is best done locally to remove dependency on web-based subscription services, the app needs to be able to interact with the local file system.
+
+The combination of `input[type="file"]` and JavaScript's [FileReader object](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) only provides access to a single file.
+
+The cropper needs access to a folder of files.
+
+A web browser is sandboxed for security reasons. Electron can run a web browser whilst also providing access to the operating system.
+
+* [What is the difference between IPC send / on and invoke / handle in electron?](https://stackoverflow.com/questions/59889729/what-is-the-difference-between-ipc-send-on-and-invoke-handle-in-electron) - invoke vs send/on
+* [Inter-Process Communication](https://www.electronjs.org/docs/latest/tutorial/ipc) - send/on
