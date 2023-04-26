@@ -1,10 +1,17 @@
 // Electron's render process (web page)
 
 const selectFilesButton = document.getElementById('select-folder');
-const folderPathElement = document.getElementById('folder-path');
+const imagesContainer = document.getElementById('images');
 
 selectFilesButton.addEventListener('click', async () => {
   // The ipcRenderer module is an EventEmitter, for inter-process communication (IPC) with the main process
-  const folderPath = await window.electronAPI.selectFolder();
-  folderPathElement.innerText = folderPath;
+  const images = await window.electronAPI.selectFolder();
+
+  let html = '';
+
+  images.forEach(image => {
+    html += (`<li><img src="${image}" alt="${image}" width="50"></li>`);
+  });
+
+  imagesContainer.innerHTML = html;
 });

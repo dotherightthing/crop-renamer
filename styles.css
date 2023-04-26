@@ -1,3 +1,33 @@
+body {
+  margin: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-rows: 1fr 4fr 4fr;
+  height: 100vh;
+}
+
+.images-wrapper {
+  overflow-y: auto;
+  border: 8px solid black;
+}
+
+.images-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  list-style: none;
+  background-color: black;
+  padding: 0;
+  margin: 0;
+}
+
+.images-list img {
+  width: 100%;
+  height: auto;
+}
+
 button {
   cursor: pointer;
 }

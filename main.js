@@ -14,8 +14,28 @@ async function handleSelectFolder () {
   if (canceled) {
 
   } else {
-    return filePaths[0];
+    const folderPath = filePaths[0];
+    const files = getFiles(folderPath);
+
+    const images = files.filter(file => file.match(/(.gif|.jpg|.png)+/g));
+    
+    return images;
   }
+}
+
+const getFiles = (dir) => {
+  return fs.readdirSync(dir).flatMap(item => {
+    const path = `${dir}/${item}`;
+
+    // get files from the directory
+    if (fs.statSync(path).isDirectory()) {
+      const files = getFiles(path);
+
+      return files;
+    }
+
+    return path;
+  });
 }
 
 const createWindow = () => {
@@ -26,17 +46,6 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-
-  const getFiles = (dir) => {
-    return fs.readdirSync(dir).flatMap(item => {
-      const path = `${dir}/${item}`;
-      if (fs.statSync(path).isDirectory()) {
-        return getFiles(path);
-      }
-  
-      return path;
-    });
-  }
 
   mainWindow.loadFile('index.html');
 }

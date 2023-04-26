@@ -8,9 +8,14 @@
     <title>Image cropper</title>
   </head>
   <body>
-    <h1>Image cropper</h1>
-    <div>
-      <button type="button" id="select-folder">Select image folder</button> <strong id="folder-path"></strong></p>
+    <div class="layout">
+      <div>
+        <button type="button" id="select-folder">Select image folder</button>
+      </div>
+      <div>Editor</div>
+      <div class="images-wrapper">
+        <ul class="images-list" id="images"></ul>
+      </div>
     </div>
   </body>
   <script src="./renderer.js"></script>
