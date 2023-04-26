@@ -2,8 +2,9 @@
   "name": "crop-renamer",
   "version": "1.0.0",
   "description": "Helper tool to rename images for batch cropping by ImageMagick.",
-  "main": "index.html",
+  "main": "main.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,5 +19,8 @@
   "homepage": "https://github.com/dotherightthing/crop-renamer#readme",
   "dependencies": {
     "cropperjs": "^1.5.13"
+  },
+  "devDependencies": {
+    "electron": "^24.1.2"
   }
 }
