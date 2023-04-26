@@ -17,7 +17,7 @@ async function handleSelectFolder () {
     const folderPath = filePaths[0];
     const files = getFiles(folderPath);
 
-    const images = files.filter(file => file.match(/(.gif|.jpg|.png)+/g));
+    const images = files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
     
     return images;
   }
