@@ -98,7 +98,10 @@ const createWindow = () => {
     {
       label: appName, submenu: [
         {
-          label: 'Load images', click: () => { mainWindow.webContents.executeJavaScript('uiSelectFolder()'); }
+          label: 'Load images', click: () => { mainWindow.loadFile('index.html'); mainWindow.webContents.executeJavaScript('uiSelectFolder()'); }
+        },
+        {
+          label: 'Load cropper', click: () => { mainWindow.loadFile('cropper.html'); }
         },
       ]
     }
