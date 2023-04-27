@@ -11,9 +11,7 @@ async function handleSelectFolder () {
     buttonLabel: 'Select',
     properties: ['openDirectory', 'multiSelections']
   })
-  if (canceled) {
-
-  } else {
+  if (!canceled) {
     const folderPath = filePaths[0];
     const files = getFiles(folderPath);
 
