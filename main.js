@@ -5,6 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const ExifReader = require('exifreader');
 
+const appName = 'Image cropper';
+
 async function handleSelectFolder () {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     defaultPath: '~/',
@@ -62,6 +64,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
+    title: appName
   });
 
   // https://www.electronjs.org/docs/latest/api/webview-tag
@@ -83,7 +86,7 @@ const createWindow = () => {
       ]
     },
     {
-      label: 'Crop renamer', submenu: [
+      label: appName, submenu: [
         {
           label: 'Load images', click: () => { mainWindow.webContents.executeJavaScript('uiSelectFolder()') }
         }
