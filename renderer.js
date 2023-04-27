@@ -7,6 +7,11 @@ async function uiSelectFolder() {
   const images = await window.electronAPI.selectFolder();
   let html = '';
 
+  // if folder select was cancelled
+  if (typeof images === 'undefined') {
+    return;
+  }
+
   images.forEach(image => {
     const { src, dateTimeOriginal } = image;
 
