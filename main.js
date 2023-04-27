@@ -69,7 +69,7 @@ const createWindow = () => {
     {
       label: 'File', submenu: [
         {
-          label: 'Show Dev Tools', click:() => { mainWindow.openDevTools() }
+          label: 'Show Dev Tools', click:() => { mainWindow.webContents.openDevTools() }
         },
         {
           label: 'Force reload', click: () => { mainWindow.webContents.reloadIgnoringCache() }
