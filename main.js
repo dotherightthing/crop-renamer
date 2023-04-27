@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const ExifReader = require('exifreader');
 
+const appDebug = true;
 const appName = 'Image cropper';
 const appDimensions = [ 1280, 1024 ];
 
@@ -106,6 +107,11 @@ const createWindow = () => {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 
   mainWindow.loadFile('index.html');
+
+  if (appDebug) {
+    // mainWindow.setFullScreen(true);
+    mainWindow.webContents.openDevTools();
+  }
 }
 
 // Open a window if none are open (macOS)
