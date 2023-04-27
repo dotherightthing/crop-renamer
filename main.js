@@ -1,6 +1,6 @@
 // Electron's main process
 
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const ExifReader = require('exifreader');
@@ -9,7 +9,7 @@ async function handleSelectFolder () {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     defaultPath: '~/',
     title: 'Select image folder',
-    buttonLabel: 'Select',
+    buttonLabel: 'Load images',
     properties: ['openDirectory', 'multiSelections']
   })
   if (!canceled) {
@@ -63,6 +63,35 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+
+  // https://www.electronjs.org/docs/latest/api/webview-tag
+  const template = [
+    {
+      label: 'File', submenu: [
+        {
+          label: 'Show Dev Tools', click:() => { mainWindow.openDevTools() }
+        },
+        {
+          label: 'Force reload', click: () => { mainWindow.webContents.reloadIgnoringCache() }
+        },
+        {
+          type: 'separator'
+        },
+        {
+          label: 'Quit', click: () => { app.quit() }
+        }
+      ]
+    },
+    {
+      label: 'Crop renamer', submenu: [
+        {
+          label: 'Load images', click: () => { mainWindow.webContents.executeJavaScript('uiSelectFolder()') }
+        }
+      ]
+    }
+  ];
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 
   mainWindow.loadFile('index.html');
 }
