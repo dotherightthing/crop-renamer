@@ -3,6 +3,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const ExifReader = require('exifreader');
 
 async function handleSelectFolder () {
   const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -16,8 +17,26 @@ async function handleSelectFolder () {
     const files = getFiles(folderPath);
 
     const images = files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
-    
-    return images;
+    const imagesData = [];
+
+    const processImages = async (images) => {
+      for (let i = 0; i < images.length; i++) {
+        const image = images[i];
+        const tags = await ExifReader.load(image);
+        const imageDate = tags['DateTimeOriginal'].description;
+
+        imagesData.push({
+          src: image,
+          dateTimeOriginal: imageDate
+        });
+      }
+
+      return imagesData;
+    }
+
+    const result = processImages(images);
+
+    return result;
   }
 }
 

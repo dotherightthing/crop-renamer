@@ -7,6 +7,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
+  // The ipcRenderer module is an EventEmitter, for inter-process communication (IPC) with the main process
   // ipcRenderer.send() sends to ipcMain.on()
   // ipcRenderer.invoke() invokes ipcMain.handle()
   selectFolder: () => ipcRenderer.invoke('dialog:selectFolder')
