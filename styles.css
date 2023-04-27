@@ -4,35 +4,36 @@ body {
 
 .layout {
   display: grid;
-  grid-template-rows: 1fr 4fr 4fr;
+  grid-template-rows: 1fr 1fr;
   height: 100vh;
 }
 
-.images-wrapper {
-  overflow-y: auto;
-  border: 8px solid black;
+.editor {
+  align-self: center;
+  text-align: center;
 }
 
-.images-list {
+.images {
+  overflow-y: auto;
+  background-color: black;
+  border: .5rem solid black;
+}
+
+.image-list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
+  gap: .5rem;
   list-style: none;
-  background-color: black;
   padding: 0;
   margin: 0;
 }
 
-.images-list img {
+.image-list img {
   width: 100%;
   height: auto;
 }
 
-button {
-  cursor: pointer;
-}
-
-.datetime {
+.image-datetime {
   background-color: #333;
   color: white;
   text-align: center;

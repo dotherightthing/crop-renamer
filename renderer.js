@@ -1,6 +1,5 @@
 // Electron's render process (web page)
 
-const selectFolderButton = document.getElementById('select-images-folder');
 const imagesContainer = document.getElementById('images');
 
 async function uiSelectFolder() {
@@ -17,11 +16,12 @@ async function uiSelectFolder() {
 
     html += `<li>
 <img src="${src}">
-<p class="datetime">${dateTimeOriginal}</p>
+<p class="image-datetime">${dateTimeOriginal}</p>
 </li>`;
 
     imagesContainer.innerHTML = html;
   });
 }
 
-selectFolderButton.addEventListener('click', uiSelectFolder);
+// const selectFolderButton = document.getElementById('select-images-folder');
+// selectFolderButton.addEventListener('click', uiSelectFolder);
