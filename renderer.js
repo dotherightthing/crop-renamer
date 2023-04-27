@@ -1,6 +1,7 @@
 // Electron's render process (web page)
 
 const imagesContainer = document.getElementById('images');
+const imageCount = document.getElementById('image-count');
 
 async function uiSelectFolder() {
   const images = await window.electronAPI.selectFolder();
@@ -11,12 +12,14 @@ async function uiSelectFolder() {
     return;
   }
 
+  imageCount.textContent = images.length;
+
   images.forEach(image => {
     const { src, dateTimeOriginal } = image;
 
     html += `<li>
 <img src="${src}">
-<p class="image-datetime">${dateTimeOriginal}</p>
+<p class="image-meta image-datetime">${dateTimeOriginal}</p>
 </li>`;
 
     imagesContainer.innerHTML = html;

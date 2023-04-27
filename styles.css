@@ -1,3 +1,8 @@
+:root {
+  --gutter: .5rem;
+  --gutter-half: calc(.5rem/2);
+}
+
 body {
   margin: 0;
 }
@@ -16,13 +21,14 @@ body {
 .images {
   overflow-y: auto;
   background-color: black;
-  border: .5rem solid black;
+  padding-bottom: 2rem;
+  border: var(--gutter) solid black;
 }
 
 .image-list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: .5rem;
+  gap: var(--gutter);
   list-style: none;
   padding: 0;
   margin: 0;
@@ -33,12 +39,30 @@ body {
   height: auto;
 }
 
-.image-datetime {
+.image-meta {
   background-color: #333;
   color: white;
-  text-align: center;
   font-family: sans-serif;
   font-size: .9rem;
-  padding: .2rem 0;
-  margin: -.05rem 0 .1rem 0;
+  padding: var(--gutter-half) var(--gutter);
+  margin: .1rem 0;
+}
+
+.image-datetime {
+  text-align: center;
+}
+
+.image-summary {
+  position: fixed;
+  bottom: var(--gutter);
+  width: calc(100% - (var(--gutter) * 4));
+  text-align: right;
+  border-top: var(--gutter) solid black;
+}
+
+.image-summary.image-meta {
+  background-color: #1f1f1f;
+  color: #ccc;
+  font-size: .8rem;
+  margin: 0;
 }
