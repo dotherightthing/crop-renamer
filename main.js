@@ -6,6 +6,7 @@ const path = require('path');
 const ExifReader = require('exifreader');
 
 const appName = 'Image cropper';
+const appDimensions = [ 1280, 1024 ];
 
 async function handleSelectFolder () {
   const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -58,9 +59,11 @@ const getFiles = (dir) => {
 }
 
 const createWindow = () => {
+  const [ width, height ] = appDimensions;
+
   const mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 1024,
+    width,
+    height,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -72,24 +75,30 @@ const createWindow = () => {
     {
       label: 'File', submenu: [
         {
-          label: 'Show Dev Tools', click:() => { mainWindow.webContents.openDevTools() }
+          label: 'Show Dev Tools', click:() => { mainWindow.webContents.openDevTools(); }
         },
         {
-          label: 'Force reload', click: () => { mainWindow.webContents.reloadIgnoringCache() }
+          label: 'Force reload', click: () => { mainWindow.webContents.reloadIgnoringCache(); }
+        },
+        {
+          label: 'Bring window to front', click:() => { mainWindow.moveTop(); }
+        },
+        {
+          label: 'Reset window size', click:() => { mainWindow.setSize(width, height); mainWindow.center(); }
         },
         {
           type: 'separator'
         },
         {
-          label: 'Quit', click: () => { app.quit() }
+          label: 'Quit', click: () => { app.quit(); }
         }
       ]
     },
     {
       label: appName, submenu: [
         {
-          label: 'Load images', click: () => { mainWindow.webContents.executeJavaScript('uiSelectFolder()') }
-        }
+          label: 'Load images', click: () => { mainWindow.webContents.executeJavaScript('uiSelectFolder()'); }
+        },
       ]
     }
   ];
