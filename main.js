@@ -71,6 +71,10 @@ const createWindow = () => {
     title: appName
   });
 
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.maximize();
+  });
+
   // https://www.electronjs.org/docs/latest/api/webview-tag
   const template = [
     {
