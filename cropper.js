@@ -177,6 +177,13 @@ function init() {
       target = target.parentNode;
     }
 
+    const thumbItems = thumbs.querySelectorAll('button');
+    thumbItems.forEach(thumbItem => {
+      thumbItem.classList.remove('btn-selected');
+    });
+
+    target.classList.add('btn-selected');
+
     const newImage = target.querySelector('img');
     newImageSrc = newImage.getAttribute('src');
 
