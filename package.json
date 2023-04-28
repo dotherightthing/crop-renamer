@@ -19,6 +19,7 @@
   "homepage": "https://github.com/dotherightthing/crop-renamer#readme",
   "dependencies": {
     "cropperjs": "^1.5.13",
+    "electron-context-menu": "^3.6.1",
     "exifreader": "^4.12.0"
   },
   "devDependencies": {

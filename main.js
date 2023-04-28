@@ -1,9 +1,10 @@
 // Electron's main process
 
-const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, shell } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const ExifReader = require('exifreader');
+const contextMenu = require('electron-context-menu');
 
 const appDebug = true;
 const appName = 'Image cropper';
@@ -136,6 +137,15 @@ app.whenReady().then(() => {
     }
   })
 });
+
+app.on('web-contents-created', (e, contents) => {
+  contextMenu({
+     window: contents,
+    //  copyImageAddress: true,
+     showSaveImageAs: true,
+     showInspectElement: true
+  });
+})
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
