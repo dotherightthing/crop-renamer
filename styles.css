@@ -1,6 +1,7 @@
 :root {
   --gutter: .5rem;
   --gutter-half: calc(.5rem/2);
+  --text-tiny: .75rem;
   --text-small: .8rem;
   --text-medium: .9rem;
   --color-primary: #fff;
@@ -8,7 +9,7 @@
   --color-bg-primary: #000;
   --color-bg-secondary: #1e1e1e;
   --color-border-secondary: #333;
-  --color-border-active: #fc0;
+  --color-border-active: #aaa; /* fc0 */
 }
 
 body {
@@ -37,18 +38,27 @@ body {
   margin: 0;
 }
 
-.image-list img {
+.images img {
   width: 100%;
   height: auto;
+  filter: grayscale(80%) brightness(.6);
+}
+
+.images .btn-selected img {
+  filter: none;
 }
 
 .image-meta {
   background-color: var(--color-bg-secondary);
-  color: var(--color-primary);
+  color: var(--color-secondary);
   font-family: sans-serif;
-  font-size: var(--text-medium);
+  font-size: var(--text-tiny);
   padding: var(--gutter-half) var(--gutter);
   margin: .1rem 0;
+}
+
+.btn-selected + .image-meta {
+  color: var(--color-primary);
 }
 
 
@@ -105,6 +115,7 @@ body {
   bottom: 0;
   left: 0;
   border: var(--gutter-half) solid var(--color-border-active);
+  filter: drop-shadow(2px 4px 6px black;)
 }
 
 input.btn {
@@ -165,3 +176,6 @@ img {
   margin: 0;
 }
 
+.cropper-modal {
+  opacity: .8; /* darker */
+}
