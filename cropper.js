@@ -10,6 +10,7 @@ function init() {
   var actions = document.getElementById('actions');
   var rotateInput = document.getElementById('rotate');
   var thumbs = document.querySelector('.images');
+  var thumbSelectedClass = 'btn-selected';
 
   var aspectRatioEnlargementCollapsed = 865 / 368;
 
@@ -165,6 +166,51 @@ function init() {
     }
   });
 
+  const handleKeyDown = (e => {
+    if (!cropper) {
+      return;
+    }
+
+    const thumbsButtons = document.querySelectorAll('.images .btn-img');
+    let thumbsButtonSelectedIndex = -1;
+    let thumbsButtonNextIndex = -1;
+
+    thumbsButtons.forEach((tb, tbi) => {
+      if (tb.classList.contains('btn-selected')) {
+        thumbsButtonSelectedIndex = tbi;
+      }
+    });
+
+    switch (e.keyCode) {
+      case 37: // left arrow
+        e.preventDefault();
+
+        if (thumbsButtonSelectedIndex > 0) {
+          thumbsButtonNextIndex = thumbsButtonSelectedIndex - 1;
+        } else {
+          thumbsButtonNextIndex = thumbsButtons.length - 1; // loop around to last item
+        }
+
+        break;
+
+      case 39: // right arrow
+        e.preventDefault();
+
+        if ((thumbsButtonSelectedIndex + 1) < thumbsButtons.length ) {
+          thumbsButtonNextIndex = thumbsButtonSelectedIndex + 1;
+        } else {
+          thumbsButtonNextIndex = 0;
+        }
+
+        break;
+    }
+
+    if (thumbsButtonNextIndex > -1) {
+      thumbsButtons[thumbsButtonNextIndex].click();
+      thumbsButtons[thumbsButtonNextIndex].scrollIntoView();
+    }
+  });
+
   const handleThumbSelect = (event => {
     var e = event || window.event;
     var target = e.target || e.srcElement;
@@ -179,10 +225,10 @@ function init() {
 
     const thumbItems = thumbs.querySelectorAll('button');
     thumbItems.forEach(thumbItem => {
-      thumbItem.classList.remove('btn-selected');
+      thumbItem.classList.remove(thumbSelectedClass);
     });
 
-    target.classList.add('btn-selected');
+    target.classList.add(thumbSelectedClass);
 
     const newImage = target.querySelector('img');
     newImageSrc = newImage.getAttribute('src');
@@ -204,4 +250,5 @@ function init() {
   
   actions.onclick = handleControlChange;
   thumbs.onclick = handleThumbSelect;
+  document.body.onkeydown = handleKeyDown;
 }
