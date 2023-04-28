@@ -66,6 +66,7 @@ const createWindow = () => {
     width,
     height,
     webPreferences: {
+      nodeIntegration: true, // disable sandboxing
       preload: path.join(__dirname, 'preload.js'),
     },
     title: appName
