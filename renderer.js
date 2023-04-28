@@ -17,9 +17,11 @@ async function uiSelectFolder() {
   images.forEach(image => {
     const { src, dateTimeOriginal } = image;
 
-    html += `<li>
-<button type="button" class="btn-img"><img src="${src}"></button>
-<p class="image-meta image-datetime">${dateTimeOriginal}</p>
+    html += `<li class="image-list-item">
+  <button type="button" class="btn-img">
+    <img src="${src}">
+    <p class="image-meta image-datetime">${dateTimeOriginal}</p>  
+  </button>
 </li>`;
 
     imagesContainer.innerHTML = html;
