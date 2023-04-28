@@ -171,6 +171,10 @@ function init() {
       return;
     }
 
+    if (!thumbs.querySelectorAll('img').length) {
+      return;
+    }
+
     const thumbsButtons = document.querySelectorAll('.images .btn-img');
     let thumbsButtonSelectedIndex = -1;
     let thumbsButtonNextIndex = -1;
@@ -216,6 +220,10 @@ function init() {
     var target = e.target || e.srcElement;
 
     if (!cropper) {
+      return;
+    }
+
+    if (!thumbs.querySelectorAll('img').length) {
       return;
     }
 
