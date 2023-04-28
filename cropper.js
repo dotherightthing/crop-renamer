@@ -15,27 +15,27 @@ function init() {
   var aspectRatioEnlargementCollapsed = 865 / 368;
 
   var options = {
-    ready: function (e) {
-      console.log(e.type);
-    },
-    cropstart: function (e) {
-      console.log(e.type, e.detail.action);
-    },
-    cropmove: function (e) {
-      console.log(e.type, e.detail.action);
-    },
-    cropend: function (e) {
-      console.log(e.type, e.detail.action);
-    },
-    crop: function (e) {
-      var data = e.detail;
+    // ready: function (e) {
+    //   console.log(e.type);
+    // },
+    // cropstart: function (e) {
+    //   console.log(e.type, e.detail.action);
+    // },
+    // cropmove: function (e) {
+    //   console.log(e.type, e.detail.action);
+    // },
+    // cropend: function (e) {
+    //   console.log(e.type, e.detail.action);
+    // },
+    // crop: function (e) {
+    //   var data = e.detail;
+    //   console.log('crop', data);
 
-      console.log('crop', data);
-      console.log('getData', cropper.getData()); // setData
-      console.log('getImageData', cropper.getImageData());
-      console.log('getCanvasData', cropper.getCanvasData()); // setCanvasData
-      console.log('getCropBoxData', cropper.getCropBoxData()); // setCropBoxData
-    },
+    //   // console.log('getData', cropper.getData()); // setData
+    //   // console.log('getImageData', cropper.getImageData());
+    //   // console.log('getCanvasData', cropper.getCanvasData()); // setCanvasData
+    //   // console.log('getCropBoxData', cropper.getCropBoxData()); // setCropBoxData
+    // },
     aspectRatio: aspectRatioEnlargementCollapsed,
     autoCrop: true,
     autoCropArea: 1, // 100% (default is .8 - 80%)
@@ -242,8 +242,8 @@ function init() {
     cropper = new Cropper(image, options);
 
     setTimeout(function() {
-      const imageData = cropper.getImageData();
-      console.log('imageData.naturalWidth', imageData.naturalWidth);
+      // const imageData = cropper.getImageData();
+      // console.log('imageData.naturalWidth', imageData.naturalWidth);
     }, 100);
 
   });
