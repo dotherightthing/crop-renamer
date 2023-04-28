@@ -7,6 +7,7 @@ window.onload = function () {
   var image = container.getElementsByTagName('img').item(0);
   var actions = document.getElementById('actions');
   var rotateInput = document.getElementById('rotate');
+  var thumbs = document.querySelector('.images');
 
   var aspectRatioEnlargementCollapsed = 865 / 368;
 
@@ -161,6 +162,38 @@ window.onload = function () {
       }
     }
   });
+
+  const handleThumbSelect = (event => {
+    var e = event || window.event;
+    var target = e.target || e.srcElement;
+
+    if (!cropper) {
+      return;
+    }
+
+    while (target.tagName.toLowerCase() !== 'button') {
+      target = target.parentNode;
+    }
+
+    const newImage = target.querySelector('img');
+    const newImageSrc = newImage.getAttribute('src');
+
+    image.src = newImageSrc; // = URL.createObjectURL(file);
+
+    if (cropper) {
+      cropper.destroy();
+    }
+
+    cropper = new Cropper(image, options);
+
+    setTimeout(function() {
+      const imageData = cropper.getImageData();
+      console.log('imageData.naturalWidth', imageData.naturalWidth);
+    }, 100);
+
+  });
   
   actions.onclick = handleControlChange;
+  thumbs.onclick = handleThumbSelect;
+
 };

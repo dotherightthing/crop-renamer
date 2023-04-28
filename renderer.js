@@ -18,7 +18,7 @@ async function uiSelectFolder() {
     const { src, dateTimeOriginal } = image;
 
     html += `<li>
-<img src="${src}">
+<button type="button" class="btn-img"><img src="${src}"></button>
 <p class="image-meta image-datetime">${dateTimeOriginal}</p>
 </li>`;
 
