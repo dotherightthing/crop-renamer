@@ -175,7 +175,7 @@ function init() {
       return;
     }
 
-    const thumbsButtons = document.querySelectorAll('.images .btn-img');
+    const thumbsButtons = thumbs.querySelectorAll('.btn-img');
     let thumbsButtonSelectedIndex = -1;
     let thumbsButtonNextIndex = -1;
 
