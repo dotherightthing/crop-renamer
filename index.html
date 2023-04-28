@@ -4,16 +4,36 @@
     <meta charset="UTF-8" />
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+    <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
     <div class="layout">
-      <div class="editor">Editor</div>
+      <div class="header actions" id="actions">
+        <button type="button" class="btn" data-method="reset" title="Reset">Reset</button>
+        <button type="button" class="btn" data-method="destroy" title="Destroy">Destroy</button>
+        <button type="button" class="btn" data-method="setAspectRatio" data-option="2.35054347826087">Crop 865x368</button>
+        <button type="button" class="btn" data-method="setAspectRatio" data-option="1">Crop 320x320</button>
+        <div>
+          <label for="rotate" class="btn">Rotate by</label>
+          <input type="number" value="0" class="btn" id="rotate" data-method="rotate">
+        </div>
+        <button type="button" class="btn" data-method="rotateTo" data-option="0">Reset rotation</button>
+      </div>
+      <div class="editor">
+        <div class="img-container">
+          <img src="file:///Volumes/DanBackup4TB/Not%20cloud%20synced/Don't%20Believe%20The%20Hype%20(302.96GB)/2017.01.16%20-%202017.01.21%20-%20Christchurch%20to%20Wellington%20via%20St%20James%20&%20Molesworth%20Station%20incl%20housesitting%20summary%20(6%20days)/Day%2001%20-%202017.01.16%20-%20Christchurch%20to%20Waikari/2017-01-16%2013.26.09.jpg" alt="Picture">
+        </div>
+      </div>
       <div class="images">
-        <ul class="image-list" id="images"></ul>
+        <ul class="image-list" id="images">
+          <!-- loaded by Load images -->
+        </ul>
         <p class="image-meta image-summary"><span id="image-count">0</span> images</p>
       </div>
     </div>
   </body>
   <script src="./renderer.js"></script>
+  <script src="node_modules/cropperjs/dist/cropper.js"></script>
+  <script src="cropper.js"></script>
 </html>

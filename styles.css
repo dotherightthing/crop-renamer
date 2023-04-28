@@ -1,6 +1,13 @@
 :root {
   --gutter: .5rem;
   --gutter-half: calc(.5rem/2);
+  --text-small: .8rem;
+  --text-medium: .9rem;
+  --color-primary: #fff;
+  --color-secondary: #ccc;
+  --color-bg-primary: #000;
+  --color-bg-secondary: #1e1e1e;
+  --color-border-secondary: #333;
 }
 
 body {
@@ -9,25 +16,20 @@ body {
 
 .layout {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: auto auto minmax(10rem, 1fr);
   height: 100vh;
-}
-
-.editor {
-  align-self: center;
-  text-align: center;
 }
 
 .images {
   overflow-y: auto;
-  background-color: black;
+  background-color: var(--color-bg-primary);
   padding-bottom: 2rem;
-  border: var(--gutter) solid black;
+  border: var(--gutter) solid var(--color-bg-primary);
 }
 
 .image-list {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(10, 1fr);
   gap: var(--gutter);
   list-style: none;
   padding: 0;
@@ -40,16 +42,27 @@ body {
 }
 
 .image-meta {
-  background-color: #333;
-  color: white;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-primary);
   font-family: sans-serif;
-  font-size: .9rem;
+  font-size: var(--text-medium);
   padding: var(--gutter-half) var(--gutter);
   margin: .1rem 0;
 }
 
+
+/* .img-container {
+  max-height: none !important;
+} */
+
 .image-datetime {
   text-align: center;
+}
+
+.header {
+  justify-content: center;
+  background-color: var(--color-bg-primary);
+  padding: var(--gutter-half) var(--gutter);
 }
 
 .image-summary {
@@ -57,12 +70,80 @@ body {
   bottom: var(--gutter);
   width: calc(100% - (var(--gutter) * 4));
   text-align: right;
-  border-top: var(--gutter) solid black;
+  border-top: var(--gutter) solid var(--color-bg-primary);
 }
 
 .image-summary.image-meta {
-  background-color: #1f1f1f;
-  color: #ccc;
-  font-size: .8rem;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-secondary);
+  font-size: var(--text-small);
   margin: 0;
 }
+
+.btn {
+  background-color: #333;
+  color: var(--color-primary);
+  font-family: sans-serif;
+  font-size: var(--text-small);
+  padding: var(--gutter-half);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 0;
+  margin-right: 1px;
+}
+
+.cropper-bg {
+  /* prevent cross origin error by replacing base64 encoded image with pure css pattern */
+  /* see https://projects.verou.me/css3patterns/#checkerboard */
+  background-color: #eee;
+  background-image: linear-gradient(45deg, rgb(193, 193, 193) 25%, transparent 25%, transparent 75%, rgb(193, 193, 193) 75%, rgb(193, 193, 193)),
+  linear-gradient(45deg, rgb(193, 193, 193) 25%, transparent 25%, transparent 75%, rgb(193, 193, 193) 75%, rgb(193, 193, 193));
+  background-size: 16px 16px;
+  background-position: 0 0, 8px 8px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align: end;
+}
+
+label[for="rotate"] {
+  border-right: 0;
+  margin-right: -3px; /* inline block - 1px */
+}
+
+#rotate {
+  width: 3rem;
+  border-left: 0;
+}
+
+/* cropper */
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.img-container,
+.img-preview {
+  background-color: #f7f7f7;
+  text-align: center;
+  width: 100%;
+}
+
+.img-container {
+  max-height: 497px;
+  min-height: 200px;
+}
+
+@media (min-width: 768px) {
+  .img-container {
+    min-height: 497px;
+  }
+}
+
+.img-container > img {
+  max-width: 100%;
+}
+

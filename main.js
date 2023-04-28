@@ -98,10 +98,7 @@ const createWindow = () => {
     {
       label: appName, submenu: [
         {
-          label: 'Load images', click: () => { mainWindow.loadFile('index.html'); mainWindow.webContents.executeJavaScript('uiSelectFolder()'); }
-        },
-        {
-          label: 'Load cropper', click: () => { mainWindow.loadFile('cropper.html'); }
+          label: 'Load images', click: () => { mainWindow.webContents.executeJavaScript('uiSelectFolder()'); }
         },
       ]
     }
@@ -109,12 +106,16 @@ const createWindow = () => {
 
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 
-  mainWindow.loadFile('index.html');
-
   if (appDebug) {
     // mainWindow.setFullScreen(true);
     mainWindow.webContents.openDevTools();
   }
+
+  // give dev tools drawer time to open
+  // so that cropper is centered in remaining space
+  setTimeout(() => {
+    mainWindow.loadFile('index.html');
+  }, 100);
 }
 
 // Open a window if none are open (macOS)
