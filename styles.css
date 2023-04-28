@@ -91,14 +91,6 @@ body {
   margin-right: 1px;
 }
 
-.cropper-bg {
-  /* prevent cross origin error by replacing base64 encoded image with pure css pattern */
-  /* see https://projects.verou.me/css3patterns/#checkerboard */
-  background-color: #eee;
-  background-image: linear-gradient(45deg, rgb(193, 193, 193) 25%, transparent 25%, transparent 75%, rgb(193, 193, 193) 75%, rgb(193, 193, 193)),
-  linear-gradient(45deg, rgb(193, 193, 193) 25%, transparent 25%, transparent 75%, rgb(193, 193, 193) 75%, rgb(193, 193, 193));
-  background-size: 16px 16px;
-  background-position: 0 0, 8px 8px;
 }
 
 .actions {
