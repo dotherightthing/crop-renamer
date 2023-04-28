@@ -1,6 +1,8 @@
-window.onload = function () {
-  'use strict';
+'use strict';
 
+window.onload = init();
+
+function init() {
   var Cropper = window.Cropper;
   var URL = window.URL || window.webkitURL;
   var container = document.querySelector('.img-container');
@@ -62,7 +64,7 @@ window.onload = function () {
   };
   var cropper = new Cropper(image, options);
   var originalImageURL = image.src;
-  var uploadedImageURL;
+  var newImageSrc;
 
   // Buttons
   if (typeof document.createElement('cropper').style.transition === 'undefined') {
@@ -144,9 +146,9 @@ window.onload = function () {
         case 'destroy':
           cropper = null;
 
-          if (uploadedImageURL) {
-            URL.revokeObjectURL(uploadedImageURL);
-            uploadedImageURL = '';
+          if (newImageSrc) {
+            URL.revokeObjectURL(newImageSrc);
+            newImageSrc = '';
             image.src = originalImageURL;
           }
 
@@ -176,7 +178,7 @@ window.onload = function () {
     }
 
     const newImage = target.querySelector('img');
-    const newImageSrc = newImage.getAttribute('src');
+    newImageSrc = newImage.getAttribute('src');
 
     image.src = newImageSrc; // = URL.createObjectURL(file);
 
@@ -196,4 +198,4 @@ window.onload = function () {
   actions.onclick = handleControlChange;
   thumbs.onclick = handleThumbSelect;
 
-};
+}
