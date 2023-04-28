@@ -14,7 +14,7 @@ async function uiSelectFolder() {
 
   imageCount.textContent = images.length;
 
-  images.forEach(image => {
+  images.forEach((image, i) => {
     const { src, dateTimeOriginal } = image;
 
     html += `<li class="image-list-item">
@@ -25,6 +25,10 @@ async function uiSelectFolder() {
 </li>`;
 
     imagesContainer.innerHTML = html;
+
+    if (i === images.length - 1) {
+      imagesContainer.querySelectorAll('.btn-img')[0].click();
+    }
   });
 }
 
