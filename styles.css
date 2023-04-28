@@ -26,6 +26,7 @@ body {
 
 .images {
   overflow-y: auto;
+  scroll-behavior: auto; /* instant */
   background-color: var(--color-bg-primary);
   padding-bottom: 2rem;
   border: var(--gutter) solid var(--color-bg-primary);

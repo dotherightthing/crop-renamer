@@ -211,7 +211,12 @@ function init() {
 
     if (thumbsButtonNextIndex > -1) {
       thumbsButtons[thumbsButtonNextIndex].click();
-      thumbsButtons[thumbsButtonNextIndex].scrollIntoView();
+
+      setTimeout(() => {
+        thumbsButtons[thumbsButtonNextIndex].scrollIntoView({
+          behavior: 'auto'
+        });
+      }, 500);
     }
   });
 
