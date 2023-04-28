@@ -91,6 +91,9 @@ body {
   margin-right: 1px;
 }
 
+input.btn {
+  padding-right: 0;
+  padding-left: 0;
 }
 
 .actions {
@@ -106,7 +109,7 @@ label[for="rotate"] {
 }
 
 #rotate {
-  width: 3rem;
+  width: 2rem;
   border-left: 0;
 }
 
