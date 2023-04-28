@@ -204,5 +204,4 @@ function init() {
   
   actions.onclick = handleControlChange;
   thumbs.onclick = handleThumbSelect;
-
 }
