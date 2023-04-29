@@ -85,11 +85,6 @@ body {
   color: var(--color-primary);
 }
 
-
-/* .img-container {
-  max-height: none !important;
-} */
-
 .image-datetime {
   text-align: center;
 }
