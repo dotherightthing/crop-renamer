@@ -14,14 +14,27 @@
   --color-border-active: #aaa; /* fc0 */
 }
 
+/* prevent flash of white content when navigating thumbnails */
+html,
+body {
+  height: 100vh;
+  overflow: hidden;
+}
+
 body {
   margin: 0;
 }
 
 .layout {
   display: grid;
-  grid-template-rows: auto auto 36rem; /* minmax(10rem, 1fr); */
+  grid-template-rows: 70vh 30vh;
   height: 100vh;
+}
+
+/* prevent flash of white content when navigating thumbnails */
+.layout,
+.layout > * {
+  overflow: hidden;
 }
 
 .images {
