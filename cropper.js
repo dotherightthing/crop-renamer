@@ -211,13 +211,11 @@ function init() {
 
     if (thumbsButtonNextIndex > -1) {
       thumbsButtons[thumbsButtonNextIndex].click();
-
-      setTimeout(() => {
-        thumbsButtons[thumbsButtonNextIndex].scrollIntoView({
-          behavior: 'auto'
-        });
-      }, 500);
     }
+
+    thumbsButtons[thumbsButtonNextIndex].scrollIntoView({
+      behavior: 'auto'
+    });
   });
 
   const handleThumbSelect = (event => {
