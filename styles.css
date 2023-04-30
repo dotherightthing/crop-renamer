@@ -236,7 +236,6 @@ label[for='rotate'] {
   bottom: 0;
   left: 0;
   border: var(--gutter-half) solid var(--color-border-active);
-  filter: drop-shadow(2px 4px 6px var(--color-bg-primary));
 }
 
 .btn-selected .meta {
