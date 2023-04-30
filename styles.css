@@ -137,7 +137,7 @@ img {
   filter: grayscale(60%) brightness(var(--opacity-thumb-brightness));
 }
 
-.thumb-img.btn-selected {
+.btn-selected .thumb-img {
   filter: none;
 }
 
