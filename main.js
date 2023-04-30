@@ -1,6 +1,15 @@
 // Electron's main process
 
-const { app, BrowserWindow, ipcMain, dialog, Menu, shell } = require('electron');
+'use strict';
+
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  Menu
+} = require('electron');
+
 const fs = require('fs');
 const path = require('path');
 const ExifReader = require('exifreader');
@@ -10,55 +19,20 @@ const appDebug = true;
 const appName = 'Image cropper';
 const appDimensions = [ 1280, 1024 ];
 
-async function handleSelectFolder () {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    defaultPath: '~/',
-    title: 'Select image folder',
-    buttonLabel: 'Load images',
-    properties: ['openDirectory', 'multiSelections']
-  })
-  if (!canceled) {
-    const folderPath = filePaths[0];
-    const files = getFiles(folderPath);
-
-    const images = files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
-    const imagesData = [];
-
-    const processImages = async (images) => {
-      for (let i = 0; i < images.length; i++) {
-        const image = images[i];
-        const tags = await ExifReader.load(image);
-        const imageDate = tags['DateTimeOriginal'].description;
-
-        imagesData.push({
-          src: image,
-          dateTimeOriginal: imageDate
-        });
-      }
-
-      return imagesData;
-    }
-
-    const result = processImages(images);
-
-    return result;
-  }
-}
-
 const getFiles = (dir) => {
   return fs.readdirSync(dir).flatMap(item => {
-    const path = `${dir}/${item}`;
+    const pth = `${dir}/${item}`;
 
     // get files from the directory
-    if (fs.statSync(path).isDirectory()) {
-      const files = getFiles(path);
+    if (fs.statSync(pth).isDirectory()) {
+      const files = getFiles(pth);
 
       return files;
     }
 
-    return path;
+    return pth;
   });
-}
+};
 
 const createWindow = () => {
   const [ width, height ] = appDimensions;
@@ -68,7 +42,7 @@ const createWindow = () => {
     height,
     webPreferences: {
       nodeIntegration: true, // disable sandboxing
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.js')
     },
     title: appName
   });
@@ -80,18 +54,19 @@ const createWindow = () => {
   // https://www.electronjs.org/docs/latest/api/webview-tag
   const template = [
     {
-      label: 'File', submenu: [
+      label: 'File',
+      submenu: [
         {
-          label: 'Show Dev Tools', click:() => { mainWindow.webContents.openDevTools(); }
+          label: 'Show Dev Tools', click: () => { mainWindow.webContents.openDevTools(); }
         },
         {
           label: 'Force reload', click: () => { mainWindow.webContents.reloadIgnoringCache(); }
         },
         {
-          label: 'Bring window to front', click:() => { mainWindow.moveTop(); }
+          label: 'Bring window to front', click: () => { mainWindow.moveTop(); }
         },
         {
-          label: 'Reset window size', click:() => { mainWindow.setSize(width, height); mainWindow.center(); }
+          label: 'Reset window size', click: () => { mainWindow.setSize(width, height); mainWindow.center(); }
         },
         {
           type: 'separator'
@@ -102,10 +77,11 @@ const createWindow = () => {
       ]
     },
     {
-      label: appName, submenu: [
+      label: appName,
+      submenu: [
         {
           label: 'Load images', click: () => { mainWindow.webContents.executeJavaScript('uiSelectFolder()'); }
-        },
+        }
       ]
     }
   ];
@@ -122,32 +98,70 @@ const createWindow = () => {
   setTimeout(() => {
     mainWindow.loadFile('index.html');
   }, 100);
+};
+
+const getImagesData = async (imageFiles) => {
+  const imagesData = [];
+
+  for (let i = 0; i < imageFiles.length; i += 1) {
+    const image = imageFiles[i];
+    const tags = await ExifReader.load(image); /* eslint-disable-line no-await-in-loop */
+    const imageDate = tags.DateTimeOriginal.description;
+
+    imagesData.push({
+      src: image,
+      dateTimeOriginal: imageDate
+    });
+  }
+
+  return imagesData;
+};
+
+async function handleSelectFolder() {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    defaultPath: '~/',
+    title: 'Select image folder',
+    buttonLabel: 'Load images',
+    properties: [ 'openDirectory', 'multiSelections' ]
+  });
+
+  let result = [];
+
+  if (!canceled) {
+    const folderPath = filePaths[0];
+    const files = getFiles(folderPath);
+
+    const imageFiles = files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
+
+    result = getImagesData(imageFiles);
+  }
+
+  return result;
 }
 
 // Open a window if none are open (macOS)
 app.whenReady().then(() => {
   // ipcMain module for inter-process communication (IPC) with render process
   ipcMain.handle('dialog:selectFolder', handleSelectFolder);
-  
+
   createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
-  })
+  });
 });
 
 app.on('web-contents-created', (e, contents) => {
   contextMenu({
-     window: contents,
-    //  copyImageAddress: true,
-     showSaveImageAs: true,
-     showInspectElement: true
+    window: contents,
+    showSaveImageAs: true,
+    showInspectElement: true
   });
-})
+});
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }

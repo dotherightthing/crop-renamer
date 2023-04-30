@@ -10,7 +10,7 @@
   <body>
     <div class="layout">
       <div class="editor">
-        <div class="header actions" id="actions">
+        <div class="header controls" id="controls">
           <button type="button" class="btn" data-method="reset" title="Reset">Reset</button>
           <button type="button" class="btn" data-method="destroy" title="Destroy">Destroy</button>
           <button type="button" class="btn" data-method="setAspectRatio" data-option="2.35054347826087">Crop 865x368</button>
@@ -22,18 +22,19 @@
           <button type="button" class="btn" data-method="rotateTo" data-option="0">Reset rotation</button>
         </div>
         <div class="img-container">
-          <img src="" alt="">
+          <img src="" alt="" id="image">
         </div>
       </div>
-      <div class="images">
-        <ul class="image-list" id="images">
+      <div class="thumbs">
+        <ul class="thumbs-list" id="thumbs">
           <!-- loaded by Load images -->
         </ul>
-        <p class="image-meta image-summary"><span id="image-count">0</span> images</p>
+        <p class="meta thumbs-summary-meta">
+          <span id="thumbs-count">0</span> images
+        </p>
       </div>
     </div>
   </body>
-  <script src="./renderer.js"></script>
   <script src="node_modules/cropperjs/dist/cropper.js"></script>
-  <script src="cropper.js"></script>
+  <script src="./renderer.js"></script>
 </html>

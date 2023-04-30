@@ -4,6 +4,8 @@
 // exposes privileged APIs to the renderer via the contextBridge API
 // sets up inter-process communication (IPC) interfaces to pass arbitrary messages between Electron's main and renderer processes
 
+'use strict';
+
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
