@@ -89,6 +89,7 @@ img {
 /* .thumbs */
 
 .thumbs {
+  counter-reset: thumb-counter;
   background-color: var(--color-bg-primary);
   padding-bottom: 2rem;
   border: var(--gutter) solid var(--color-bg-primary);
@@ -109,8 +110,25 @@ img {
 }
 
 .thumb {
+  position: relative;
   width: 7.8vw;
   flex-shrink: 0;
+}
+
+.thumb::before {
+  counter-increment: thumb-counter;
+  content: "#" counter(thumb-counter);
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  color: var(--color-secondary);
+  font-family: sans-serif;
+  font-size: var(--text-small);
+  line-height: 1;
+  text-shadow: 1px 0 4px var(--color-bg-primary);
+  padding: var(--gutter);
 }
 
 .thumb-img {
