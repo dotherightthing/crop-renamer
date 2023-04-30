@@ -260,6 +260,20 @@ const initCropper = () => {
   }
 };
 
+const scrollToSelectedThumb = () => {
+  const thumbsButtons = thumbsEl.querySelectorAll(`.${thumbButtonClass}`);
+
+  if (!thumbsButtons.length) {
+    return;
+  }
+
+  const thumbsButtonSelectedIndex = getSelectedIndex(thumbsButtons);
+
+  thumbsButtons[thumbsButtonSelectedIndex].scrollIntoView({
+    behavior: 'auto'
+  });
+};
+
 async function uiSelectFolder() {
   const loadedThumbs = await window.electronAPI.selectFolder();
   let html = '';
@@ -290,6 +304,8 @@ async function uiSelectFolder() {
 }
 
 window.addEventListener('load', initCropper);
+
+window.addEventListener('resize', scrollToSelectedThumb);
 
 document.addEventListener('DOMContentLoaded', () => {
   controlsEl.addEventListener('click', handleControlChange);
