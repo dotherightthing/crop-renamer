@@ -2,10 +2,8 @@
 
 'use strict';
 
-const aspectRatioEnlargementCollapsed = 865 / 368;
 const controlsEl = document.getElementById('controls');
 const Cropper = window.Cropper;
-const image = document.getElementById('image');
 const rotateEl = document.getElementById('rotate');
 const selectedClass = 'btn-selected';
 const thumbsCount = document.getElementById('thumbs-count');
@@ -15,49 +13,48 @@ const thumbButtonClass = 'btn-thumb';
 const thumbImgClass = 'thumb-img';
 const thumbMetaClass = 'thumb-meta';
 const URL = window.URL || window.webkitURL;
-
-let cropper;
 let originalImageURL;
 let newImageSrc;
 
+const cropper1Image = document.getElementById('image1');
+let cropper1;
+let cropper1CropboxData;
+let cropper1ImageData;
+
+const cropper2Image = document.getElementById('image2');
+let cropper2;
+let cropper2CropboxData;
+let cropper2ImageData;
+
+const cropper3Image = document.getElementById('image3');
+let cropper3;
+let cropper3CropboxData;
+let cropper3ImageData;
+
 const cropperOptions = {
-  // ready: function (e) {
-  //   console.log(e.type);
-  // },
-  // cropstart: function (e) {
-  //   console.log(e.type, e.detail.action);
-  // },
-  // cropmove: function (e) {
-  //   console.log(e.type, e.detail.action);
-  // },
-  // cropend: function (e) {
-  //   console.log(e.type, e.detail.action);
-  // },
   // crop: function (e) {
   //   var data = e.detail;
-  //   console.log('crop', data);
-
-  //   // console.log('getData', cropper.getData()); // setData
-  //   // console.log('getImageData', cropper.getImageData());
-  //   // console.log('getCanvasData', cropper.getCanvasData()); // setCanvasData
-  //   // console.log('getCropBoxData', cropper.getCropBoxData()); // setCropBoxData
+  //   // console.log('getData', cropper1.getData()); // setData
+  //   // console.log('getImageData', cropper1.getImageData());
+  //   // console.log('getCanvasData', cropper1.getCanvasData()); // setCanvasData
+  //   // console.log('getCropBoxData', cropper1.getCropBoxData()); // setCropBoxData
   // },
-  aspectRatio: aspectRatioEnlargementCollapsed,
   autoCrop: true,
   autoCropArea: 1, // 100% (default is .8 - 80%)
   background: true,
   center: true,
   checkCrossOrigin: true,
   checkOrientation: true,
-  cropBoxMovable: true,
-  cropBoxResizable: true,
+  cropBoxMovable: false,
+  cropBoxResizable: false,
+  dragMode: 'none',
   guides: true,
   highlight: true,
   modal: true,
-  movable: true,
+  movable: false,
   preview: '',
   responsive: true,
-  restore: true,
+  restore: true, // Restore the cropped area after resizing the window
   rotatable: true, // TODO: rotate should affect entire image, not just the crop, so requires an additional pre-crop
   scalable: false,
   toggleDragModeOnDblclick: false,
@@ -66,6 +63,50 @@ const cropperOptions = {
   zoomOnTouch: false,
   zoomOnWheel: false
 };
+
+let cropperOptions1 = { ...cropperOptions };
+
+// https://codepen.io/saleemnaufa/pen/gVewZw
+Object.assign(cropperOptions1, {
+  aspectRatio: 1,
+  autoCropArea: .2,
+  cropBoxMovable: true,
+  guides: false,
+  movable: true,
+  crop: (e) => {
+    // const { x, y } = e.detail;
+    // setCropboxData(e);
+    // console.log('crop', Math.round(x), Math.round(y));
+  },
+  cropend: (e) => {
+    // https://github.com/fengyuanchen/cropperjs/issues/669
+    setCropboxData(e);
+  },
+  ready: () => {
+    cropper1CropboxData = cropper1.getCropBoxData();
+    cropper1ImageData = cropper1.getImageData();
+  }
+});
+
+let cropperOptions2 = { ...cropperOptions };
+
+Object.assign(cropperOptions2, {
+  aspectRatio: 865 / 368,
+  ready: () => {
+    cropper2CropboxData = cropper2.getCropBoxData();
+    cropper2ImageData = cropper2.getImageData();
+  }
+});
+
+let cropperOptions3 = { ...cropperOptions };
+
+Object.assign(cropperOptions3, {
+  aspectRatio: 320 / 320,
+  ready: () => {
+    cropper3CropboxData = cropper3.getCropBoxData();
+    cropper3ImageData = cropper3.getImageData();
+  }
+});
 
 const getSelectedIndex = (nodeList) => {
   let selectedIndex = -1;
@@ -103,15 +144,27 @@ const getNextIndex = (nodeList, selectedIndex) => {
   return nextIndex;
 };
 
+// https://usefulangle.com/post/179/jquery-offset-vanilla-javascript
+const getOffset = (el) => {
+  const rect = el.getBoundingClientRect();
+  const offset = { 
+    top: rect.top + window.scrollY, 
+    left: rect.left + window.scrollX, 
+  };
+
+  return offset;
+}
+
 const handleControlChange = (event) => {
   var evt = event || window.event;
   var evtTarget = evt.target || evt.srcElement;
-  var cropped;
+  var cropped1;
+  var cropped2;
   var result;
   var input;
   var data;
 
-  if (!cropper) {
+  if (!cropper1) {
     return;
   }
 
@@ -133,9 +186,12 @@ const handleControlChange = (event) => {
     secondOption: evtTarget.getAttribute('data-second-option') || undefined
   };
 
-  cropped = cropper.cropped;
+  cropped1 = cropper1.cropped;
+  cropped2 = cropper2.cropped;
+  cropped3 = cropper3.cropped;
 
-  const { method, option, secondOption } = data;
+  const { method, secondOption } = data;
+  let { option } = data;
 
   if (method) {
     if (!evtTarget.hasAttribute('data-option')) {
@@ -145,32 +201,48 @@ const handleControlChange = (event) => {
     if (method === 'reset') {
       rotateEl.value = 0;
     } else if (method === 'rotate') {
-      // if (cropped && cropperOptions.viewMode > 0) {
-      //   cropper.clear(); // this resets the crop position
+      // if (cropped1 && cropperOptions1.viewMode > 0) {
+      //   cropper1.clear(); // this resets the crop position
       // }
 
-      cropper.rotateTo(0); // temporarily reset rotation so that a reduction of value is not treated as a further increase
+      cropper1.rotateTo(0); // temporarily reset rotation so that a reduction of value is not treated as a further increase
+      cropper2.rotateTo(0);
+      cropper3.rotateTo(0);
     } else if (method === 'rotateTo') {
       rotateEl.value = evtTarget.value;
     }
 
-    result = cropper[method](option, secondOption);
+    result = cropper1[method](option, secondOption);
+    cropper2[method](option, secondOption);
+    cropper3[method](option, secondOption);
 
     if (method === 'rotate') {
-      if (cropped && cropperOptions.viewMode > 0) {
-        cropper.crop();
+      if (cropped1 && cropperOptions1.viewMode > 0) {
+        cropper1.crop();
+      }
+
+      if (cropped2 && cropperOptions2.viewMode > 0) {
+        cropper2.crop();
+      }
+
+      if (cropped3 && cropperOptions3.viewMode > 0) {
+        cropper3.crop();
       }
     } else if (method === 'destroy') {
-      cropper = null;
+      cropper1 = null;
+      cropper2 = null;
+      cropper3 = null;
 
       if (newImageSrc) {
         URL.revokeObjectURL(newImageSrc);
         newImageSrc = '';
-        image.src = originalImageURL;
+        cropper1Image.src = originalImageURL;
+        cropper2Image.src = originalImageURL;
+        cropper3Image.src = originalImageURL;
       }
     }
 
-    if (typeof result === 'object' && result !== cropper && input) {
+    if (typeof result === 'object' && result !== cropper1 && input) {
       try {
         input.value = JSON.stringify(result);
       } catch (err) {
@@ -180,8 +252,9 @@ const handleControlChange = (event) => {
   }
 };
 
+// cropper (1) only
 const handleKeyDown = (e) => {
-  if (!cropper) {
+  if (!cropper1) {
     return;
   }
 
@@ -215,7 +288,7 @@ const handleThumbSelect = (event) => {
   var e = event || window.event;
   var target = e.target || e.srcElement;
 
-  if (!cropper) {
+  if (!cropper1) {
     return;
   }
 
@@ -237,23 +310,37 @@ const handleThumbSelect = (event) => {
   const newImage = target.querySelector('img');
   newImageSrc = newImage.getAttribute('src');
 
-  image.src = newImageSrc; // = URL.createObjectURL(file);
+  cropper1Image.src = newImageSrc; // = URL.createObjectURL(file);
+  cropper2Image.src = newImageSrc; // = URL.createObjectURL(file);
+  cropper3Image.src = newImageSrc; // = URL.createObjectURL(file);
 
-  if (cropper) {
-    cropper.destroy();
+  if (cropper1) {
+    cropper1.destroy();
   }
 
-  cropper = new Cropper(image, cropperOptions);
+  if (cropper2) {
+    cropper2.destroy();
+  }
+
+  if (cropper3) {
+    cropper3.destroy();
+  }
+
+  cropper1 = new Cropper(cropper1Image, cropperOptions1);
+  cropper2 = new Cropper(cropper2Image, cropperOptions2);
+  cropper3 = new Cropper(cropper3Image, cropperOptions3);
 
   // setTimeout(function() {
-  //   const imageData = cropper.getImageData();
+  //   const imageData = cropper1.getImageData();
   //   console.log('imageData.naturalWidth', imageData.naturalWidth);
   // }, 100);
 };
 
 const initCropper = () => {
-  cropper = new Cropper(image, cropperOptions);
-  originalImageURL = image.src;
+  cropper1 = new Cropper(cropper1Image, cropperOptions1);
+  cropper2 = new Cropper(cropper2Image, cropperOptions2);
+  cropper3 = new Cropper(cropper3Image, cropperOptions3);
+  originalImageURL = cropper1Image.src;
 
   if (typeof document.createElement('cropper').style.transition === 'undefined') {
     rotateEl.prop('disabled', true);
@@ -271,6 +358,37 @@ const scrollToSelectedThumb = () => {
 
   thumbsButtons[thumbsButtonSelectedIndex].scrollIntoView({
     behavior: 'auto'
+  });
+};
+
+// this is only called from cropper1, which then controls cropper2
+const setCropboxData = (e) => {
+  const el = e.target; // #image1
+  const cropper1ContainerEl = el.nextSibling;
+  const cropper1DragBoxEl = cropper1ContainerEl.querySelector('.cropper-drag-box');
+  const { left, top } = getOffset(cropper1DragBoxEl); // TODO this is always fixed rather than moving with cropbox (this is the parent element)
+  const { pageX, pageY } = e.detail.originalEvent; // TODO this is position of mouse not center cross inside cropbox
+  const x = pageX - left;
+  const y = pageY - top;
+
+  console.log('pageX', pageX);
+  console.log('left', left);
+  console.log('pageY', pageY);
+  console.log('top', top);
+
+  cropper1.setCropBoxData({
+    left: x - (cropper1CropboxData.width / 2),
+    top: y - (cropper1CropboxData.height / 2)
+  });
+
+  cropper2.setCropBoxData({
+    left: (x * (cropper2ImageData.width / cropper1ImageData.width)) - (cropper2CropboxData.width / 2),
+    top: (y * (cropper2ImageData.width / cropper1ImageData.width)) - (cropper2CropboxData.height / 2)
+  });
+
+  cropper3.setCropBoxData({
+    left: (x * (cropper3ImageData.width / cropper1ImageData.width)) - (cropper3CropboxData.width / 2),
+    top: (y * (cropper3ImageData.width / cropper1ImageData.width)) - (cropper3CropboxData.height / 2)
   });
 };
 

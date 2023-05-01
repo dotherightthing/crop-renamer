@@ -63,23 +63,59 @@ img {
   max-width: 100%;
 }
 
-.img-container {
+.img-container1 {
   position: relative; /* AP */
-  width: 100%;
+  width: calc(100% - 400px);
   min-height: calc(70vh - 2rem);
   max-height: calc(70vh - 2rem);
   background-color: var(--color-bg-light);
   text-align: center;
 }
 
+.img-container1 .cropper-face {
+  opacity: 0;
+}
+
+.img-container1 .cropper-crop-box,
+.img-container1 .cropper-view-box {
+  border-radius: 50%;
+}
+
+.img-container1 .cropper-view-box {
+  box-shadow: 0 0 0 var(--gutter-half) var(--color-border-active);
+  outline: 0;
+}
+
+.editor {
+  position: relative; /* AP */
+}
+
 .editor,
-.img-container {
+.img-container1,
+.img-container2,
+.img-container3 {
   background-color: var(--color-bg-tertiary);
 }
 
-.img-container > img {
+.img-container1 > img,
+.img-container2 > img,
+.img-container3 > img {
   visibility: hidden; /* allows presumed dimension calculations without FOUC */
   max-width: 100%;
+}
+
+.img-container2 {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 400px;
+}
+
+.img-container3 {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 400px;
 }
 
 .cropper-modal {
