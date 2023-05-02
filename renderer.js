@@ -31,6 +31,8 @@ let cropper3;
 let cropper3CropboxData;
 let cropper3ImageData;
 
+let cropper1CropBoxDidMove = false;
+
 const cropperOptions = {
   // crop: function (e) {
   //   var data = e.detail;
@@ -76,17 +78,15 @@ Object.assign(cropperOptions1, {
   // crop: (e) => {
   //   // fires during move, then after cropend
   // },
-  cropstart: (e) => {
-    console.log('cropstart');
-  },
+  // cropstart: (e) => {
+  //   // occurs on mouse down, so before a click AND before a move
+  // },
   cropmove: (e) => {
-    console.log('cropmove');
+    cropper1CropBoxDidMove = true; // differentiate between a click and a move
   },
   cropend: (e) => { // dragEnd callback, see https://github.com/fengyuanchen/cropperjs/issues/669
-    console.log('cropend');
-
     // fires after move
-    setCropboxData(e);
+    setCropboxData(e, cropper1CropBoxDidMove);
   },
   // ready: () => {
   // }
@@ -367,26 +367,25 @@ const scrollToSelectedThumb = () => {
 
 // this is only called from cropper1, which then controls cropper2
 const setCropboxData = (e) => {
+  const didMove = cropper1CropBoxDidMove; // TODO this sometimes needs to be clicked twice, needs to support a shaky hand
+  cropper1CropBoxDidMove = false;
+
   const el = e.target; // #image1
   const cropper1ContainerEl = el.nextSibling;
   const cropper1DragBoxEl = cropper1ContainerEl.querySelector('.cropper-drag-box');
-  const { left, top } = getOffset(cropper1DragBoxEl); // TODO this is always fixed rather than moving with cropbox (this is the parent element)
-  const { pageX, pageY } = e.detail.originalEvent; // TODO this is position of mouse not center cross inside cropbox - this is good for click to set but not at cropend
+  const { pageX, pageY } = e.detail.originalEvent;
 
-  console.log(e.type);
-
-  // TODO these are only relevant if a move didn't occur
-  const x = pageX - left;
-  const y = pageY - top;
+  const {
+    top: cropper1DragBoxTop
+  } = getOffset(cropper1DragBoxEl);
 
   const {
     top: cropper1CanvasTop,
-    left: cropper1CanvasLeft, // 196 (px)
-  } = cropper1.getCanvasData(); // 196 (px)
+    left: cropper1CanvasLeft,
+  } = cropper1.getCanvasData();
 
   // gap between edge of cropper-container and child cropper-crop-box (styled as a circle)
   // width and height values could be set on cropper.ready() as they don't change
-  // but for dev easiest to have all here
 
   // get left and top then halve for center x and y
   const {
@@ -394,7 +393,7 @@ const setCropboxData = (e) => {
     left: cropper1CropboxLeft,
     width: cropper1CropboxWidth,
     height: cropper1CropboxHeight,
-  } = cropper1.getCropBoxData(); // 196 is the minimum due to cropper1CanvasLeft
+  } = cropper1.getCropBoxData();
 
   // get width and height of cropbox so we can calculate the position of the center crosshairs
   const {
@@ -418,10 +417,24 @@ const setCropboxData = (e) => {
   // cropper3 is smaller than cropper 1
   const cropper3ScalingRatio = (cropper3ImageWidth / cropper1ImageWidth);
 
-  // subtract gap between LH edge of cropper-container (0px) and grandchild cropper-canvas containing the scaled down image (centered)
-  // to get LH position of crop-box relative to canvas/image
-  const cropper1RelativeLeft = cropper1CropboxLeft - cropper1CanvasLeft;
-  const cropper1RelativeTop = cropper1CropboxTop - cropper1CanvasTop;
+  let cropper1RelativeLeft;
+  let cropper1RelativeTop;
+
+  if (didMove) {
+    // subtract gap between LH edge of cropper-container (0px) and grandchild cropper-canvas containing the scaled down image (centered)
+    // to get LH position of crop-box relative to canvas/image
+    cropper1RelativeLeft = cropper1CropboxLeft - cropper1CanvasLeft;
+    cropper1RelativeTop = cropper1CropboxTop - cropper1CanvasTop;
+  } else {
+    // use mouse XY
+    cropper1RelativeLeft = pageX - cropper1CanvasLeft
+    cropper1RelativeTop = pageY - cropper1DragBoxTop;
+
+    cropper1.setCropBoxData({
+      left: cropper1RelativeLeft + (cropper1CropboxWidth),
+      top: cropper1RelativeTop - (cropper1CropboxHeight / 2)
+    });
+  }
 
   const cropper1CropBoxCenterX = cropper1RelativeLeft + (cropper1CropboxWidth / 2);
   const cropper1CropBoxCenterY = cropper1RelativeTop + (cropper1CropboxHeight / 2);
@@ -431,13 +444,6 @@ const setCropboxData = (e) => {
 
   const cropper3CropBoxCenterX = (cropper1CropBoxCenterX * cropper3ScalingRatio);
   const cropper3CropBoxCenterY = (cropper1CropBoxCenterY * cropper3ScalingRatio);
-
-  // old: x - (cropper1CropboxWidth / 2) - this is problematic because X is click point not center point
-  // old: y - (cropper1CropboxHeight / 2) - this is problematic because Y is click point not center point
-  // cropper1.setCropBoxData({
-  //   left: cropper1CropBoxCenterX,
-  //   top: cropper1CropBoxCenterY
-  // });
 
   cropper2.setCropBoxData({
     left: cropper2CropBoxCenterX - (cropper2CropboxWidth / 2),
@@ -487,5 +493,4 @@ document.addEventListener('DOMContentLoaded', () => {
   controlsEl.addEventListener('click', handleControlChange);
   thumbsEl.addEventListener('click', handleThumbSelect);
   document.body.addEventListener('keydown', handleKeyDown);
-  cropper1Image.addEventListener('pointerup', setCropboxData);
 });
