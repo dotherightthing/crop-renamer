@@ -10,13 +10,14 @@
     "airbnb-base/legacy"
   ],
   "globals": {
-    "uiSelectFolder": "readonly",
+    "uiSelectFolder": "readonly"
   },
   "plugins": [
     "jsdoc"
   ],
   "ignorePatterns": [
-    "node_modules/"
+    "node_modules/",
+    "*.html"
   ],
   "rules": {
     "array-bracket-spacing": ["error", "always"],
@@ -38,7 +39,7 @@
     }],
     "no-console": "off",
     "no-underscore-dangle": "off",
-    "no-use-before-define": "warn",
+    "no-use-before-define": "off",
     "no-param-reassign": [ "warn", {
       "props": false
     }],

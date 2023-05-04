@@ -11,24 +11,83 @@
     <div class="layout">
       <div class="editor">
         <div class="header controls" id="controls">
-          <button type="button" class="btn" data-method="reset" title="Reset">Reset</button>
-          <button type="button" class="btn" data-method="destroy" title="Destroy">Destroy</button>
-          <button type="button" class="btn" data-method="setAspectRatio" data-option="2.35054347826087">Crop 865x368</button>
-          <button type="button" class="btn" data-method="setAspectRatio" data-option="1">Crop 320x320</button>
+          <!-- <button type="button" class="btn" data-method="setAspectRatio" data-option="2.35054347826087">Crop 865x368</button>
+          <button type="button" class="btn" data-method="setAspectRatio" data-option="1">Crop 320x320</button> -->
           <div>
-            <label for="rotate" class="btn">Rotate by</label>
+            <label for="rotate" class="btn">Rotation</label>
             <input type="number" value="0" class="btn" id="rotate" data-method="rotate">
           </div>
-          <button type="button" class="btn" data-method="rotateTo" data-option="0">Reset rotation</button>
+          <!-- <button type="button" class="btn" data-method="rotateTo" data-option="0">Reset rotation</button> -->
+          <div>
+            <label for="image1CropperCanvasTopEl" class="btn">Canvas  Top</label>
+            <input type="text" value="0" class="btn" id="image1CropperCanvasTopEl" readonly>
+          </div>
+          <div>
+            <label for="image1CropperCanvasLeftEl" class="btn">Canvas 1 Left</label>
+            <input type="text" value="0" class="btn" id="image1CropperCanvasLeftEl" readonly>
+          </div>
+          <div>
+            <label for="image1CropperCropboxTopEl" class="btn">Cropbox 2 Top</label>
+            <input type="text" value="0" class="btn" id="image1CropperCropboxTopEl" readonly>
+          </div>
+          <div>
+            <label for="image1CropperCropboxLeftEl" class="btn">Cropbox 1 Left</label>
+            <input type="text" value="0" class="btn" id="image1CropperCropboxLeftEl" readonly>
+          </div>
+          <div>
+            <label for="image1CropperImageDataTopEl" class="btn">Image 1 Top</label>
+            <input type="text" value="0" class="btn" id="image1CropperImageDataTopEl" readonly>
+          </div>
+          <div>
+            <label for="image1CropperImageDataLeftEl" class="btn">Image 1 Left</label>
+            <input type="text" value="0" class="btn" id="image1CropperImageDataLeftEl" readonly>
+          </div>
+          <div>
+            <label for="image2CropperCropBoxTopEl" class="btn">Cropbox 2 Top</label>
+            <input type="text" value="0" class="btn" id="image2CropperCropBoxTopEl" readonly>
+          </div>
+          <div>
+            <label for="image2CropperCropBoxLeftEl" class="btn">Cropbox 2 Left</label>
+            <input type="text" value="0" class="btn" id="image2CropperCropBoxLeftEl" readonly>
+          </div>
+          <div>
+            <label for="image2CropperCanvasTopEl" class="btn">Canvas 2 Top</label>
+            <input type="text" value="0" class="btn" id="image2CropperCanvasTopEl" readonly>
+          </div>
+          <div>
+            <label for="image2CropperCanvasLeftEl" class="btn">Canvas 2 Left</label>
+            <input type="text" value="0" class="btn" id="image2CropperCanvasLeftEl" readonly>
+          </div>
+          <div>
+            <label for="image3CropperCropBoxTopEl" class="btn">Cropbox 3 Top</label>
+            <input type="text" value="0" class="btn" id="image3CropperCropBoxTopEl" readonly>
+          </div>
+          <div>
+            <label for="image3CropperCropBoxLeftEl" class="btn">Cropbox 3 Left</label>
+            <input type="text" value="0" class="btn" id="image3CropperCropBoxLeftEl" readonly>
+          </div>
+          <div>
+            <label for="image3CropperCanvasTopEl" class="btn">Canvas 3 Top</label>
+            <input type="text" value="0" class="btn" id="image3CropperCanvasTopEl" readonly>
+          </div>
+          <div>
+            <label for="image3CropperCanvasLeftEl" class="btn">Canvas 3 Left</label>
+            <input type="text" value="0" class="btn" id="image3CropperCanvasLeftEl" readonly>
+          </div>
+
+          <!-- <button type="button" class="btn" data-method="reset" title="Reset">Reset</button>
+          <button type="button" class="btn" data-method="destroy" title="Destroy">Destroy</button> -->
         </div>
-        <div class="img-container1">
-          <img src="" alt="" id="image1">
-        </div>
-        <div class="img-container2">
-          <img src="" alt="" id="image2">
-        </div>
-        <div class="img-container3">
-          <img src="" alt="" id="image3">
+        <div class="img-containers">
+          <div class="img-container1">
+            <img src="" alt="" id="image1" class="cropperImage" data-cropper-aspect-ratio="1:1" data-cropper-master="true">
+          </div>
+          <div class="img-container2">
+            <img src="" alt="" id="image2" class="cropperImage" data-cropper-aspect-ratio="865:368">
+          </div>
+          <div class="img-container3">
+            <img src="" alt="" id="image3" class="cropperImage" data-cropper-aspect-ratio="320:320">
+          </div>
         </div>
       </div>
       <div class="thumbs">
