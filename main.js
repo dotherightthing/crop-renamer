@@ -15,7 +15,7 @@ const path = require('path');
 const ExifReader = require('exifreader');
 const contextMenu = require('electron-context-menu');
 
-const appDebug = true;
+const appDebug = false;
 const appName = 'Image cropper';
 const appDimensions = [ 1280, 1024 ];
 

@@ -2,7 +2,8 @@
 
 'use strict';
 
-const controlsEl = document.getElementById('controls');
+const consoleTop = document.getElementById('console-top');
+const consoleBottom = document.getElementById('console-bottom');
 const Cropper = window.Cropper;
 const cropperDragBoxClass = 'cropper-drag-box';
 const cropperImageClass = 'cropperImage';
@@ -37,6 +38,54 @@ let masterCropperCropBoxDidMove = false;
 
 // functions
 
+const capitalize = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const createOutputSet = ({ id, title, outputs = {} }) => {
+  let outputsHtml = '';
+  let outputIds = {};
+  const outputsKeys = Object.keys(outputs);
+
+  outputsKeys.forEach(outputKey => {
+    const output = outputs[outputKey];
+    const outputId = `${id}-output-${output}`;
+    const outputParts = output.split('_');
+    let outputLabel = '';
+
+    outputParts.forEach(part => {
+      outputLabel += capitalize(part) + ' ';
+    });
+
+    outputLabel = outputLabel.trim();
+
+    outputIds[output] = outputId;
+
+    outputsHtml += `<div class="control">
+  <label for="${outputId}">${outputLabel}</label>
+  <input type="text" value="0" id="${outputId}" readonly>
+</div> 
+`;
+  });
+
+  const html = `<div class="control-set">
+  <fieldset>
+    <legend>
+      <div class="legend">${title}</div>
+    </legend>
+    <div class="controls">
+      ${outputsHtml}
+    </div>
+  </fieldset>
+</div>
+`;
+
+  return {
+    html,
+    outputIds
+  };
+};
+
 const destroyCroppers = () => {
   croppers.forEach(cropper => {
     const { cropperInstance } = cropper;
@@ -49,22 +98,22 @@ const destroyCroppers = () => {
   croppers = [];
 };
 
-const getCropperInstance = (imageId) => {
-  let _cropperInstance = null;
+const getCropper = (imageId) => {
+  let _cropper = null;
 
   croppers.forEach(cropper => {
     const { cropperInstance } = cropper;
 
     if (cropperInstance) {
       if (cropperInstance.element.id === imageId) {
-        _cropperInstance = cropperInstance;
+        _cropper = cropper;
       }
     }
 
     return true;
   });
 
-  return _cropperInstance;
+  return _cropper;
 };
 
 const getNextIndex = (nodeList, selectedIndex) => {
@@ -229,6 +278,11 @@ const handleKeyDown = (e) => {
   }
 };
 
+const handleMouseUp = (e) => {
+  document.getElementById('cropper1-mouse-output-x').value = e.clientX;
+  document.getElementById('cropper1-mouse-output-y').value = e.clientY;
+};
+
 // used to change the image, and triggered on load
 const handleThumbSelect = (event) => {
   const e = event || window.event;
@@ -287,7 +341,25 @@ const initCroppers = (imageSrc) => {
     zoomOnWheel: false
   };
 
-  cropperImages.forEach(cropperImage => {
+  // consoleTop.removeEventListener('click', handleControlChange);
+  window.removeEventListener('resize', scrollToSelectedThumb);
+  window.removeEventListener('click', handleMouseUp);
+
+  // consoleTop.addEventListener('click', handleControlChange);
+  window.addEventListener('resize', scrollToSelectedThumb);
+  window.addEventListener('click', handleMouseUp);
+
+  consoleTop.innerHTML = '';
+
+  const { html: bottomHtml } = createOutputSet({
+    id: 'console',
+    title: 'Console',
+    outputs: [ 'debug' ]
+  });
+
+  consoleBottom.innerHTML = bottomHtml;
+
+  cropperImages.forEach((cropperImage, cropperIndex) => {
     const data = cropperImage.dataset;
 
     cropperImage.setAttribute('src', imageSrc);
@@ -330,10 +402,45 @@ const initCroppers = (imageSrc) => {
 
     const cropperInstance = new Cropper(cropperImage, options);
 
+    let outputIdSets = {};
+
+    let outputs = {
+      canvas: [ 'top', 'left' ],
+      cropbox: [ 'top', 'left' ]
+    };
+
+    if (cropperIndex === 0) {
+      outputs = {
+        mouse: [ 'x', 'y' ],
+        cropper: [ 'x', 'y' ],
+        drgbx: [ 'top' ],
+        canvas: [ 'left', 'top' ],
+        cropbox: [ 'center_x', 'center_y', 'left', 'top', 'left_relative', 'top_relative' ],
+        image: [ 'left', 'top' ]
+      };
+    }
+
+    const outputsKeys = Object.keys(outputs);
+
+    outputsKeys.forEach(outputKey => {
+      const index = cropperIndex + 1;
+      const title = capitalize(outputKey);
+
+      const { html: topHtml, outputIds } = createOutputSet({
+        id: `cropper${index}-${outputKey}`,
+        title: `${title} ${index}`,
+        outputs: outputs[outputKey]
+      });
+
+      consoleTop.innerHTML += topHtml;
+      outputIdSets[outputKey] = outputIds;
+    });
+
     croppers.push({
       cropperInstance,
       // imageId, cropper.element.id
-      isMaster
+      isMaster,
+      outputIds: outputIdSets
     });
   });
 
@@ -360,19 +467,27 @@ const getCropboxTopLeftRelative = (cropper, didMove, pageX, pageY) => {
   let top;
   let left;
 
+  const { outputIds } = getCropper(cropper.element.id);
+
+  const {
+    x: cropperX,
+    y: cropperY
+  } = cropper.getData();
+
+  document.getElementById(outputIds.cropper.x).value = Math.round(cropperX);
+  document.getElementById(outputIds.cropper.y).value = Math.round(cropperY);
+
   const {
     top: cropperCanvasTop,
     left: cropperCanvasLeft
   } = cropper.getCanvasData();
 
+  document.getElementById(outputIds.canvas.top).value = Math.round(cropperCanvasTop);
+  document.getElementById(outputIds.canvas.left).value = Math.round(cropperCanvasLeft);
+
   const {
     element: cropperImage
   } = cropper;
-
-  const cropperOutputId = `${cropperImage.id}Cropper`;
-
-  document.getElementById(`${cropperOutputId}CanvasTopEl`).value = Math.round(cropperCanvasTop);
-  document.getElementById(`${cropperOutputId}CanvasLeftEl`).value = Math.round(cropperCanvasLeft);
 
   // get left and top then halve for center x and y
   const {
@@ -380,8 +495,8 @@ const getCropboxTopLeftRelative = (cropper, didMove, pageX, pageY) => {
     left: cropperCropboxLeft
   } = getCropBoxDataAdjustedMaster(cropper);
 
-  document.getElementById(`${cropperOutputId}CropboxTopEl`).value = Math.round(cropperCanvasTop);
-  document.getElementById(`${cropperOutputId}CropboxLeftEl`).value = Math.round(cropperCanvasLeft);
+  document.getElementById(outputIds.cropbox.top).value = Math.round(cropperCropboxTop);
+  document.getElementById(outputIds.cropbox.left).value = Math.round(cropperCropboxLeft);
 
   const cropperContainerEl = cropperImage.nextSibling;
   const cropperDragBoxEl = cropperContainerEl.querySelector(`.${cropperDragBoxClass}`);
@@ -400,9 +515,19 @@ const getCropboxTopLeftRelative = (cropper, didMove, pageX, pageY) => {
       return;
     }
 
-    top = pageY - cropperDragBoxTop;
-    left = pageX - cropperCanvasLeft;
+    document.getElementById(outputIds.drgbx.top).value = Math.round(cropperDragBoxTop);
+
+    // old
+    // top = pageY - cropperDragBoxTop;
+    // left = pageX - cropperCanvasLeft;
+
+    // new
+    top = pageY;
+    left = pageX;
   }
+
+  document.getElementById(outputIds.cropbox.top_relative).value = Math.round(top);
+  document.getElementById(outputIds.cropbox.left_relative).value = Math.round(left);
 
   // eslint-disable-next-line consistent-return
   return {
@@ -444,8 +569,8 @@ const moveCropperCropboxToXY = (cropper, x, y) => {
     left
   } = getCropboxTopLeftRelative(cropper, false, x, y);
 
-  const newTop = top - (height / 2);
   const newLeft = left + width;
+  const newTop = top - (height / 2);
 
   masterCropper.setCropBoxData({
     top: newTop,
@@ -459,10 +584,10 @@ const moveCropperCropboxToXY = (cropper, x, y) => {
 };
 
 // get left and top then halve for center x and y
-const getCropperInstanceCropboxCenter = (cropper, didMove, pageX, pageY) => {
+const getCropperCropboxCenter = (cropper, didMove, pageX, pageY) => {
   const {
-    width,
-    height
+    width, // 142
+    height // 142
   } = getCropBoxDataAdjustedMaster(cropper);
 
   const {
@@ -473,6 +598,8 @@ const getCropperInstanceCropboxCenter = (cropper, didMove, pageX, pageY) => {
   const x = left + (width / 2);
   const y = top + (height / 2);
 
+  document.getElementById('console-output-debug').value = `getCropperCropboxCenter - x/y: ${Math.round(x)} ${Math.round(y)}, left/top: ${Math.round(left)} ${Math.round(top)}, width/height: ${Math.round(width)} ${Math.round(height)}`;
+
   return {
     x,
     y
@@ -480,11 +607,7 @@ const getCropperInstanceCropboxCenter = (cropper, didMove, pageX, pageY) => {
 };
 
 const updateSlaveCropper = (slaveCropper, centerX, centerY) => {
-  const {
-    element: slaveCropperImage
-  } = slaveCropper;
-
-  const slaveCropperId = slaveCropperImage.getAttribute('id') + 'Cropper';
+  const { outputIds } = getCropper(slaveCropper.element.id);
 
   // const masterCropper = TODO this needs to be dynamic rather than a global
 
@@ -496,6 +619,9 @@ const updateSlaveCropper = (slaveCropper, centerX, centerY) => {
     top: slaveCropperCanvasTop,
     left: slaveCropperCanvasLeft
   } = slaveCropper.getCanvasData();
+
+  document.getElementById(outputIds.canvas.top).value = Math.round(slaveCropperCanvasTop);
+  document.getElementById(outputIds.canvas.left).value = Math.round(slaveCropperCanvasLeft);
 
   // get width and height of cropbox so we can calculate the position of the center crosshairs
   const {
@@ -523,10 +649,8 @@ const updateSlaveCropper = (slaveCropper, centerX, centerY) => {
     left: slaveCropperCropBoxLeft
   } = slaveCropper.getCropBoxData();
 
-  document.getElementById(`${slaveCropperId}CanvasTopEl`).value = slaveCropperCanvasTop;
-  document.getElementById(`${slaveCropperId}CanvasLeftEl`).value = slaveCropperCanvasLeft;
-  document.getElementById(`${slaveCropperId}CropBoxTopEl`).value = slaveCropperCropBoxTop;
-  document.getElementById(`${slaveCropperId}CropBoxLeftEl`).value = slaveCropperCropBoxLeft;
+  document.getElementById(outputIds.cropbox.top).value = Math.round(slaveCropperCropBoxTop);
+  document.getElementById(outputIds.cropbox.top).value = Math.round(slaveCropperCropBoxLeft);
 };
 
 // only called from masterCropper, which then controls slaveCropper1
@@ -536,24 +660,27 @@ const setCropboxData = (e) => {
 
   const { pageX, pageY } = e.detail.originalEvent;
 
-  const cropperOutputId = 'image1Cropper';
+  masterCropper = getCropper('image1').cropperInstance;
+  slaveCropper1 = getCropper('image2').cropperInstance;
+  slaveCropper2 = getCropper('image3').cropperInstance;
 
-  masterCropper = getCropperInstance('image1');
-  slaveCropper1 = getCropperInstance('image2');
-  slaveCropper2 = getCropperInstance('image3');
+  const { outputIds } = getCropper('image1');
 
   const {
     top: masterCropperImageTop,
     left: masterCropperImageLeft
   } = masterCropper.getImageData();
 
-  document.getElementById(`${cropperOutputId}ImageDataTopEl`).value = Math.round(masterCropperImageTop);
-  document.getElementById(`${cropperOutputId}ImageDataLeftEl`).value = Math.round(masterCropperImageLeft);
+  document.getElementById(outputIds.image.top).value = Math.round(masterCropperImageTop);
+  document.getElementById(outputIds.image.left).value = Math.round(masterCropperImageLeft);
 
   const {
     x: centerX,
     y: centerY
-  } = getCropperInstanceCropboxCenter(masterCropper, cropperWasDragged, pageX, pageY);
+  } = getCropperCropboxCenter(masterCropper, cropperWasDragged, pageX, pageY);
+
+  document.getElementById(outputIds.cropbox.center_x).value = Math.round(centerX);
+  document.getElementById(outputIds.cropbox.center_y).value = Math.round(centerY);
 
   if (!cropperWasDragged) {
     moveCropperCropboxToXY(masterCropper, centerX, centerY);
@@ -596,8 +723,6 @@ async function uiSelectFolder() {
 // listeners
 
 window.addEventListener('load', () => {
-  controlsEl.addEventListener('click', handleControlChange);
-  thumbsEl.addEventListener('click', handleThumbSelect);
   document.body.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('resize', scrollToSelectedThumb);
+  thumbsEl.addEventListener('click', handleThumbSelect);
 });
