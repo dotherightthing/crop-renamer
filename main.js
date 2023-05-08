@@ -15,7 +15,7 @@ const path = require('path');
 const ExifReader = require('exifreader');
 const contextMenu = require('electron-context-menu');
 
-const appDebug = false;
+const appDebug = true;
 const appName = 'Image cropper';
 const appDimensions = [ 1280, 1024 ];
 
@@ -49,6 +49,10 @@ const createWindow = () => {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.maximize();
+
+    if (appDebug) {
+      mainWindow.webContents.executeJavaScript('uiSelectFolder()');
+    }
   });
 
   // https://www.electronjs.org/docs/latest/api/webview-tag
@@ -88,11 +92,6 @@ const createWindow = () => {
 
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 
-  if (appDebug) {
-    // mainWindow.setFullScreen(true);
-    mainWindow.webContents.openDevTools();
-  }
-
   // give dev tools drawer time to open
   // so that cropper is centered in remaining space
   setTimeout(() => {
@@ -118,17 +117,31 @@ const getImagesData = async (imageFiles) => {
 };
 
 async function handleSelectFolder() {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    defaultPath: '~/',
-    title: 'Select image folder',
-    buttonLabel: 'Load images',
-    properties: [ 'openDirectory', 'multiSelections' ]
-  });
+  let canceled;
+  let filePaths;
+
+  if (appDebug) {
+    canceled = false;
+    filePaths = [
+      "/Volumes/DanBackup4TB/Not cloud synced/Don't Believe The Hype (302.96GB)/2022.12.31 - 2023.01.08 - Wellington to Acheron, St James, Rainbow, to Wellington/Day 04 - 2023.01.03 - Aratere Valley to Acheron Campsite"
+    ];
+  } else {
+    // https://stackoverflow.com/a/59416470
+    (
+      { canceled, filePaths } = await dialog.showOpenDialog({
+        defaultPath: '~/',
+        title: 'Select image folder',
+        buttonLabel: 'Load images',
+        properties: [ 'openDirectory', 'multiSelections' ]
+      })
+    );
+  }
 
   let result = [];
 
-  if (!canceled) {
+  if (!canceled && filePaths.length) {
     const folderPath = filePaths[0];
+
     const files = getFiles(folderPath);
 
     const imageFiles = files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
