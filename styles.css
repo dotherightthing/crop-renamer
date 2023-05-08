@@ -13,15 +13,16 @@
   --color-bg-secondary: rgba(20, 20, 20, 1);
   --color-bg-tertiary: rgba(51, 51, 51, 1);
   --color-bg-light: rgba(247, 247, 247, 1);
-  --color-border-secondary: rgba(51, 51, 51, 1);
+  --color-border-secondary: rgba(255, 255, 255, .5);
+  --color-border-tertiary: rgba(51, 51, 51, 1);
   --color-border-active: rgba(170, 170, 170, 1);
-  --height-console-inner: 1.7rem; /* 27.2px */
+  --height-console-inner: 2.7rem;
   --opacity-modal-overlay: .5;
   --opacity-thumb-brightness: .8;
 }
 
 :root {
-  --height-console-outer: 43px; /* calc(var(--height-console-inner) + var(--gutter-half) + var(--gutter-half)); */
+  --height-console-outer: 59px; /* calc(var(--height-console-inner) + var(--gutter-half) + var(--gutter-half)); */
 }
 
 /* prevent flash of white content when navigating thumbnails */
@@ -56,7 +57,7 @@ body {
 
   justify-content: center;
   background-color: var(--color-bg-primary);
-  padding: var(--gutter-half) var(--gutter);
+  padding: var(--gutter-half) 0;
 }
 
 /* cropper */
@@ -76,8 +77,8 @@ img {
 .img-container1 {
   position: relative; /* AP */
   width: 100%;
-  min-height: calc(70vh - var(--height-console-outer) - var(--height-console-outer));
-  max-height: calc(70vh - var(--height-console-outer) - var(--height-console-outer));
+  min-height: calc(70vh - var(--height-console-outer));
+  max-height: calc(70vh - var(--height-console-outer));
   background-color: var(--color-bg-light);
   text-align: center;
 }
@@ -220,22 +221,21 @@ img {
   color: var(--color-primary);
   font-family: sans-serif;
   font-size: var(--text-tiny);
-  padding: var(--gutter-half);
-  border: 1px solid var(--color-border-secondary);
+  padding: var(--gutter-half) var(--gutter);
+  border: 1px solid var(--color-border-tertiary);
   border-radius: 0;
-  margin-right: var(--gutter-half);
 }
 
 .control-set {
   height: var(--height-console-inner);
   padding: var(--gutter-half);
   border: 0;
-  border-right: 1px solid;
+  border-right: 1px solid var(--color-border-secondary);
   overflow: hidden;
 }
 
 .console > .control-set:first-child {
-  border-left: 1px solid;
+  border-left: 1px solid var(--color-border-secondary);
 }
 
 .control-set fieldset {
@@ -258,18 +258,24 @@ img {
   align-items: start;
 }
 
+.control {
+  flex-direction: column;
+  margin-right: var(--gutter);
+}
+
 .control > label {
   white-space: nowrap;
+  margin-bottom: var(--gutter-half);
 }
 
 .control > input {
-  width: 2rem;
+  width: 1.6rem;
   background-color: inherit;
   color: var(--color-input);
   font-size: inherit;
   padding: 0;
   border: 0;
-  margin: 0 var(--gutter) 0 var(--gutter-half);
+  margin: 0;
 }
 
 #console-bottom .control > input {

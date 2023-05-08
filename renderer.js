@@ -3,7 +3,6 @@
 'use strict';
 
 const consoleTop = document.getElementById('console-top');
-const consoleBottom = document.getElementById('console-bottom');
 const Cropper = window.Cropper;
 const cropperDragBoxClass = 'cropper-drag-box';
 const cropperImageClass = 'cropperImage';
@@ -350,14 +349,6 @@ const initCroppers = (imageSrc) => {
   window.addEventListener('click', handleMouseUp);
 
   consoleTop.innerHTML = '';
-
-  const { html: bottomHtml } = createOutputSet({
-    id: 'console',
-    title: 'Console',
-    outputs: [ 'debug' ]
-  });
-
-  consoleBottom.innerHTML = bottomHtml;
 
   cropperImages.forEach((cropperImage, cropperIndex) => {
     const data = cropperImage.dataset;
