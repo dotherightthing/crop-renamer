@@ -49,10 +49,6 @@ const createWindow = () => {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.maximize();
-
-    if (appDebug) {
-      mainWindow.webContents.executeJavaScript('uiSelectFolder()');
-    }
   });
 
   // https://www.electronjs.org/docs/latest/api/webview-tag

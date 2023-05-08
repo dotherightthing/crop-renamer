@@ -743,4 +743,5 @@ async function uiSelectFolder() {
 window.addEventListener('load', () => {
   document.body.addEventListener('keydown', handleKeyDown);
   thumbsEl.addEventListener('click', handleThumbSelect);
+  uiSelectFolder();
 });
