@@ -563,7 +563,7 @@ const initCroppers = (imageSrc) => {
 /**
  * @function moveCropperCropBox
  * @param {event} e
- * @todo This sometimes needs to be clicked twice, needs to support a shaky hand
+ * @todo This sometimes needs to be clicked twice, needs to support a shaky hand (#5)
  */
 const moveCropperCropBox = (e) => {
   const cropperWasDragged = masterCropperCropBoxDidMove;
@@ -616,7 +616,7 @@ const moveCropperCropBox = (e) => {
  * @param {options.pageX} pageX
  * @param {options.pageY} pageY
  * @param {options.masterCropperCanvasOffsetTop} masterCropperCanvasOffsetTop - Height of preceding UI
- * @todo Vertical positioning is incorrect for wide images, though the slave cropper is correct because there is no space for vertical movement.
+ * @todo Vertical positioning is incorrect for wide images (though the slave cropper is correct because there is no space for vertical movement). (#6)
  */
 const moveMasterCropperCropBox = ({
   cropper,
@@ -702,7 +702,7 @@ const scaleSlaveVal = (slaveCropper, val) => {
 /**
  * @function scrollToSelectedThumb
  * @summary Scroll the selected thumb into view
- * @todo Would programmatically shifting the focus make this redundant?
+ * @todo Would programmatically shifting the focus make this redundant? (#7)
 */
 const scrollToSelectedThumb = () => {
   const thumbsButtons = thumbsEl.querySelectorAll(`.${thumbButtonClass}`);
