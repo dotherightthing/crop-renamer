@@ -693,8 +693,8 @@ const setCropboxData = (e) => {
   document.getElementById(outputIds.cropbox.center_y).value = Math.round(centerY);
   document.getElementById(outputIds.cropbox.actual_center_x).value = Math.round(centerLeft);
   document.getElementById(outputIds.cropbox.actual_center_y).value = Math.round(centerTop);
-  document.getElementById(outputIds.cropbox.width).value = Math.round(width);
-  document.getElementById(outputIds.cropbox.height).value = Math.round(height);
+  // document.getElementById(outputIds.cropbox.width).value = Math.round(width);
+  // document.getElementById(outputIds.cropbox.height).value = Math.round(height);
   document.getElementById(outputIds.image.top).value = Math.round(masterCropperImageTop);
   document.getElementById(outputIds.image.left).value = Math.round(masterCropperImageLeft);
 };
