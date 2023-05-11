@@ -615,20 +615,15 @@ const setCropboxData = (e) => {
   slaveCropper1 = getCropper('image2').cropperInstance;
   slaveCropper2 = getCropper('image3').cropperInstance;
 
-  const {
-    width: cropperActualWidth,
-    height: cropperActualHeight
-  } = getCropBoxDataAdjustedMaster(masterCropper);
-
-  let top;
-  let left;
+  let topRelative;
+  let leftRelative;
   let centerX;
   let centerY;
 
   (
     {
-      top,
-      left
+      top: topRelative,
+      left: leftRelative
     } = getCropboxTopLeftRelative(masterCropper, cropperWasDragged, pageX, pageY)
   );
 
@@ -648,8 +643,13 @@ const setCropboxData = (e) => {
   // move master cropper
 
   if (!cropperWasDragged) {
-    centerX = left + (cropperActualWidth / 2);
-    centerY = top + (cropperActualHeight / 2);
+    const {
+      width: cropperActualWidth,
+      height: cropperActualHeight
+    } = getCropBoxDataAdjustedMaster(masterCropper);
+
+    centerX = leftRelative + (cropperActualWidth / 2);
+    centerY = topRelative + (cropperActualHeight / 2);
 
     // ({
     //   top,
