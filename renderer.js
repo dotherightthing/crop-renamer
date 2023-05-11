@@ -4,8 +4,6 @@
 
 const consoleTop = document.getElementById('console-top');
 const Cropper = window.Cropper;
-const cropperCenterClass = 'cropper-center';
-const cropperCropBoxClass = 'cropper-crop-box';
 const cropperDragBoxClass = 'cropper-drag-box';
 const cropperImageClass = 'cropperImage';
 const rotateEl = document.getElementById('rotate');
@@ -557,60 +555,86 @@ const getCropBoxDataAdjustedMaster = (cropper) => {
   return data;
 };
 
-const moveCropperCropboxToXY = (cropper, centerX, centerY) => {};
+/**
+ * @function moveMasterCropper
+ * @summary When the canvas is clicked, move the crop box on the master cropper
+ * @param {object} options
+ * @param {options.cropper} cropper - Master cropper
+ * @param {options.pageX} pageX
+ * @param {options.pageY} pageY
+ * @param {options.cropperDragBoxOffsetTop} cropperDragBoxOffsetTop - Height of preceding UI
+ */
+const moveMasterCropper = ({
+  cropper,
+  pageX,
+  pageY,
+  cropperDragBoxOffsetTop
+}) => {
+  const {
+    width: cropperActualWidth,
+    height: cropperActualHeight
+  } = getCropBoxDataAdjustedMaster(cropper);
 
-const getCropperCropboxCenter = (cropper, didMove, pageX, pageY) => {};
+  // this places the crop box around the click point
+  const cropperNewTop = pageY - (cropperActualHeight / 2) - cropperDragBoxOffsetTop;
+  const cropperNewLeft = pageX - (cropperActualWidth / 2);
 
-const updateSlaveCropper = (slaveCropper, centerX, centerY) => {
-  const { outputIds } = getCropper(slaveCropper.element.id);
+  cropper.setCropBoxData({
+    top: cropperNewTop,
+    left: cropperNewLeft
+  });
+};
 
-  // const masterCropper = TODO this needs to be dynamic rather than a global
-
+/**
+ * @function moveSlaveCropper
+ * @summary Move the crop box on the dependent cropper
+ * @param {object} options
+ * @param {options.cropper} cropper - Slave cropper
+ * @param {options.pageX} pageX
+ * @param {options.pageY} pageY
+ * @param {options.masterCropperDragBoxOffsetTop} masterCropperDragBoxOffsetTop - Height of preceding UI
+ */
+const moveSlaveCropper = ({
+  cropper,
+  pageX,
+  pageY,
+  masterCropperDragBoxOffsetTop
+}) => {
+  // masterCropper is a global
   const {
     width: masterCropperImageWidth
   } = masterCropper.getImageData();
 
   const {
-    top: slaveCropperCanvasTop,
-    left: slaveCropperCanvasLeft
-  } = slaveCropper.getCanvasData();
-
-  document.getElementById(outputIds.canvas.top).value = Math.round(slaveCropperCanvasTop);
-  document.getElementById(outputIds.canvas.left).value = Math.round(slaveCropperCanvasLeft);
-
-  // get width and height of cropbox so we can calculate the position of the center crosshairs
-  const {
-    width: slaveCropperCropboxWidth,
-    height: slaveCropperCropboxHeight
-  } = slaveCropper.getCropBoxData();
+    width: cropperImageWidth
+  } = cropper.getImageData();
 
   const {
-    width: slaveCropperImageWidth
-  } = slaveCropper.getImageData();
+    width: cropperActualWidth,
+    height: cropperActualHeight
+  } = getCropBoxDataAdjustedMaster(cropper);
 
-  // slaveCropper is smaller than cropper 1
-  const slaveCropperScalingRatio = (slaveCropperImageWidth / masterCropperImageWidth);
+  const {
+    top: cropperCanvasTop
+  } = cropper.getCanvasData();
 
-  const slaveCropperCropBoxCenterX = (centerX * slaveCropperScalingRatio);
-  const slaveCropperCropBoxCenterY = (centerY * slaveCropperScalingRatio);
+  // cropper is smaller than cropper 1
+  const scalingRatio = (cropperImageWidth / masterCropperImageWidth);
 
-  slaveCropper.setCropBoxData({
-    left: slaveCropperCropBoxCenterX - (slaveCropperCropboxWidth / 2),
-    top: slaveCropperCanvasTop + slaveCropperCropBoxCenterY - (slaveCropperCropboxHeight / 2)
+  const scaledMasterCropperDragBoxOffsetTop = (masterCropperDragBoxOffsetTop * scalingRatio);
+  const scaledPageX = pageX * scalingRatio;
+  const scaledPageY = pageY * scalingRatio;
+
+  // eslint-disable-next-line max-len
+  const cropperNewTop = scaledPageY - (cropperActualHeight / 2) - scaledMasterCropperDragBoxOffsetTop + cropperCanvasTop;
+  const cropperNewLeft = scaledPageX - (cropperActualWidth / 2);
+
+  cropper.setCropBoxData({
+    top: cropperNewTop,
+    left: cropperNewLeft
   });
-
-  const {
-    top: slaveCropperCropBoxTop,
-    left: slaveCropperCropBoxLeft
-  } = slaveCropper.getCropBoxData();
-
-  document.getElementById(outputIds.cropbox.top).value = Math.round(slaveCropperCropBoxTop);
-  document.getElementById(outputIds.cropbox.top).value = Math.round(slaveCropperCropBoxLeft);
 };
 
-// only called from masterCropper, which then controls slaveCropper1
-// TODO Tuesday afternoon
-// what is required to make the slace croppers work proportionally - check diff in SourceTree for what I changed
 const setCropboxData = (e) => {
   const cropperWasDragged = masterCropperCropBoxDidMove; // TODO this sometimes needs to be clicked twice, needs to support a shaky hand
   masterCropperCropBoxDidMove = false;
@@ -621,116 +645,43 @@ const setCropboxData = (e) => {
   slaveCropper1 = getCropper('image2').cropperInstance;
   slaveCropper2 = getCropper('image3').cropperInstance;
 
-  // let topRelative;
-  // let leftRelative;
-  // let centerX;
-  // let centerY;
-
-  // (
-  //   {
-  //     top: topRelative,
-  //     left: leftRelative
-  //   } = getCropboxTopLeftRelative(masterCropper, cropperWasDragged, pageX, pageY)
-  // );
-
-  // cropperDragBoxOffsetTop = height of vertically preceding console
-
   const {
-    element: cropperImage
+    element: masterCropperImageTmp
   } = masterCropper;
 
-  const cropperContainerEl = cropperImage.nextSibling;
-  const cropperDragBoxEl = cropperContainerEl.querySelector(`.${cropperDragBoxClass}`);
+  const masterCropperContainerEl = masterCropperImageTmp.nextSibling;
+  const masterCropperDragBoxEl = masterCropperContainerEl.querySelector(`.${cropperDragBoxClass}`);
 
   const {
     top: cropperDragBoxOffsetTop // height of preceding UI, only cos we know, so we shd also support width
-  } = getOffset(cropperDragBoxEl);
+  } = getOffset(masterCropperDragBoxEl);
 
-  // move master cropper
-
-  const {
-    width: cropperActualWidth,
-    height: cropperActualHeight
-  } = getCropBoxDataAdjustedMaster(masterCropper);
-
-  // this places the crop box around the click point
-  const masterCropperNewTop = pageY - (cropperActualHeight / 2) - cropperDragBoxOffsetTop;
-  const masterCropperNewLeft = pageX - (cropperActualWidth / 2);
-
+  // move the cropper to the click location
   if (!cropperWasDragged) {
-    masterCropper.setCropBoxData({
-      top: masterCropperNewTop,
-      left: masterCropperNewLeft
+    moveMasterCropper({
+      cropper: masterCropper,
+      pageX,
+      pageY,
+      cropperDragBoxOffsetTop
     });
-
-    // const { outputIds } = getCropper(masterCropper.element.id);
-    // document.getElementById(outputIds.cropbox.new_left).value = Math.round(masterCropperNewLeft);
-    // document.getElementById(outputIds.cropbox.new_top).value = Math.round(masterCropperNewTop);
   }
 
-  // move slave cropper
-  // was updateSlaveCropper()
-
-  const {
-    top: slaveCropper1CanvasTop
-  } = slaveCropper1.getCanvasData();
-
-  const {
-    width: masterCropperImageWidth
-  } = masterCropper.getImageData();
-
-  const {
-    width: slaveCropper1ImageWidth
-  } = slaveCropper1.getImageData();
-
-  const {
-    width: slaveCropper1ActualWidth,
-    height: slaveCropper1ActualHeight
-  } = getCropBoxDataAdjustedMaster(slaveCropper1);
-
-  // slaveCropper is smaller than cropper 1
-  const slaveCropperScalingRatio = (slaveCropper1ImageWidth / masterCropperImageWidth);
-
-  // eslint-disable-next-line max-len
-  const slaveCropper1NewTop = (pageY * slaveCropperScalingRatio) - (slaveCropper1ActualHeight / 2) - (cropperDragBoxOffsetTop * slaveCropperScalingRatio) + slaveCropper1CanvasTop;
-  const slaveCropper1NewLeft = (pageX * slaveCropperScalingRatio) - (slaveCropper1ActualWidth / 2);
-
-  console.log('slaveCropper1NewTop', slaveCropper1NewTop);
-  console.log('slaveCropper1NewLeft', slaveCropper1NewLeft);
-
-  slaveCropper1.setCropBoxData({
-    top: slaveCropper1NewTop,
-    left: slaveCropper1NewLeft
+  moveSlaveCropper({
+    cropper: slaveCropper1,
+    pageX,
+    pageY,
+    masterCropperDragBoxOffsetTop: cropperDragBoxOffsetTop
   });
 
-  // move slave croppers
-  // updateSlaveCropper(slaveCropper1, masterCropperNewLeft, masterCropperNewTop);
-  // updateSlaveCropper(slaveCropper2, centerX, centerY);
-
-  // debugging
-  // const { outputIds } = getCropper('image1');
-
-  // const {
-  //   top: masterCropperImageTop,
-  //   left: masterCropperImageLeft
-  // } = masterCropper.getImageData();
-
-  // const cropperCenterEl = document.querySelectorAll(`.${cropperCenterClass}`)[0];
-  // const {
-  //   top: centerTop,
-  //   left: centerLeft
-  // } = getOffset(cropperCenterEl);
+  moveSlaveCropper({
+    cropper: slaveCropper2,
+    pageX,
+    pageY,
+    masterCropperDragBoxOffsetTop: cropperDragBoxOffsetTop
+  });
 
   document.getElementById('cropper1-mouse-output-page_x').value = Math.round(pageX);
   document.getElementById('cropper1-mouse-output-page_y').value = Math.round(pageY);
-  // document.getElementById(outputIds.cropbox.center_x).value = Math.round(centerX);
-  // document.getElementById(outputIds.cropbox.center_y).value = Math.round(centerY);
-  // document.getElementById(outputIds.cropbox.actual_center_x).value = Math.round(centerLeft);
-  // document.getElementById(outputIds.cropbox.actual_center_y).value = Math.round(centerTop);
-  // document.getElementById(outputIds.cropbox.width).value = Math.round(width);
-  // document.getElementById(outputIds.cropbox.height).value = Math.round(height);
-  // document.getElementById(outputIds.image.top).value = Math.round(masterCropperImageTop);
-  // document.getElementById(outputIds.image.left).value = Math.round(masterCropperImageLeft);
 };
 
 async function uiSelectFolder() {
