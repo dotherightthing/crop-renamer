@@ -2,7 +2,9 @@
 
 'use strict';
 
-const consoleTop = document.getElementById('console-top');
+// globals
+
+const debugBar = document.getElementById('debug-bar');
 const Cropper = window.Cropper;
 const cropperCanvasClass = 'cropper-canvas';
 const cropperImageClass = 'cropperImage';
@@ -14,16 +16,23 @@ const thumbImgClass = 'thumb-img';
 const thumbMetaClass = 'thumb-meta';
 const thumbsCount = document.getElementById('thumbs-count');
 const thumbsEl = document.getElementById('thumbs');
-const URL = window.URL || window.webkitURL;
 
 let croppers = [];
 
 let newImageSrc;
-let originalImageURL;
 
 let masterCropper;
 let slaveCropper1;
 let slaveCropper2;
+
+// this variable is used by initCroppers
+// eslint-disable-next-line no-unused-vars
+let originalImageURL;
+
+/*
+// handleControlChange
+
+const URL = window.URL || window.webkitURL;
 
 let masterCropperImage;
 let slaveCropper1Image;
@@ -32,15 +41,31 @@ let slaveCropper2Image;
 let masterCropperOptions;
 let slaveCropper1Options;
 let slaveCropper2Options;
+*/
 
 let masterCropperCropBoxDidMove = false;
 
 // functions
 
+/**
+ * @function capitalize
+ * @summary Make the first letter of the string uppercase, also applies to underscore separated strings
+ * @param {string} str - String
+ * @returns {string}
+*/
 const capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+/**
+ * @function createOutputSet
+ * @summary Create UI to display debugging parameters
+ * @param {object} options - Options
+ * @param {options.id} id - ID
+ * @param {options.title} title - Title
+ * @param {options.outputs} outputs - Outputs object
+ * @returns {object} - { html, outputIds }
+ */
 const createOutputSet = ({ id, title, outputs = {} }) => {
   let outputsHtml = '';
   let outputIds = {};
@@ -85,6 +110,26 @@ const createOutputSet = ({ id, title, outputs = {} }) => {
   };
 };
 
+/**
+ * @function debugClickLocation
+ * @summary Output the pointer location
+ * @param {event} e
+*/
+const debugClickLocation = (e) => {
+  console.log(e);
+
+  const { outputIds } = getCropper(masterCropper.element.id);
+
+  console.log(outputIds);
+
+  document.getElementById(outputIds.mouse.client_x).value = Math.round(e.clientX);
+  document.getElementById(outputIds.mouse.client_y).value = Math.round(e.clientY);
+};
+
+/**
+ * @function destroyCroppers
+ * @summary Destroy instances of cropperjs
+*/
 const destroyCroppers = () => {
   croppers.forEach(cropper => {
     const { cropperInstance } = cropper;
@@ -97,6 +142,12 @@ const destroyCroppers = () => {
   croppers = [];
 };
 
+/**
+ * @function getCropper
+ * @summary Get the cropperjs instance associated with an image
+ * @param {string} imageId - HTML id attribute
+ * @returns {object} instance of cropperjs
+*/
 const getCropper = (imageId) => {
   let _cropper = null;
 
@@ -113,30 +164,6 @@ const getCropper = (imageId) => {
   });
 
   return _cropper;
-};
-
-const getNextIndex = (nodeList, selectedIndex) => {
-  let nextIndex = -1;
-
-  if ((selectedIndex + 1) < nodeList.length) {
-    nextIndex = selectedIndex + 1;
-  } else {
-    nextIndex = 0;
-  }
-
-  return nextIndex;
-};
-
-// https://usefulangle.com/post/179/jquery-offset-vanilla-javascript
-// this matches the translateY implemented by the cropperjs
-const getOffset = (el) => {
-  const rect = el.getBoundingClientRect();
-  const offset = {
-    top: rect.top + window.scrollY,
-    left: rect.left + window.scrollX
-  };
-
-  return offset;
 };
 
 /**
@@ -160,6 +187,44 @@ const getCropperCanvasOffsetTop = (cropper) => {
   return cropperCanvasTop;
 };
 
+/**
+ * @function getNextIndex
+ * @summary Get the index of the next node in a nodelist
+ * @returns {Number} nextIndex | -1
+*/
+const getNextIndex = (nodeList, selectedIndex) => {
+  let nextIndex = -1;
+
+  if ((selectedIndex + 1) < nodeList.length) {
+    nextIndex = selectedIndex + 1;
+  } else {
+    nextIndex = 0;
+  }
+
+  return nextIndex;
+};
+
+/**
+ * @function getOffset
+ * @summary Get the space between an element and the viewport (this matches the inline CSS translate implemented by cropperjs)
+ * @returns {object} offset - { top, left }
+ * @see {@link https://usefulangle.com/post/179/jquery-offset-vanilla-javascript}
+*/
+const getOffset = (el) => {
+  const rect = el.getBoundingClientRect();
+  const offset = {
+    top: rect.top + window.scrollY,
+    left: rect.left + window.scrollX
+  };
+
+  return offset;
+};
+
+/**
+ * @function getPreviousIndex
+ * @summary Get the index of the previous node in a nodelist
+ * @returns {Number} previousIndex | -1
+*/
 const getPreviousIndex = (nodeList, selectedIndex) => {
   let previousIndex = -1;
 
@@ -172,6 +237,11 @@ const getPreviousIndex = (nodeList, selectedIndex) => {
   return previousIndex;
 };
 
+/**
+ * @function getSelectedIndex
+ * @summary Get the index of the selected node in a nodelist
+ * @returns {Number} selectedIndex | -1
+*/
 const getSelectedIndex = (nodeList) => {
   let selectedIndex = -1;
 
@@ -183,6 +253,9 @@ const getSelectedIndex = (nodeList) => {
 
   return selectedIndex;
 };
+
+/*
+// supports buttons in debug bar
 
 const handleControlChange = (event) => {
   const evt = event || window.event;
@@ -267,7 +340,13 @@ const handleControlChange = (event) => {
     }
   }
 };
+*/
 
+/**
+ * @function handleKeyDown
+ * @summary Handle key presses to facilitate thumb navigation with the cursor keys.
+ * @param {event} e
+*/
 const handleKeyDown = (e) => {
   if (!masterCropper) {
     return;
@@ -299,12 +378,24 @@ const handleKeyDown = (e) => {
   }
 };
 
+/**
+ * @function handleMouseUp
+ * @summary Handle mouse clicks
+ * @param {event} e - Event object passed to called function
+*/
 const handleMouseUp = (e) => {
-  document.getElementById('cropper1-mouse-output-client_x').value = e.clientX;
-  document.getElementById('cropper1-mouse-output-client_y').value = e.clientY;
+  if (!masterCropper) {
+    return;
+  }
+
+  debugClickLocation(e);
 };
 
-// used to change the image, and triggered on load
+/**
+ * @function handleThumbSelect
+ * @summary Change the image when a thumb is selected (triggered on load)
+ * @param {event} e
+ */
 const handleThumbSelect = (event) => {
   const e = event || window.event;
   let target = e.target || e.srcElement;
@@ -333,6 +424,11 @@ const handleThumbSelect = (event) => {
   target.classList.add(selectedClass);
 };
 
+/**
+ * @function initCroppers
+ * @summary Initialise cropper instances (master and slaves)
+ * @param {string} imageSrc - HTML src attribute
+*/
 const initCroppers = (imageSrc) => {
   const cropperImages = document.querySelectorAll(`.${cropperImageClass}`);
 
@@ -363,15 +459,15 @@ const initCroppers = (imageSrc) => {
     zoomOnWheel: false
   };
 
-  // consoleTop.removeEventListener('click', handleControlChange);
+  // debugBar.removeEventListener('click', handleControlChange);
   window.removeEventListener('resize', scrollToSelectedThumb);
   window.removeEventListener('click', handleMouseUp);
 
-  // consoleTop.addEventListener('click', handleControlChange);
+  // debugBar.addEventListener('click', handleControlChange);
   window.addEventListener('resize', scrollToSelectedThumb);
   window.addEventListener('click', handleMouseUp);
 
-  consoleTop.innerHTML = '';
+  debugBar.innerHTML = '';
 
   cropperImages.forEach((cropperImage, cropperIndex) => {
     const data = cropperImage.dataset;
@@ -409,7 +505,7 @@ const initCroppers = (imageSrc) => {
           masterCropperCropBoxDidMove = true; // differentiate between a click and a move
         },
         cropend: (e) => { // dragEnd callback, see https://github.com/fengyuanchen/cropperjs/issues/669; fires after move
-          setCropboxData(e, masterCropperCropBoxDidMove);
+          moveCropperCropBox(e, masterCropperCropBoxDidMove);
         }
       });
     }
@@ -419,19 +515,19 @@ const initCroppers = (imageSrc) => {
     let outputIdSets = {};
 
     let outputs = {
-      canvas: [ 'top', 'left' ],
-      cropbox: [ 'top', 'left' ]
+      // canvas: [ 'top', 'left' ],
+      // cropbox: [ 'top', 'left' ]
     };
 
     if (cropperIndex === 0) {
       outputs = {
-        mouse: [ 'client_x', 'client_y', 'page_x', 'page_y' ],
-        cropper: [ 'x', 'y' ],
-        container: [ 'width', 'height' ],
-        canvas: [ 'left', 'top' ],
-        image: [ 'left', 'top' ],
-        drg: [ 'top' ],
-        cropbox: [ 'center_x', 'center_y', 'actual_center_x', 'actual_center_y', 'left', 'top', 'left_rel', 'top_rel', 'width', 'height', 'new_left', 'new_top' ]
+        mouse: [ 'client_x', 'client_y' ] // same as 'page_x', 'page_y'
+        // cropper: [ 'x', 'y' ],
+        // container: [ 'width', 'height' ],
+        // canvas: [ 'left', 'top' ],
+        // image: [ 'left', 'top' ],
+        // drg: [ 'top' ],
+        // cropbox: [ 'center_x', 'center_y', 'actual_center_x', 'actual_center_y', 'left', 'top', 'left_rel', 'top_rel', 'width', 'height', 'new_left', 'new_top' ]
       };
     }
 
@@ -447,7 +543,7 @@ const initCroppers = (imageSrc) => {
         outputs: outputs[outputKey]
       });
 
-      consoleTop.innerHTML += topHtml;
+      debugBar.innerHTML += topHtml;
       outputIdSets[outputKey] = outputIds;
     });
 
@@ -464,46 +560,65 @@ const initCroppers = (imageSrc) => {
   }
 };
 
-const scrollToSelectedThumb = () => {
-  const thumbsButtons = thumbsEl.querySelectorAll(`.${thumbButtonClass}`);
+/**
+ * @function moveCropperCropBox
+ * @param {event} e
+ * @todo This sometimes needs to be clicked twice, needs to support a shaky hand
+ */
+const moveCropperCropBox = (e) => {
+  const cropperWasDragged = masterCropperCropBoxDidMove;
+  masterCropperCropBoxDidMove = false;
 
-  if (!thumbsButtons.length) {
-    return;
+  const { pageX, pageY } = e.detail.originalEvent;
+
+  masterCropper = getCropper('image1').cropperInstance;
+  slaveCropper1 = getCropper('image2').cropperInstance;
+  slaveCropper2 = getCropper('image3').cropperInstance;
+
+  const masterCropperCanvasOffsetTop = getCropperCanvasOffsetTop(masterCropper);
+
+  const {
+    left: masterCropperCanvasLeft
+  } = masterCropper.getCanvasData();
+
+  if (!cropperWasDragged) {
+    // move the cropper to the click location
+    moveMasterCropperCropBox({
+      cropper: masterCropper,
+      pageX,
+      pageY,
+      masterCropperCanvasOffsetTop
+    });
   }
 
-  const thumbsButtonSelectedIndex = getSelectedIndex(thumbsButtons);
+  moveSlaveCropperCropBox({
+    cropper: slaveCropper1,
+    pageX,
+    pageY,
+    masterCropperCanvasOffsetTop,
+    masterCropperCanvasLeft
+  });
 
-  thumbsButtons[thumbsButtonSelectedIndex].scrollIntoView({
-    behavior: 'auto'
+  moveSlaveCropperCropBox({
+    cropper: slaveCropper2,
+    pageX,
+    pageY,
+    masterCropperCanvasOffsetTop,
+    masterCropperCanvasLeft
   });
 };
 
-// cropper is smaller than cropper 1
-const scaleSlaveVal = (slaveCropper, slaveVal) => {
-  // masterCropper is a global
-  const {
-    width: masterCropperImageWidth
-  } = masterCropper.getImageData();
-
-  const {
-    width: cropperImageWidth
-  } = slaveCropper.getImageData();
-
-  const scalingRatio = (cropperImageWidth / masterCropperImageWidth);
-
-  return slaveVal * scalingRatio;
-};
-
 /**
- * @function moveMasterCropper
+ * @function moveMasterCropperCropBox
  * @summary When the canvas is clicked, move the crop box on the master cropper so it centers on the pointer location
  * @param {object} options
  * @param {options.cropper} cropper - Master cropper
  * @param {options.pageX} pageX
  * @param {options.pageY} pageY
  * @param {options.masterCropperCanvasOffsetTop} masterCropperCanvasOffsetTop - Height of preceding UI
+ * @todo Vertical positioning is incorrect for wide images, though the slave cropper is correct because there is no space for vertical movement.
  */
-const moveMasterCropper = ({
+const moveMasterCropperCropBox = ({
   cropper,
   pageX,
   pageY,
@@ -526,7 +641,7 @@ const moveMasterCropper = ({
 };
 
 /**
- * @function moveSlaveCropper
+ * @function moveSlaveCropperCropBox
  * @summary Move the crop box on the dependent cropper
  * @param {object} options
  * @param {options.cropper} cropper - Slave cropper
@@ -535,7 +650,7 @@ const moveMasterCropper = ({
  * @param {options.masterCropperCanvasOffsetTop} masterCropperCanvasOffsetTop - Height of preceding UI
  * @param {options.masterCropperCanvasLeft} masterCropperCanvasLeft - gap between edge of viewport and start of master image
  */
-const moveSlaveCropper = ({
+const moveSlaveCropperCropBox = ({
   cropper,
   pageX,
   pageY,
@@ -563,50 +678,43 @@ const moveSlaveCropper = ({
 };
 
 /**
- * @function setCropboxData
- * @param {event} e
- * @todo This sometimes needs to be clicked twice, needs to support a shaky hand
- */
-const setCropboxData = (e) => {
-  const cropperWasDragged = masterCropperCropBoxDidMove;
-  masterCropperCropBoxDidMove = false;
-
-  const { pageX, pageY } = e.detail.originalEvent;
-
-  masterCropper = getCropper('image1').cropperInstance;
-  slaveCropper1 = getCropper('image2').cropperInstance;
-  slaveCropper2 = getCropper('image3').cropperInstance;
-
-  const masterCropperCanvasOffsetTop = getCropperCanvasOffsetTop(masterCropper);
+ * @function scaleSlaveVal
+ * @summary Slave croppers are smaller than the Master cropper. Scale down values derived from calculations on the Master cropper.
+ * @param {object} slaveCropper - Slave cropper instance
+ * @param {Number} val - Value to scale
+ * @returns {Number} Scaled value
+*/
+const scaleSlaveVal = (slaveCropper, val) => {
+  // note: masterCropper is a global
+  const {
+    width: masterCropperImageWidth
+  } = masterCropper.getImageData();
 
   const {
-    left: masterCropperCanvasLeft
-  } = masterCropper.getCanvasData();
+    width: cropperImageWidth
+  } = slaveCropper.getImageData();
 
-  if (!cropperWasDragged) {
-    // move the cropper to the click location
-    moveMasterCropper({
-      cropper: masterCropper,
-      pageX,
-      pageY,
-      masterCropperCanvasOffsetTop
-    });
+  const scalingRatio = (cropperImageWidth / masterCropperImageWidth);
+
+  return val * scalingRatio;
+};
+
+/**
+ * @function scrollToSelectedThumb
+ * @summary Scroll the selected thumb into view
+ * @todo Would programmatically shifting the focus make this redundant?
+*/
+const scrollToSelectedThumb = () => {
+  const thumbsButtons = thumbsEl.querySelectorAll(`.${thumbButtonClass}`);
+
+  if (!thumbsButtons.length) {
+    return;
   }
 
-  moveSlaveCropper({
-    cropper: slaveCropper1,
-    pageX,
-    pageY,
-    masterCropperCanvasOffsetTop,
-    masterCropperCanvasLeft
-  });
+  const thumbsButtonSelectedIndex = getSelectedIndex(thumbsButtons);
 
-  moveSlaveCropper({
-    cropper: slaveCropper2,
-    pageX,
-    pageY,
-    masterCropperCanvasOffsetTop,
-    masterCropperCanvasLeft
+  thumbsButtons[thumbsButtonSelectedIndex].scrollIntoView({
+    behavior: 'auto'
   });
 };
 
