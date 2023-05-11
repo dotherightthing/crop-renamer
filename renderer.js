@@ -5,6 +5,7 @@
 const consoleTop = document.getElementById('console-top');
 const Cropper = window.Cropper;
 const cropperCenterClass = 'cropper-center';
+const cropperCropBoxClass = 'cropper-crop-box';
 const cropperDragBoxClass = 'cropper-drag-box';
 const cropperImageClass = 'cropperImage';
 const rotateEl = document.getElementById('rotate');
@@ -129,6 +130,7 @@ const getNextIndex = (nodeList, selectedIndex) => {
 };
 
 // https://usefulangle.com/post/179/jquery-offset-vanilla-javascript
+// this matches the translateY implemented by the cropperjs
 const getOffset = (el) => {
   const rect = el.getBoundingClientRect();
   const offset = {
@@ -555,6 +557,10 @@ const getCropBoxDataAdjustedMaster = (cropper) => {
   return data;
 };
 
+const moveCropperCropboxToXY = (cropper, centerX, centerY) => {};
+
+const getCropperCropboxCenter = (cropper, didMove, pageX, pageY) => {};
+
 const updateSlaveCropper = (slaveCropper, centerX, centerY) => {
   const { outputIds } = getCropper(slaveCropper.element.id);
 
@@ -615,17 +621,17 @@ const setCropboxData = (e) => {
   slaveCropper1 = getCropper('image2').cropperInstance;
   slaveCropper2 = getCropper('image3').cropperInstance;
 
-  let topRelative;
-  let leftRelative;
-  let centerX;
-  let centerY;
+  // let topRelative;
+  // let leftRelative;
+  // let centerX;
+  // let centerY;
 
-  (
-    {
-      top: topRelative,
-      left: leftRelative
-    } = getCropboxTopLeftRelative(masterCropper, cropperWasDragged, pageX, pageY)
-  );
+  // (
+  //   {
+  //     top: topRelative,
+  //     left: leftRelative
+  //   } = getCropboxTopLeftRelative(masterCropper, cropperWasDragged, pageX, pageY)
+  // );
 
   // cropperDragBoxOffsetTop = height of vertically preceding console
 
@@ -637,66 +643,94 @@ const setCropboxData = (e) => {
   const cropperDragBoxEl = cropperContainerEl.querySelector(`.${cropperDragBoxClass}`);
 
   const {
-    top: cropperDragBoxOffsetTop // height of preceding UI
+    top: cropperDragBoxOffsetTop // height of preceding UI, only cos we know, so we shd also support width
   } = getOffset(cropperDragBoxEl);
 
   // move master cropper
 
+  const {
+    width: cropperActualWidth,
+    height: cropperActualHeight
+  } = getCropBoxDataAdjustedMaster(masterCropper);
+
+  // this places the crop box around the click point
+  const masterCropperNewTop = pageY - (cropperActualHeight / 2) - cropperDragBoxOffsetTop;
+  const masterCropperNewLeft = pageX - (cropperActualWidth / 2);
+
   if (!cropperWasDragged) {
-    const {
-      width: cropperActualWidth,
-      height: cropperActualHeight
-    } = getCropBoxDataAdjustedMaster(masterCropper);
-
-    centerX = leftRelative + (cropperActualWidth / 2);
-    centerY = topRelative + (cropperActualHeight / 2);
-
-    // ({
-    //   top,
-    //   left
-    // } = getCropboxTopLeftRelative(masterCropper, cropperWasDragged, centerX, centerY));
-
-    const masterCropperNewTop = pageY - (cropperActualHeight / 2) - cropperDragBoxOffsetTop;
-    const masterCropperNewLeft = pageX - (cropperActualWidth / 2);
-
     masterCropper.setCropBoxData({
       top: masterCropperNewTop,
       left: masterCropperNewLeft
     });
 
-    const { outputIds } = getCropper(masterCropper.element.id);
-    document.getElementById(outputIds.cropbox.new_left).value = Math.round(masterCropperNewLeft);
-    document.getElementById(outputIds.cropbox.new_top).value = Math.round(masterCropperNewTop);
+    // const { outputIds } = getCropper(masterCropper.element.id);
+    // document.getElementById(outputIds.cropbox.new_left).value = Math.round(masterCropperNewLeft);
+    // document.getElementById(outputIds.cropbox.new_top).value = Math.round(masterCropperNewTop);
   }
 
+  // move slave cropper
+  // was updateSlaveCropper()
+
+  const {
+    top: slaveCropper1CanvasTop
+  } = slaveCropper1.getCanvasData();
+
+  const {
+    width: masterCropperImageWidth
+  } = masterCropper.getImageData();
+
+  const {
+    width: slaveCropper1ImageWidth
+  } = slaveCropper1.getImageData();
+
+  const {
+    width: slaveCropper1ActualWidth,
+    height: slaveCropper1ActualHeight
+  } = getCropBoxDataAdjustedMaster(slaveCropper1);
+
+  // slaveCropper is smaller than cropper 1
+  const slaveCropperScalingRatio = (slaveCropper1ImageWidth / masterCropperImageWidth);
+
+  // eslint-disable-next-line max-len
+  const slaveCropper1NewTop = (pageY * slaveCropperScalingRatio) - (slaveCropper1ActualHeight / 2) - (cropperDragBoxOffsetTop * slaveCropperScalingRatio) + slaveCropper1CanvasTop;
+  const slaveCropper1NewLeft = (pageX * slaveCropperScalingRatio) - (slaveCropper1ActualWidth / 2);
+
+  console.log('slaveCropper1NewTop', slaveCropper1NewTop);
+  console.log('slaveCropper1NewLeft', slaveCropper1NewLeft);
+
+  slaveCropper1.setCropBoxData({
+    top: slaveCropper1NewTop,
+    left: slaveCropper1NewLeft
+  });
+
   // move slave croppers
-  // updateSlaveCropper(slaveCropper1, centerX, centerY);
+  // updateSlaveCropper(slaveCropper1, masterCropperNewLeft, masterCropperNewTop);
   // updateSlaveCropper(slaveCropper2, centerX, centerY);
 
   // debugging
-  const { outputIds } = getCropper('image1');
+  // const { outputIds } = getCropper('image1');
 
-  const {
-    top: masterCropperImageTop,
-    left: masterCropperImageLeft
-  } = masterCropper.getImageData();
+  // const {
+  //   top: masterCropperImageTop,
+  //   left: masterCropperImageLeft
+  // } = masterCropper.getImageData();
 
-  const cropperCenterEl = document.querySelectorAll(`.${cropperCenterClass}`)[0];
-  const {
-    top: centerTop,
-    left: centerLeft
-  } = getOffset(cropperCenterEl);
+  // const cropperCenterEl = document.querySelectorAll(`.${cropperCenterClass}`)[0];
+  // const {
+  //   top: centerTop,
+  //   left: centerLeft
+  // } = getOffset(cropperCenterEl);
 
   document.getElementById('cropper1-mouse-output-page_x').value = Math.round(pageX);
   document.getElementById('cropper1-mouse-output-page_y').value = Math.round(pageY);
-  document.getElementById(outputIds.cropbox.center_x).value = Math.round(centerX);
-  document.getElementById(outputIds.cropbox.center_y).value = Math.round(centerY);
-  document.getElementById(outputIds.cropbox.actual_center_x).value = Math.round(centerLeft);
-  document.getElementById(outputIds.cropbox.actual_center_y).value = Math.round(centerTop);
+  // document.getElementById(outputIds.cropbox.center_x).value = Math.round(centerX);
+  // document.getElementById(outputIds.cropbox.center_y).value = Math.round(centerY);
+  // document.getElementById(outputIds.cropbox.actual_center_x).value = Math.round(centerLeft);
+  // document.getElementById(outputIds.cropbox.actual_center_y).value = Math.round(centerTop);
   // document.getElementById(outputIds.cropbox.width).value = Math.round(width);
   // document.getElementById(outputIds.cropbox.height).value = Math.round(height);
-  document.getElementById(outputIds.image.top).value = Math.round(masterCropperImageTop);
-  document.getElementById(outputIds.image.left).value = Math.round(masterCropperImageLeft);
+  // document.getElementById(outputIds.image.top).value = Math.round(masterCropperImageTop);
+  // document.getElementById(outputIds.image.left).value = Math.round(masterCropperImageLeft);
 };
 
 async function uiSelectFolder() {
