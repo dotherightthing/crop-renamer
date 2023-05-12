@@ -87,7 +87,7 @@ img {
 .img-container > h2 {
   position: absolute;
   top: 0;
-  left: 0;
+  right: 0;
   z-index: 1;
   background-color: rgba(0, 0, 0, .7);
   color: var(--color-primary);
@@ -106,6 +106,11 @@ img {
   max-height: calc(70vh - var(--height-debug-bar-outer));
   background-color: var(--color-bg-light);
   text-align: center;
+}
+
+.cropper-master > h2 {
+  right: auto;
+  left: 0;
 }
 
 .cropper-master .cropper-face {
@@ -186,18 +191,19 @@ img {
 
 .thumb::before {
   counter-increment: thumb-counter;
-  content: "#" counter(thumb-counter);
+  content: counter(thumb-counter);
   display: block;
   position: absolute;
   top: 0;
   right: 0;
   z-index: 1;
-  color: var(--color-secondary);
+  /* same as h2 */
+  background-color: rgba(0, 0, 0, .7);
+  color: var(--color-primary);
   font-family: sans-serif;
-  font-size: var(--text-small);
-  line-height: 1;
-  text-shadow: 1px 0 4px var(--color-bg-primary);
-  padding: var(--gutter);
+  font-size: var(--text-tiny);
+  padding: var(--gutter-half);
+  margin: var(--gutter-half);
 }
 
 .thumb-img {
