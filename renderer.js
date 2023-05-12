@@ -575,6 +575,10 @@ const moveCropperCropBox = (e) => {
   slaveCropper1 = getCropper('image2').cropperInstance;
   slaveCropper2 = getCropper('image3').cropperInstance;
 
+  const {
+    top: masterCropperCanvasTop
+  } = masterCropper.getCanvasData();
+
   const masterCropperCanvasOffsetTop = getCropperCanvasOffsetTop(masterCropper);
 
   const {
@@ -587,7 +591,8 @@ const moveCropperCropBox = (e) => {
       cropper: masterCropper,
       pageX,
       pageY,
-      masterCropperCanvasOffsetTop
+      masterCropperCanvasOffsetTop,
+      masterCropperCanvasTop
     });
   }
 
@@ -616,13 +621,14 @@ const moveCropperCropBox = (e) => {
  * @param {options.pageX} pageX
  * @param {options.pageY} pageY
  * @param {options.masterCropperCanvasOffsetTop} masterCropperCanvasOffsetTop - Height of preceding UI
- * @todo Vertical positioning is incorrect for wide images (though the slave cropper is correct because there is no space for vertical movement). (#6)
+ * @param {options.masterCropperCanvasTop} masterCropperCanvasTop - Gap between bottom of debug bar and start of master image
  */
 const moveMasterCropperCropBox = ({
   cropper,
   pageX,
   pageY,
-  masterCropperCanvasOffsetTop
+  masterCropperCanvasOffsetTop,
+  masterCropperCanvasTop
 }) => {
   const {
     width: cropperWidth,
@@ -631,7 +637,7 @@ const moveMasterCropperCropBox = ({
 
   const cropBoxCenterX = pageX - (cropperWidth / 2);
   const cropBoxCenterY = pageY - (cropperHeight / 2);
-  const cropperCropBoxTop = cropBoxCenterY - masterCropperCanvasOffsetTop;
+  const cropperCropBoxTop = cropBoxCenterY + masterCropperCanvasTop - masterCropperCanvasOffsetTop;
   const cropperCropBoxLeft = cropBoxCenterX;
 
   cropper.setCropBoxData({
