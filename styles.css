@@ -69,14 +69,37 @@ img {
   max-width: 100%;
 }
 
-.img-containers {
+.grid-croppers {
   display: grid;
-  /* TODO calculations don't work with 300px 1fr 300px */
+  grid-template-areas:
+    "master slave3 slave3"
+    "master slave1 slave2";
+  grid-template-rows: 300px 1fr;
   grid-template-columns: 1fr 300px 300px;
+  row-gap: var(--gutter);
   column-gap: var(--gutter);
 }
 
-.img-container1 {
+.img-container {
+  position: relative;
+}
+
+.img-container > h2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, .7);
+  color: var(--color-primary);
+  font-family: sans-serif;
+  font-size: var(--text-tiny);
+  padding: var(--gutter-half);
+  margin: var(--gutter-half);
+}
+
+.cropper-master {
+  grid-area: master;
+
   position: relative; /* AP */
   width: 100%;
   min-height: calc(70vh - var(--height-debug-bar-outer));
@@ -85,18 +108,33 @@ img {
   text-align: center;
 }
 
-.img-container1 .cropper-face {
+.cropper-master .cropper-face {
   opacity: 0;
 }
 
-.img-container1 .cropper-crop-box,
-.img-container1 .cropper-view-box {
+.cropper-master .cropper-crop-box,
+.cropper-master .cropper-view-box {
   border-radius: 50%;
 }
 
-.img-container1 .cropper-view-box {
+.cropper-master .cropper-view-box {
   box-shadow: 0 0 0 var(--cropper-view-box-width) var(--color-border-active);
   outline: 0;
+}
+
+.cropper-collapsed {
+  grid-area: slave1;
+  width: 100%;
+}
+
+.cropper-thumbnail {
+  grid-area: slave2;
+  width: 100%;
+}
+
+.cropper-banner {
+  grid-area: slave3;
+  width: 100%;
 }
 
 .editor {
@@ -104,25 +142,13 @@ img {
 }
 
 .editor,
-.img-container1,
-.img-container2,
-.img-container3 {
+.grid-croppers > .img-container {
   background-color: var(--color-bg-tertiary);
 }
 
-.img-container1 > img,
-.img-container2 > img,
-.img-container3 > img {
+.grid-croppers > .img-container > img {
   visibility: hidden; /* allows presumed dimension calculations without FOUC */
   max-width: 100%;
-}
-
-.img-container2 {
-  width: 100%;
-}
-
-.img-container3 {
-  width: 100%;
 }
 
 .cropper-modal {

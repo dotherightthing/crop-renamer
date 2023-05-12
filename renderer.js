@@ -24,6 +24,7 @@ let newImageSrc;
 let masterCropper;
 let slaveCropper1;
 let slaveCropper2;
+let slaveCropper3;
 
 // this variable is used by initCroppers
 // eslint-disable-next-line no-unused-vars
@@ -37,10 +38,12 @@ const URL = window.URL || window.webkitURL;
 let masterCropperImage;
 let slaveCropper1Image;
 let slaveCropper2Image;
+let slaveCropper3Image;
 
 let masterCropperOptions;
 let slaveCropper1Options;
 let slaveCropper2Options;
+let slaveCropper3Options;
 */
 
 let masterCropperCropBoxDidMove = false;
@@ -286,6 +289,7 @@ const handleControlChange = (event) => {
   const cropped1 = masterCropper.cropped;
   const cropped2 = slaveCropper1.cropped;
   const cropped3 = slaveCropper2.cropped;
+  const cropped4 = slaveCropper3.cropped;
 
   const { method, secondOption } = data;
   let { option } = data;
@@ -305,6 +309,7 @@ const handleControlChange = (event) => {
       masterCropper.rotateTo(0); // temporarily reset rotation so that a reduction of value is not treated as a further increase
       slaveCropper1.rotateTo(0);
       slaveCropper2.rotateTo(0);
+      slaveCropper3.rotateTo(0);
     } else if (method === 'rotateTo') {
       rotateEl.value = evtTarget.value;
     }
@@ -312,6 +317,7 @@ const handleControlChange = (event) => {
     masterCropper[method](option, secondOption);
     slaveCropper1[method](option, secondOption);
     slaveCropper2[method](option, secondOption);
+    slaveCropper3[method](option, secondOption);
 
     if (method === 'rotate') {
       if (cropped1 && masterCropperOptions.viewMode > 0) {
@@ -325,10 +331,15 @@ const handleControlChange = (event) => {
       if (cropped3 && slaveCropper2Options.viewMode > 0) {
         slaveCropper2.crop();
       }
+
+      if (cropped4 && slaveCropper3Options.viewMode > 0) {
+        slaveCropper3.crop();
+      }
     } else if (method === 'destroy') {
       masterCropper = null;
       slaveCropper1 = null;
       slaveCropper2 = null;
+      slaveCropper3 = null;
 
       if (newImageSrc) {
         URL.revokeObjectURL(newImageSrc);
@@ -336,6 +347,7 @@ const handleControlChange = (event) => {
         masterCropperImage.src = originalImageURL;
         slaveCropper1Image.src = originalImageURL;
         slaveCropper2Image.src = originalImageURL;
+        slaveCropper3Image.src = originalImageURL;
       }
     }
   }
@@ -574,6 +586,7 @@ const moveCropperCropBox = (e) => {
   masterCropper = getCropper('image1').cropperInstance;
   slaveCropper1 = getCropper('image2').cropperInstance;
   slaveCropper2 = getCropper('image3').cropperInstance;
+  slaveCropper3 = getCropper('image4').cropperInstance;
 
   const {
     top: masterCropperCanvasTop
@@ -606,6 +619,14 @@ const moveCropperCropBox = (e) => {
 
   moveSlaveCropperCropBox({
     cropper: slaveCropper2,
+    pageX,
+    pageY,
+    masterCropperCanvasOffsetTop,
+    masterCropperCanvasLeft
+  });
+
+  moveSlaveCropperCropBox({
+    cropper: slaveCropper3,
     pageX,
     pageY,
     masterCropperCanvasOffsetTop,
