@@ -322,9 +322,10 @@ img {
 
 .btn-thumb .meta {
   position: absolute;
+  right: 0;
   bottom: -1px; /* else small gap */
-  width: calc(100% - (var(--gutter) * 2));
-  margin: 0;
+  left: 0;
+  padding: var(--gutter);
 }
 
 .btn-thumb:focus {
