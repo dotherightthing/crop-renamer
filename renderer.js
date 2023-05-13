@@ -21,10 +21,6 @@ let croppers = [];
 
 let newImageSrc;
 
-// this variable is used by initCroppers
-// eslint-disable-next-line no-unused-vars
-let originalImageURL;
-
 let masterCropperCropBoxDidMove = false;
 
 // functions
@@ -445,8 +441,6 @@ const initCroppers = (imageSrc) => {
     });
 
     if (isMaster) {
-      originalImageURL = ''; // cropperImage.src; // it's empty by default
-
       // https://codepen.io/saleemnaufa/pen/gVewZw
       Object.assign(options, {
         autoCropArea: 0.2,
