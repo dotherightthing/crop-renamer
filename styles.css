@@ -334,9 +334,10 @@ img {
 .btn-thumb .meta {
   position: absolute;
   right: 0;
-  bottom: -1px; /* else small gap */
+  bottom: 0;
   left: 0;
   padding: var(--gutter);
+  margin: 0;
 }
 
 .btn-thumb:focus {
