@@ -509,14 +509,11 @@ const moveCropperCropBox = (e) => {
   const slaveCropper3 = getCropper('image4').cropperInstance;
 
   const {
-    top: masterCropperCanvasTop
+    top: masterCropperCanvasTop,
+    left: masterCropperCanvasLeft
   } = masterCropper.getCanvasData();
 
   const masterCropperCanvasOffsetTop = getCropperCanvasOffsetTop(masterCropper);
-
-  const {
-    left: masterCropperCanvasLeft
-  } = masterCropper.getCanvasData();
 
   if (!cropperWasDragged) {
     // move the cropper to the click location
