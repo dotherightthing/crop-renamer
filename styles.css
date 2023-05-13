@@ -23,6 +23,8 @@
   --height-debug-bar-outer: 59px; /* calc(var(--height-debug-bar-inner) + var(--gutter-half) + var(--gutter-half)); */
   --opacity-modal-overlay: .5;
   --opacity-thumb-brightness: .8;
+  --cropper-master-height: calc(70vh - var(--height-debug-bar-outer));
+  --cropper-slave-height: calc((70vh - var(--height-debug-bar-outer) - var(--gutter)) / 2);
 }
 
 /* debugging */
@@ -75,8 +77,8 @@ img {
   grid-template-areas:
     "master slave3 slave3"
     "master slave1 slave2";
-  grid-template-rows: 300px 1fr;
-  grid-template-columns: 1fr 300px 300px;
+  grid-template-rows: var(--cropper-slave-height) var(--cropper-slave-height);
+  grid-template-columns: 1fr 20% 20%;
   row-gap: var(--gutter);
   column-gap: var(--gutter);
 }
@@ -103,8 +105,8 @@ img {
 
   position: relative; /* AP */
   width: 100%;
-  min-height: calc(70vh - var(--height-debug-bar-outer));
-  max-height: calc(70vh - var(--height-debug-bar-outer));
+  min-height: var(--cropper-master-height);
+  max-height: var(--cropper-master-height);
   background-color: var(--color-bg-light);
   text-align: center;
 }
