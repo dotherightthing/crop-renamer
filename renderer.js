@@ -142,6 +142,37 @@ const destroyCroppers = () => {
 };
 
 /**
+ * @function getCropCenterAsPercentage
+ * @summary Get the X or Y coordinate as a percentage of the image dimension, so that it can be stored and recalled later.
+ * @param {Number} cropCenter - Crop center (X or Y axis)
+ * @param {Number} dimensionLength - Dimension length (width or height)
+ * @param {boolean} subtractExtras - Whether to subtract widths which interfere with the debug bar display value.
+ * @returns {Number} percentage
+ */
+const getCropCenterAsPercentage = (cropCenter, dimensionLength, subtractExtras) => {
+  const boxShadowWidth = (4 / 100);
+  const unknownWidth = (1 / 100);
+  let percentage = cropCenter / dimensionLength;
+
+  if (subtractExtras) {
+    percentage = (percentage - boxShadowWidth - unknownWidth);
+  }
+
+  if (percentage < 0) {
+    percentage = 0;
+  }
+
+  if (percentage > 100) {
+    percentage = 100;
+  }
+
+  // In testing, rounding changes the results by 1-4 units.
+  // This causes little visual difference but makes the numbers much easier to store.
+
+  return Math.round(percentage * 100);
+};
+
+/**
  * @function getCropper
  * @summary Get the cropperjs instance associated with an image
  * @param {string} imageId - HTML id attribute
@@ -453,13 +484,25 @@ const initCroppers = (imageSrc) => {
 
     if (cropperIndex === 0) {
       outputs = {
-        mouse: [ 'client_x', 'client_y' ] // same as 'page_x', 'page_y'
+        mouse: [
+          'page_x',
+          'page_y'
+        ], // same as 'client_x', 'client_y'
         // cropper: [ 'x', 'y' ],
         // container: [ 'width', 'height' ],
         // canvas: [ 'left', 'top' ],
-        // image: [ 'left', 'top' ],
+        image: [ 'width', 'height' ],
         // drg: [ 'top' ],
-        // cropbox: [ 'center_x', 'center_y', 'actual_center_x', 'actual_center_y', 'left', 'top', 'left_rel', 'top_rel', 'width', 'height', 'new_left', 'new_top' ]
+        cropbox: [
+          'canvas_top_offset',
+          'canvas_top',
+          'percentage_top',
+          'percentage_left',
+          'set_top',
+          'set_left',
+          'restored_top',
+          'restored_left'
+        ]
       };
     }
 
@@ -582,6 +625,42 @@ const moveMasterCropperCropBox = ({
     top: cropperCropBoxTop,
     left: cropperCropBoxLeft
   });
+
+  // get percentage values for storage and retrieval
+
+  const {
+    width: imageWidth,
+    height: imageHeight
+  } = cropper.getImageData();
+
+  // setCropPercentage
+  const percentageTop = getCropCenterAsPercentage(cropBoxCenterY, imageHeight, false);
+  const percentageLeftDisplay = getCropCenterAsPercentage(cropBoxCenterX, imageWidth, true);
+  const percentageLeft = Math.round(getCropCenterAsPercentage(cropBoxCenterX, imageWidth, false));
+
+  // test that the value is restored correctly if the percentages are applied
+
+  const restoredTop = ((percentageTop / 100) * imageHeight) + masterCropperCanvasTop - masterCropperCanvasOffsetTop;
+  const restoredLeft = ((percentageLeft / 100) * imageWidth);
+
+  debugParameter('image1', 'cropbox', 'canvas_top_offset', masterCropperCanvasOffsetTop, true);
+  debugParameter('image1', 'cropbox', 'canvas_top', masterCropperCanvasTop, true);
+  debugParameter('image1', 'cropbox', 'percentage_top', percentageTop, true);
+  debugParameter('image1', 'cropbox', 'percentage_left', percentageLeftDisplay, true);
+  debugParameter('image1', 'cropbox', 'set_top', cropperCropBoxTop, true);
+  debugParameter('image1', 'cropbox', 'set_left', cropperCropBoxLeft, true);
+  debugParameter('image1', 'cropbox', 'restored_top', restoredTop, true);
+  debugParameter('image1', 'cropbox', 'restored_left', restoredLeft, true);
+
+  debugParameter('image1', 'image', 'width', imageWidth, true);
+  debugParameter('image1', 'image', 'height', imageHeight, true);
+
+  setTimeout(() => {
+    cropper.setCropBoxData({
+      top: restoredTop,
+      left: restoredLeft
+    });
+  }, 3000);
 };
 
 /**
