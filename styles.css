@@ -204,6 +204,7 @@ img {
   font-size: var(--text-tiny);
   padding: var(--gutter-half);
   margin: var(--gutter-half);
+  pointer-events: none;
 }
 
 .thumb-img {
