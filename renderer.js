@@ -18,9 +18,6 @@ const thumbsCount = document.getElementById('thumbs-count');
 const thumbsEl = document.getElementById('thumbs');
 
 let croppers = [];
-
-let newImageSrc;
-
 let masterCropperCropBoxDidMove = false;
 
 // functions
@@ -346,8 +343,7 @@ const handleThumbSelect = (event) => {
   }
 
   const newImage = target.querySelector('img');
-
-  newImageSrc = newImage.getAttribute('src');
+  const newImageSrc = newImage.getAttribute('src');
 
   destroyCroppers();
 
