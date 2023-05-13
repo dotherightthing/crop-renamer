@@ -355,6 +355,8 @@ const handleControlChange = (event) => {
  * @param {event} e
 */
 const handleKeyDown = (e) => {
+  e.preventDefault(); // don't operate the native container scrollbar
+
   const masterCropper = getCropper('image1').cropperInstance;
 
   if (!masterCropper) {
