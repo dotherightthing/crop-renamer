@@ -21,11 +21,6 @@ let croppers = [];
 
 let newImageSrc;
 
-let masterCropper;
-let slaveCropper1;
-let slaveCropper2;
-let slaveCropper3;
-
 // this variable is used by initCroppers
 // eslint-disable-next-line no-unused-vars
 let originalImageURL;
@@ -360,6 +355,8 @@ const handleControlChange = (event) => {
  * @param {event} e
 */
 const handleKeyDown = (e) => {
+  const masterCropper = getCropper('image1').cropperInstance;
+
   if (!masterCropper) {
     return;
   }
@@ -396,6 +393,8 @@ const handleKeyDown = (e) => {
  * @param {event} e - Event object passed to called function
 */
 const handleMouseUp = (e) => {
+  const masterCropper = getCropper('image1').cropperInstance;
+
   if (!masterCropper) {
     return;
   }
@@ -596,10 +595,10 @@ const moveCropperCropBox = (e) => {
 
   const { pageX, pageY } = e.detail.originalEvent;
 
-  masterCropper = getCropper('image1').cropperInstance;
-  slaveCropper1 = getCropper('image2').cropperInstance;
-  slaveCropper2 = getCropper('image3').cropperInstance;
-  slaveCropper3 = getCropper('image4').cropperInstance;
+  const masterCropper = getCropper('image1').cropperInstance;
+  const slaveCropper1 = getCropper('image2').cropperInstance;
+  const slaveCropper2 = getCropper('image3').cropperInstance;
+  const slaveCropper3 = getCropper('image4').cropperInstance;
 
   const {
     top: masterCropperCanvasTop
