@@ -100,6 +100,8 @@ const createOutputSet = ({ id, title, outputs = {} }) => {
 const debugClickLocation = (e) => {
   console.log(e);
 
+  const masterCropper = getCropper('image1').cropperInstance;
+
   const { outputIds } = getCropper(masterCropper.element.id);
 
   console.log(outputIds);
@@ -613,7 +615,8 @@ const moveSlaveCropperCropBox = ({
  * @returns {Number} Scaled value
 */
 const scaleSlaveVal = (slaveCropper, val) => {
-  // note: masterCropper is a global
+  const masterCropper = getCropper('image1').cropperInstance;
+
   const {
     width: masterCropperImageWidth
   } = masterCropper.getImageData();
