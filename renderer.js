@@ -488,8 +488,21 @@ const initCroppers = (imageSrc) => {
 
     const {
       cropperAspectRatio: aspectRatio,
+      cropperLabel: label,
       cropperMaster: isMaster
     } = data;
+
+    const parent = cropperImage.parentNode;
+
+    let heading = parent.querySelector('h2');
+
+    if (!heading) {
+      const headingText = document.createTextNode(label);
+      heading = document.createElement('h2');
+
+      heading.appendChild(headingText);
+      parent.insertBefore(heading, cropperImage);
+    }
 
     const [
       a,
