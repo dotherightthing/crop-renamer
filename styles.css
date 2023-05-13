@@ -211,6 +211,7 @@ img {
   width: 100%;
   height: auto;
   filter: grayscale(10%) brightness(var(--opacity-thumb-brightness));
+  border-bottom: var(--gutter-half) solid;
 }
 
 .btn-selected .thumb-img {
