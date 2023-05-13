@@ -25,22 +25,6 @@ let newImageSrc;
 // eslint-disable-next-line no-unused-vars
 let originalImageURL;
 
-/*
-// handleControlChange
-
-const URL = window.URL || window.webkitURL;
-
-let masterCropperImage;
-let slaveCropper1Image;
-let slaveCropper2Image;
-let slaveCropper3Image;
-
-let masterCropperOptions;
-let slaveCropper1Options;
-let slaveCropper2Options;
-let slaveCropper3Options;
-*/
-
 let masterCropperCropBoxDidMove = false;
 
 // functions
@@ -251,103 +235,6 @@ const getSelectedIndex = (nodeList) => {
 
   return selectedIndex;
 };
-
-/*
-// supports buttons in debug bar
-
-const handleControlChange = (event) => {
-  const evt = event || window.event;
-  let evtTarget = evt.target || evt.srcElement;
-
-  if (!masterCropper) {
-    return;
-  }
-
-  while (evtTarget !== this) {
-    if (evtTarget.getAttribute('data-method')) {
-      break;
-    }
-
-    evtTarget = evtTarget.parentNode;
-  }
-
-  if (evtTarget === this || evtTarget.disabled || evtTarget.className.indexOf('disabled') > -1) {
-    return;
-  }
-
-  const data = {
-    method: evtTarget.getAttribute('data-method'),
-    option: evtTarget.getAttribute('data-option') || undefined,
-    secondOption: evtTarget.getAttribute('data-second-option') || undefined
-  };
-
-  const cropped1 = masterCropper.cropped;
-  const cropped2 = slaveCropper1.cropped;
-  const cropped3 = slaveCropper2.cropped;
-  const cropped4 = slaveCropper3.cropped;
-
-  const { method, secondOption } = data;
-  let { option } = data;
-
-  if (method) {
-    if (!evtTarget.hasAttribute('data-option')) {
-      option = evtTarget.value;
-    }
-
-    if (method === 'reset') {
-      rotateEl.value = 0;
-    } else if (method === 'rotate') {
-      // if (cropped1 && masterCropperOptions.viewMode > 0) {
-      //   masterCropper.clear(); // this resets the crop position
-      // }
-
-      masterCropper.rotateTo(0); // temporarily reset rotation so that a reduction of value is not treated as a further increase
-      slaveCropper1.rotateTo(0);
-      slaveCropper2.rotateTo(0);
-      slaveCropper3.rotateTo(0);
-    } else if (method === 'rotateTo') {
-      rotateEl.value = evtTarget.value;
-    }
-
-    masterCropper[method](option, secondOption);
-    slaveCropper1[method](option, secondOption);
-    slaveCropper2[method](option, secondOption);
-    slaveCropper3[method](option, secondOption);
-
-    if (method === 'rotate') {
-      if (cropped1 && masterCropperOptions.viewMode > 0) {
-        masterCropper.crop();
-      }
-
-      if (cropped2 && slaveCropper1Options.viewMode > 0) {
-        slaveCropper1.crop();
-      }
-
-      if (cropped3 && slaveCropper2Options.viewMode > 0) {
-        slaveCropper2.crop();
-      }
-
-      if (cropped4 && slaveCropper3Options.viewMode > 0) {
-        slaveCropper3.crop();
-      }
-    } else if (method === 'destroy') {
-      masterCropper = null;
-      slaveCropper1 = null;
-      slaveCropper2 = null;
-      slaveCropper3 = null;
-
-      if (newImageSrc) {
-        URL.revokeObjectURL(newImageSrc);
-        newImageSrc = '';
-        masterCropperImage.src = originalImageURL;
-        slaveCropper1Image.src = originalImageURL;
-        slaveCropper2Image.src = originalImageURL;
-        slaveCropper3Image.src = originalImageURL;
-      }
-    }
-  }
-};
-*/
 
 /**
  * @function handleKeyDown
