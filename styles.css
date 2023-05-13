@@ -1,6 +1,7 @@
 :root {
   --gutter: .5rem;
   --gutter-half: calc(.5rem/2);
+  --gutter-double: calc(.5rem * 2);
   --cropper-view-box-width: 4px; /* cannot use rems or calc() as must be exposed to getPropertyValue() as a number */
   --text-tiny: .7rem;
   --text-small: .8rem;
@@ -58,8 +59,6 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-
-  justify-content: center;
   background-color: var(--color-bg-primary);
   padding: var(--gutter-half) 0;
 }
@@ -270,7 +269,7 @@ img {
 
 .control-set {
   height: var(--height-debug-bar-inner);
-  padding: var(--gutter-half);
+  padding: var(--gutter-half) var(--gutter-double);
   border: 0;
   border-right: 1px solid var(--color-border-secondary);
   overflow: hidden;
