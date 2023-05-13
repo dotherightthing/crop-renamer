@@ -98,11 +98,8 @@ const createOutputSet = ({ id, title, outputs = {} }) => {
  * @param {event} e
 */
 const debugClickLocation = (e) => {
-  console.log(e);
-
-  const masterCropper = getCropper('image1').cropperInstance;
-
-  const { outputIds } = getCropper(masterCropper.element.id);
+  const masterCropper = getMasterCropper();
+  const { outputIds } = masterCropper;
 
   document.getElementById(outputIds.mouse.page_x).value = Math.round(e.clientX);
   document.getElementById(outputIds.mouse.page_y).value = Math.round(e.clientY);
@@ -111,18 +108,17 @@ const debugClickLocation = (e) => {
 /**
  * @function debugParameter
  * @summary Output the pointer location
- * @param {string} cropperImageId - Cropper image ID
- * @param {string} group - Output ID group
+ * @param {object} cropper - Cropper from croppers array
  * @param {string} parameter - Output ID parameter
  * @param {Number} value - Value to display
  * @param {boolean} round - Whether to round the value
 */
-const debugParameter = (cropperImageId, group, parameter, value, round = false) => {
-  const cropper = getCropper(cropperImageId).cropperInstance;
-  const { outputIds } = getCropper(cropper.element.id);
+const debugParameter = (cropper, parameter, value, round = false) => {
+  const { outputIds } = cropper;
   let outputValue = round ? Math.round(value) : value;
+  const [ group, param ] = parameter.split('.');
 
-  document.getElementById(outputIds[group][parameter]).value = outputValue;
+  document.getElementById(outputIds[group][param]).value = outputValue;
 };
 
 /**
@@ -173,30 +169,6 @@ const getCropCenterAsPercentage = (cropCenter, dimensionLength, subtractExtras) 
 };
 
 /**
- * @function getCropper
- * @summary Get the cropperjs instance associated with an image
- * @param {string} imageId - HTML id attribute
- * @returns {object} instance of cropperjs
-*/
-const getCropper = (imageId) => {
-  let _cropper = null;
-
-  croppers.forEach(cropper => {
-    const { cropperInstance } = cropper;
-
-    if (cropperInstance) {
-      if (cropperInstance.element.id === imageId) {
-        _cropper = cropper;
-      }
-    }
-
-    return true;
-  });
-
-  return _cropper;
-};
-
-/**
  * @function getCropperCanvasOffsetTop
  * @summary cropper.getCanvasData().top ignores preceding UI and returns 0, this function returns the actual offset
  * @param {object} cropper - Cropper
@@ -215,6 +187,27 @@ const getCropperCanvasOffsetTop = (cropper) => {
   } = getOffset(cropperCanvasEl);
 
   return cropperCanvasTop;
+};
+
+/**
+ * @function getMasterCropper
+ * @summary Get the object for the master cropper (which contains the cropperInstance)
+ * @returns {object} { cropperInstance, isMaster, outputIds }
+*/
+const getMasterCropper = () => {
+  let _cropper = null;
+
+  croppers.forEach(cropper => {
+    const { isMaster } = cropper;
+
+    if (isMaster) {
+      _cropper = cropper;
+    }
+
+    return true;
+  });
+
+  return _cropper;
 };
 
 /**
@@ -292,13 +285,11 @@ const getSelectedIndex = (nodeList) => {
 const handleKeyDown = (e) => {
   e.preventDefault(); // don't operate the native container scrollbar
 
-  let masterCropper = getCropper('image1');
+  let masterCropper = getMasterCropper();
 
   if (!masterCropper) {
     return;
   }
-
-  masterCropper = masterCropper.cropperInstance;
 
   if (!thumbsEl.querySelectorAll(`.${thumbImgClass}`).length) {
     return;
@@ -332,7 +323,7 @@ const handleKeyDown = (e) => {
  * @param {event} e - Event object passed to called function
 */
 const handleMouseUp = (e) => {
-  const masterCropper = getCropper('image1').cropperInstance;
+  const masterCropper = getMasterCropper();
 
   if (!masterCropper) {
     return;
@@ -642,17 +633,19 @@ const moveMasterCropperCropBox = ({
   const restoredTop = ((percentageTop / 100) * imageHeight) + masterCropperCanvasTop - masterCropperCanvasOffsetTop;
   const restoredLeft = ((percentageLeft / 100) * imageWidth);
 
-  debugParameter('image1', 'cropbox', 'canvas_top_offset', masterCropperCanvasOffsetTop, true);
-  debugParameter('image1', 'cropbox', 'canvas_top', masterCropperCanvasTop, true);
-  debugParameter('image1', 'cropbox', 'percentage_top', percentageTop, true);
-  debugParameter('image1', 'cropbox', 'percentage_left', percentageLeftDisplay, true);
-  debugParameter('image1', 'cropbox', 'set_top', cropperCropBoxTop, true);
-  debugParameter('image1', 'cropbox', 'set_left', cropperCropBoxLeft, true);
-  debugParameter('image1', 'cropbox', 'restored_top', restoredTop, true);
-  debugParameter('image1', 'cropbox', 'restored_left', restoredLeft, true);
+  const masterCropper = getMasterCropper();
 
-  debugParameter('image1', 'image', 'width', imageWidth, true);
-  debugParameter('image1', 'image', 'height', imageHeight, true);
+  debugParameter(masterCropper, 'cropbox.canvas_top_offset', masterCropperCanvasOffsetTop, true);
+  debugParameter(masterCropper, 'cropbox.canvas_top', masterCropperCanvasTop, true);
+  debugParameter(masterCropper, 'cropbox.percentage_top', percentageTop, true);
+  debugParameter(masterCropper, 'cropbox.percentage_left', percentageLeftDisplay, true);
+  debugParameter(masterCropper, 'cropbox.set_top', cropperCropBoxTop, true);
+  debugParameter(masterCropper, 'cropbox.set_left', cropperCropBoxLeft, true);
+  debugParameter(masterCropper, 'cropbox.restored_top', restoredTop, true);
+  debugParameter(masterCropper, 'cropbox.restored_left', restoredLeft, true);
+
+  debugParameter(masterCropper, 'image.width', imageWidth, true);
+  debugParameter(masterCropper, 'image.height', imageHeight, true);
 
   setTimeout(() => {
     cropper.setCropBoxData({
@@ -707,11 +700,11 @@ const moveSlaveCropperCropBox = ({
  * @returns {Number} Scaled value
 */
 const scaleSlaveVal = (slaveCropper, val) => {
-  const masterCropper = getCropper('image1').cropperInstance;
+  const masterCropperInstance = getMasterCropper().cropperInstance;
 
   const {
     width: masterCropperImageWidth
-  } = masterCropper.getImageData();
+  } = masterCropperInstance.getImageData();
 
   const {
     width: cropperImageWidth
