@@ -104,10 +104,25 @@ const debugClickLocation = (e) => {
 
   const { outputIds } = getCropper(masterCropper.element.id);
 
-  console.log(outputIds);
+  document.getElementById(outputIds.mouse.page_x).value = Math.round(e.clientX);
+  document.getElementById(outputIds.mouse.page_y).value = Math.round(e.clientY);
+};
 
-  document.getElementById(outputIds.mouse.client_x).value = Math.round(e.clientX);
-  document.getElementById(outputIds.mouse.client_y).value = Math.round(e.clientY);
+/**
+ * @function debugParameter
+ * @summary Output the pointer location
+ * @param {string} cropperImageId - Cropper image ID
+ * @param {string} group - Output ID group
+ * @param {string} parameter - Output ID parameter
+ * @param {Number} value - Value to display
+ * @param {boolean} round - Whether to round the value
+*/
+const debugParameter = (cropperImageId, group, parameter, value, round = false) => {
+  const cropper = getCropper(cropperImageId).cropperInstance;
+  const { outputIds } = getCropper(cropper.element.id);
+  let outputValue = round ? Math.round(value) : value;
+
+  document.getElementById(outputIds[group][parameter]).value = outputValue;
 };
 
 /**
