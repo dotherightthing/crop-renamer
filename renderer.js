@@ -261,11 +261,13 @@ const getSelectedIndex = (nodeList) => {
 const handleKeyDown = (e) => {
   e.preventDefault(); // don't operate the native container scrollbar
 
-  const masterCropper = getCropper('image1').cropperInstance;
+  let masterCropper = getCropper('image1');
 
   if (!masterCropper) {
     return;
   }
+
+  masterCropper = masterCropper.cropperInstance;
 
   if (!thumbsEl.querySelectorAll(`.${thumbImgClass}`).length) {
     return;
