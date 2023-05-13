@@ -13,6 +13,8 @@
   --color-bg-secondary: rgba(20, 20, 20, 1);
   --color-bg-tertiary: rgba(51, 51, 51, 1);
   --color-bg-light: rgba(247, 247, 247, 1);
+  --color-bg-image: rgba(134, 134, 134, 1);
+  --color-bg-thumb: rgba(255, 255, 255, .15);
   --color-border-secondary: rgba(255, 255, 255, .5);
   --color-border-tertiary: rgba(51, 51, 51, 1);
   --color-border-active: rgba(170, 170, 170, 1);
@@ -146,9 +148,12 @@ img {
   position: relative; /* AP */
 }
 
-.editor,
-.grid-croppers > .img-container {
+.editor {
   background-color: var(--color-bg-tertiary);
+}
+
+.grid-croppers > .img-container {
+  background-color: var(--color-bg-image);
 }
 
 .grid-croppers > .img-container > img {
@@ -187,6 +192,7 @@ img {
   position: relative;
   width: 7.8vw;
   flex-shrink: 0;
+  background-color: var(--color-bg-thumb); /* fill below image */
 }
 
 .thumb::before {
@@ -321,8 +327,8 @@ img {
 .btn-thumb {
   display: grid; /* aligns child img to top */
   position: relative;
+  background: transparent;
   height: 100%;
-  background-color: var(--color-bg-secondary);
   padding: 0;
   border: 0;
   margin: 0;
