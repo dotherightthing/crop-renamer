@@ -4,10 +4,10 @@
 
 // globals
 
-const debugBar = document.getElementById('debug-bar');
 const Cropper = window.Cropper;
 const cropperCanvasClass = 'cropper-canvas';
 const cropperImageClass = 'cropperImage';
+const debugBar = document.getElementById('debug-bar');
 const rotateEl = document.getElementById('rotate');
 const selectedClass = 'btn-selected';
 const thumbButtonClass = 'btn-thumb';
