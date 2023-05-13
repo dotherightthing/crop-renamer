@@ -319,10 +319,6 @@ img {
   margin: 0;
 }
 
-#console-bottom .control > input {
-  width: 95vw;
-}
-
 .btn-thumb {
   display: grid; /* aligns child img to top */
   position: relative;
