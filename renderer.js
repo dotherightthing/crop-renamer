@@ -542,55 +542,54 @@ const initCroppers = (imageSrc) => {
  */
 const moveCropperCropBox = (e) => {
   const cropperWasDragged = masterCropperCropBoxDidMove;
+
   masterCropperCropBoxDidMove = false;
 
-  const { pageX, pageY } = e.detail.originalEvent;
-
-  const masterCropper = getCropper('image1').cropperInstance;
-  const slaveCropper1 = getCropper('image2').cropperInstance;
-  const slaveCropper2 = getCropper('image3').cropperInstance;
-  const slaveCropper3 = getCropper('image4').cropperInstance;
-
   const {
-    top: masterCropperCanvasTop,
-    left: masterCropperCanvasLeft
-  } = masterCropper.getCanvasData();
-
-  const masterCropperCanvasOffsetTop = getCropperCanvasOffsetTop(masterCropper);
-
-  if (!cropperWasDragged) {
-    // move the cropper to the click location
-    moveMasterCropperCropBox({
-      cropper: masterCropper,
-      pageX,
-      pageY,
-      masterCropperCanvasOffsetTop,
-      masterCropperCanvasTop
-    });
-  }
-
-  moveSlaveCropperCropBox({
-    cropper: slaveCropper1,
     pageX,
-    pageY,
-    masterCropperCanvasOffsetTop,
-    masterCropperCanvasLeft
-  });
+    pageY
+  } = e.detail.originalEvent;
 
-  moveSlaveCropperCropBox({
-    cropper: slaveCropper2,
-    pageX,
-    pageY,
-    masterCropperCanvasOffsetTop,
-    masterCropperCanvasLeft
-  });
+  let masterCropperCanvasTop;
+  let masterCropperCanvasLeft;
+  let masterCropperCanvasOffsetTop;
 
-  moveSlaveCropperCropBox({
-    cropper: slaveCropper3,
-    pageX,
-    pageY,
-    masterCropperCanvasOffsetTop,
-    masterCropperCanvasLeft
+  croppers.forEach(cropper => {
+    const {
+      cropperInstance,
+      isMaster
+    } = cropper;
+
+    if (isMaster) {
+      (
+        {
+          top: masterCropperCanvasTop,
+          left: masterCropperCanvasLeft
+        } = cropperInstance.getCanvasData()
+      );
+
+      masterCropperCanvasOffsetTop = getCropperCanvasOffsetTop(cropperInstance);
+
+      if (!cropperWasDragged) {
+        // move the cropper to the click location
+        moveMasterCropperCropBox({
+          cropper: cropperInstance,
+          pageX,
+          pageY,
+          masterCropperCanvasOffsetTop,
+          masterCropperCanvasTop
+        });
+      }
+    } else {
+      moveSlaveCropperCropBox({
+        cropper: cropperInstance,
+        pageX,
+        pageY,
+        masterCropperCanvasOffsetTop,
+        masterCropperCanvasTop,
+        masterCropperCanvasLeft
+      });
+    }
   });
 };
 
