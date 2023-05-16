@@ -11,7 +11,9 @@ const {
 } = require('electron');
 
 const fs = require('fs');
+const { rename } = require('fs');
 const path = require('path');
+const { resolve } = require('path');
 const ExifReader = require('exifreader');
 const contextMenu = require('electron-context-menu');
 
@@ -112,6 +114,39 @@ const getImagesData = async (imageFiles) => {
   return imagesData;
 };
 
+// https://www.geeksforgeeks.org/node-js-fs-rename-method/
+// https://nodejs.dev/en/learn/nodejs-file-paths/
+const handleSaveCropCoordinatesToImage = async (event, data) => {
+  const {
+    fileName,
+    percentageTop,
+    percentageLeft
+  } = data;
+
+  let fileNameStr = fileName;
+  fileNameStr = fileNameStr.replace('file://', '');
+  fileNameStr = fileNameStr.replace(/%20/g, ' ');
+
+  const dirName = path.dirname(fileNameStr);
+  const fileName2 = path.basename(fileNameStr); // foo.ext
+  const extName = path.extname(fileNameStr); // .ext
+  const fileNameOnly = fileName2.replace(extName, '');
+
+  const folderPath = resolve(__dirname, dirName); // same same
+
+  // ok
+  const oldFileName = `${folderPath}/${fileNameOnly}${extName}`;
+  const newFileName = `${folderPath}/${fileNameOnly}__[x${percentageLeft}%-y${percentageTop}%]${extName}`;
+
+  fs.rename(oldFileName, newFileName, (error) => {
+    if (error) {
+      console.log(error);
+    }
+  });
+
+  return `Renamed\n ${oldFileName}\n to\n ${newFileName}`;
+};
+
 async function handleSelectFolder() {
   let canceled;
   let filePaths;
@@ -152,6 +187,7 @@ async function handleSelectFolder() {
 app.whenReady().then(() => {
   // ipcMain module for inter-process communication (IPC) with render process
   ipcMain.handle('dialog:selectFolder', handleSelectFolder);
+  ipcMain.handle('test:saveCropCoordinatesToImage', handleSaveCropCoordinatesToImage);
 
   createWindow();
 

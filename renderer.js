@@ -9,6 +9,7 @@ const cropperCanvasClass = 'cropper-canvas';
 const cropperImageClass = 'cropperImage';
 const debugBar = document.getElementById('debug-bar');
 const rotateEl = document.getElementById('rotate');
+const saveCropCoordinatesToImageEl = document.getElementById('save-crop-coordinates-to-image');
 const selectedClass = 'btn-selected';
 const thumbButtonClass = 'btn-thumb';
 const thumbClass = 'thumb';
@@ -112,6 +113,23 @@ const debugParameter = (cropper, parameter, value, round = false) => {
   const [ group, param ] = parameter.split('.');
 
   document.getElementById(outputIds[group][param]).value = outputValue;
+};
+
+/**
+ * @function getDebugParameterValue
+ * @summary Get the value of a debugging field
+ * @param {object} cropper - Cropper from croppers array
+ * @param {string} parameter - Output ID parameter
+ * @returns {Number} value - Displayed value
+*/
+const getDebugParameterValue = (cropper, parameter) => {
+  const { outputIds } = cropper;
+  const [ group, param ] = parameter.split('.');
+  const field = document.getElementById(outputIds[group][param]);
+
+  if (field !== null) {
+    return field.value;
+  }
 };
 
 /**
@@ -323,6 +341,28 @@ const handleMouseUp = (e) => {
   }
 
   debugClickLocation(e);
+};
+
+/**
+ * @function handleSaveCropCoordinatesToImage
+ * @summary Save the crop XY to the image file
+ * @param {event} e
+ */
+const handleSaveCropCoordinatesToImage = async () => {
+  const masterCropper = getMasterCropper();
+
+  const percentageTop = getDebugParameterValue(masterCropper, 'cropbox.percentage_top');
+  const percentageLeft = getDebugParameterValue(masterCropper, 'cropbox.percentage_left');
+
+  const fileName = masterCropper.cropperInstance.element.src;
+
+  const successMsg = await window.electronAPI.saveCropCoordinatesToImage({
+    fileName,
+    percentageTop,
+    percentageLeft
+  });
+
+  console.log(successMsg);
 };
 
 /**
@@ -759,4 +799,6 @@ window.addEventListener('load', () => {
   document.body.addEventListener('keydown', handleKeyDown);
   thumbsEl.addEventListener('click', handleThumbSelect);
   uiSelectFolder();
+
+  saveCropCoordinatesToImageEl.addEventListener('click', handleSaveCropCoordinatesToImage);
 });
