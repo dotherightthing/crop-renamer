@@ -20,9 +20,6 @@ const thumbMetaClass = 'thumb-meta';
 const thumbsCount = document.getElementById('thumbs-count');
 const thumbsEl = document.getElementById('thumbs');
 
-// debugging
-let gMasterCropperInstance;
-
 let croppers = [];
 let masterCropperCropBoxWasDragged = false;
 
@@ -413,7 +410,7 @@ const handleThumbSelect = (event) => {
  * @function initCroppers
  * @summary Initialise cropper instances (master and slaves)
  * @param {string} imageSrc - HTML src attribute
-*/
+ */
 const initCroppers = (imageSrc) => {
   const cropperImages = document.querySelectorAll(`.${cropperImageClass}`);
 
@@ -581,9 +578,6 @@ const initCroppers = (imageSrc) => {
   }, 5000);
 };
 
-// TODO create function pageXY to imageXY
-
-// convert image percentage X/Y to crop Left/Top
 const applyFocalPoint = ({ imagePercentageTop, imagePercentageLeft }) => {
   // simulate click event
   masterCropperCropBoxWasDragged = false;
@@ -595,7 +589,6 @@ const applyFocalPoint = ({ imagePercentageTop, imagePercentageLeft }) => {
     height: masterCropperImageHeight
   } = masterCropperInstance.getImageData();
 
-  // done
   const {
     width: cropperWidth,
     height: cropperHeight
@@ -619,7 +612,6 @@ const applyFocalPoint = ({ imagePercentageTop, imagePercentageLeft }) => {
   const imageYOffset = imageY + masterCropperCanvasTop;
   const cropperCropBoxTop = imageYOffset - (cropperHeight / 2);
 
-  // moving the crop box uses setCropBoxData: top, left
 
   // const e = {
   //   detail: {
@@ -632,7 +624,6 @@ const applyFocalPoint = ({ imagePercentageTop, imagePercentageLeft }) => {
 
   // moveCropperCropBoxToPageXY(e);
 
-  // ok
   masterCropperInstance.setCropBoxData({
     top: cropperCropBoxTop,
     left: cropperCropBoxLeft
@@ -659,8 +650,6 @@ const moveCropperCropBoxToPageXY = (e) => {
     pageX,
     pageY
   } = e.detail.originalEvent;
-
-  console.log(pageX, pageY);
 
   const masterCropper = getMasterCropper(); // obj
   const slaveCroppers = getSlaveCroppers(); // arr
@@ -922,8 +911,8 @@ async function uiSelectFolder() {
 
 window.addEventListener('load', () => {
   document.body.addEventListener('keydown', handleKeyDown);
-  thumbsEl.addEventListener('click', handleThumbSelect);
   uiSelectFolder();
 
   saveCropCoordinatesToImageEl.addEventListener('click', handleSaveCropCoordinatesToImage);
+  thumbsEl.addEventListener('click', handleThumbSelect);
 });
