@@ -7,7 +7,7 @@
 const Cropper = window.Cropper;
 const cropperCanvasClass = 'cropper-canvas';
 const cropperImageClass = 'cropperImage';
-const debugBar = document.getElementById('debug-bar');
+const debugBarEl = document.getElementById('debug-bar');
 const debugMsgClass = 'debug-param';
 const rotateEl = document.getElementById('rotate');
 const saveCropCoordinatesToImageEl = document.getElementById('save-crop-coordinates-to-image');
@@ -443,16 +443,14 @@ const initCroppers = (imageSrc) => {
     zoomOnWheel: false
   };
 
-  // debugBar.removeEventListener('click', handleControlChange);
   window.removeEventListener('resize', scrollToSelectedThumb);
   window.removeEventListener('click', handleMouseUp);
 
-  // debugBar.addEventListener('click', handleControlChange);
   window.addEventListener('resize', scrollToSelectedThumb);
   window.addEventListener('click', handleMouseUp);
 
   // remove debug messages whilst retaining any buttons
-  const debugMsgs = debugBar.querySelectorAll(`.${debugMsgClass}`);
+  const debugMsgs = debugBarEl.querySelectorAll(`.${debugMsgClass}`);
 
   debugMsgs.forEach(debugMsg => {
     debugMsg.remove();
@@ -555,7 +553,9 @@ const initCroppers = (imageSrc) => {
         outputs: outputs[outputKey]
       });
 
-      debugBar.innerHTML += topHtml;
+      // https://stackoverflow.com/a/37448747
+      debugBarEl.insertAdjacentHTML('beforeend', topHtml);
+
       outputIdSets[outputKey] = outputIds;
     });
 
