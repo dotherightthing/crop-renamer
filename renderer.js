@@ -498,7 +498,7 @@ const initCroppers = (imageSrc) => {
           masterCropperCropBoxDidMove = true; // differentiate between a click and a move
         },
         cropend: (e) => { // dragEnd callback, see https://github.com/fengyuanchen/cropperjs/issues/669; fires after move
-          moveCropperCropBox(e, masterCropperCropBoxDidMove);
+          moveCropperCropBox(e);
         }
       });
     }
