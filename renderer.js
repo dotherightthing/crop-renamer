@@ -683,12 +683,13 @@ const moveMasterCropperCropBox = ({
   debugParameter(masterCropper, 'image.width', imageWidth, true);
   debugParameter(masterCropper, 'image.height', imageHeight, true);
 
+  // visual delay so its clear what's happening
   setTimeout(() => {
     cropper.setCropBoxData({
       top: restoredTop,
       left: restoredLeft
     });
-  }, 3000);
+  }, 500);
 };
 
 /**
