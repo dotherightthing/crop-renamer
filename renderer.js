@@ -7,6 +7,7 @@
 const Cropper = window.Cropper;
 const cropperCanvasClass = 'cropper-canvas';
 const cropperImageClass = 'cropperImage';
+const croppersClass = 'grid-croppers';
 const debugBarEl = document.getElementById('debug-bar');
 const debugMsgClass = 'debug-param';
 const rotateEl = document.getElementById('rotate');
@@ -443,11 +444,13 @@ const initCroppers = (imageSrc) => {
     zoomOnWheel: false
   };
 
+  const croppersEl = document.querySelectorAll(`.${croppersClass}`)[0];
+
   window.removeEventListener('resize', scrollToSelectedThumb);
-  window.removeEventListener('click', handleMouseUp);
+  croppersEl.removeEventListener('click', handleMouseUp);
 
   window.addEventListener('resize', scrollToSelectedThumb);
-  window.addEventListener('click', handleMouseUp);
+  croppersEl.addEventListener('click', handleMouseUp);
 
   // remove debug messages whilst retaining any buttons
   const debugMsgs = debugBarEl.querySelectorAll(`.${debugMsgClass}`);
