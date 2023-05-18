@@ -10,10 +10,14 @@
   <body>
     <div class="layout">
       <div class="editor">
-        <div class="console" id="debug-bar"></div>
+        <div class="debug-bar" id="debug-bar">
+          <button type="button" class="debug-action" id="save-crop-coordinates-to-image">
+            <span class="legend">Action</span><span hidden>:</span>
+            Save crop coordinates to image
+          </button>
+        </div>
         <div class="grid-croppers">
           <div class="img-container cropper-master">
-            <button type="button" id="save-crop-coordinates-to-image">Save crop coordinates to image</button>
             <img src="" alt="" id="image1" class="cropperImage" data-cropper-aspect-ratio="1:1" data-cropper-master="true" data-cropper-label="Master">
           </div>
           <div class="img-container cropper-banner">

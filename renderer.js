@@ -8,6 +8,7 @@ const Cropper = window.Cropper;
 const cropperCanvasClass = 'cropper-canvas';
 const cropperImageClass = 'cropperImage';
 const debugBar = document.getElementById('debug-bar');
+const debugMsgClass = 'debug-param';
 const rotateEl = document.getElementById('rotate');
 const saveCropCoordinatesToImageEl = document.getElementById('save-crop-coordinates-to-image');
 const selectedClass = 'btn-selected';
@@ -68,7 +69,7 @@ const createOutputSet = ({ id, title, outputs = {} }) => {
 `;
   });
 
-  const html = `<div class="control-set">
+  const html = `<div class="debug-param">
   <fieldset>
     <legend>
       <div class="legend">${title}</div>
@@ -440,7 +441,12 @@ const initCroppers = (imageSrc) => {
   window.addEventListener('resize', scrollToSelectedThumb);
   window.addEventListener('click', handleMouseUp);
 
-  debugBar.innerHTML = '';
+  // remove debug messages whilst retaining any buttons
+  const debugMsgs = debugBar.querySelectorAll(`.${debugMsgClass}`);
+
+  debugMsgs.forEach(debugMsg => {
+    debugMsg.remove();
+  });
 
   cropperImages.forEach((cropperImage, cropperIndex) => {
     const data = cropperImage.dataset;
