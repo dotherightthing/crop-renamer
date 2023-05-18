@@ -209,19 +209,9 @@ const getCropperCanvasOffsetTop = (cropper) => {
  * @returns {object} { cropperInstance, isMaster, outputIds }
 */
 const getMasterCropper = () => {
-  let _cropper = null;
+  const masterCroppers = croppers.filter(cropper => cropper.isMaster);
 
-  croppers.forEach(cropper => {
-    const { isMaster } = cropper;
-
-    if (isMaster) {
-      _cropper = cropper;
-    }
-
-    return true;
-  });
-
-  return _cropper;
+  return masterCroppers[0];
 };
 
 /**
@@ -289,6 +279,17 @@ const getSelectedIndex = (nodeList) => {
   });
 
   return selectedIndex;
+};
+
+/**
+ * @function getSlaveCroppers
+ * @summary Get an array of slave croppers (containing objects which include the cropperInstance)
+ * @returns {Array} slaveCroppers
+*/
+const getSlaveCroppers = () => {
+  const slaveCroppers = croppers.filter(cropper => typeof cropper.isMaster === 'undefined');
+
+  return slaveCroppers;
 };
 
 /**
@@ -579,46 +580,41 @@ const moveCropperCropBox = (e) => {
     pageY
   } = e.detail.originalEvent;
 
-  let masterCropperCanvasTop;
-  let masterCropperCanvasLeft;
-  let masterCropperCanvasOffsetTop;
+  const masterCropper = getMasterCropper(); // obj
+  const slaveCroppers = getSlaveCroppers(); // arr
 
-  croppers.forEach(cropper => {
+  const masterCropperInstance = masterCropper.cropperInstance;
+  const masterCropperCanvasOffsetTop = getCropperCanvasOffsetTop(masterCropperInstance);
+
+  const {
+    top: masterCropperCanvasTop,
+    left: masterCropperCanvasLeft
+  } = masterCropperInstance.getCanvasData();
+
+  if (!cropperWasDragged) {
+    // move the cropper to the click location
+    moveMasterCropperCropBox({
+      cropper: masterCropperInstance,
+      pageX,
+      pageY,
+      masterCropperCanvasOffsetTop,
+      masterCropperCanvasTop
+    });
+  }
+
+  slaveCroppers.forEach(cropper => {
     const {
-      cropperInstance,
-      isMaster
+      cropperInstance
     } = cropper;
 
-    if (isMaster) {
-      (
-        {
-          top: masterCropperCanvasTop,
-          left: masterCropperCanvasLeft
-        } = cropperInstance.getCanvasData()
-      );
-
-      masterCropperCanvasOffsetTop = getCropperCanvasOffsetTop(cropperInstance);
-
-      if (!cropperWasDragged) {
-        // move the cropper to the click location
-        moveMasterCropperCropBox({
-          cropper: cropperInstance,
-          pageX,
-          pageY,
-          masterCropperCanvasOffsetTop,
-          masterCropperCanvasTop
-        });
-      }
-    } else {
-      moveSlaveCropperCropBox({
-        cropper: cropperInstance,
-        pageX,
-        pageY,
-        masterCropperCanvasOffsetTop,
-        masterCropperCanvasTop,
-        masterCropperCanvasLeft
-      });
-    }
+    moveSlaveCropperCropBox({
+      cropper: cropperInstance,
+      pageX,
+      pageY,
+      masterCropperCanvasOffsetTop,
+      masterCropperCanvasTop,
+      masterCropperCanvasLeft
+    });
   });
 };
 
