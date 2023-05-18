@@ -275,6 +275,7 @@ img {
   display: grid;
   align-content: start;
   text-align: left;
+  max-width: 7rem;
   border-color: var(--color-border-secondary);
   border-radius: .2rem;
   margin-right: var(--gutter-half);
