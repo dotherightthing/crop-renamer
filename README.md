@@ -1,6 +1,6 @@
 # crop-renamer
 
-Helper tool to rename images for batch cropping by ImageMagick.
+Focal Point crop tool - rename images for batch cropping by ImageMagick.
 
 ## Desired usage
 
