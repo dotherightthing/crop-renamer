@@ -131,6 +131,8 @@ const getDebugParameterValue = (cropper, parameter) => {
   if (field !== null) {
     return field.value;
   }
+
+  return -1;
 };
 
 /**
