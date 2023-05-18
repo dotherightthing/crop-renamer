@@ -10,9 +10,11 @@ const cropperImageClass = 'cropperImage';
 const croppersClass = 'grid-croppers';
 const debugBarEl = document.getElementById('debug-bar');
 const debugMsgClass = 'debug-param';
+const readCropCoordinatesFromImageEl = document.getElementById('read-crop-coordinates-from-image');
+const removeCropCoordinatesFromImageEl = document.getElementById('remove-crop-coordinates-from-image');
 const rotateEl = document.getElementById('rotate');
 const resetFocalPointEl = document.getElementById('reset-focal-point');
-const saveCropCoordinatesToImageEl = document.getElementById('save-crop-coordinates-to-image');
+const writeCropCoordinatesToImageEl = document.getElementById('write-crop-coordinates-to-image');
 const selectedClass = 'btn-selected';
 const thumbButtonClass = 'btn-thumb';
 const thumbClass = 'thumb';
@@ -320,14 +322,54 @@ const handleMouseUp = (e) => {
 };
 
 /**
- * @function handleSaveCropCoordinatesToImage
+ * @function handleReadCropCoordinatesFromImage
+*/
+const handleReadCropCoordinatesFromImage = () => {
+  const masterCropperInstance = getMasterCropper().cropperInstance;
+  const masterCropperImageSrc = masterCropperInstance.element.src;
+
+  const regexp = /\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
+  const matches = masterCropperImageSrc.matchAll(regexp);
+  const matchesArr = [ ...matches ];
+
+  if (matchesArr.length) {
+    const position = {
+      imagePercentageLeft: matchesArr[0][1],
+      imagePercentageTop: matchesArr[0][2]
+    };
+
+    applyFocalPoint(position);
+  }
+};
+
+/**
+ * @function handleRemoveCropCoordinatesFromImage
+*/
+const handleRemoveCropCoordinatesFromImage = async () => {
+  const masterCropper = getMasterCropper();
+
+  const fileName = masterCropper.cropperInstance.element.src;
+
+  removeCropCoordinatesFromImageEl.disabled = true;
+
+  const newFileName = await window.electronAPI.removeCropCoordinatesFromImage({
+    fileName
+  });
+
+  removeCropCoordinatesFromImageEl.disabled = false;
+
+  masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
+  document.querySelector('.thumbs .btn-selected img').src = newFileName;
+};
+
+/**
+ * @function handleWriteCropCoordinatesToImage
  * @summary Save the crop XY to the image file
  * @param {event} e
  * @todo Working but top and left aren't correct for both tested images
  * @todo Refresh thumbnail and image src after renaming image file
- * @todo Fix styling and position of associated button
  */
-const handleSaveCropCoordinatesToImage = async () => {
+const handleWriteCropCoordinatesToImage = async () => {
   const masterCropper = getMasterCropper();
 
   const imagePercentageTop = getDebugParameterValue(masterCropper, 'cropbox.percentage_top');
@@ -335,13 +377,18 @@ const handleSaveCropCoordinatesToImage = async () => {
 
   const fileName = masterCropper.cropperInstance.element.src;
 
-  const successMsg = await window.electronAPI.saveCropCoordinatesToImage({
+  removeCropCoordinatesFromImageEl.disabled = true;
+
+  const newFileName = await window.electronAPI.writeCropCoordinatesToImage({
     fileName,
     imagePercentageTop,
     imagePercentageLeft
   });
 
-  console.log(successMsg);
+  removeCropCoordinatesFromImageEl.disabled = false;
+
+  masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
+  document.querySelector('.thumbs .btn-selected img').src = newFileName;
 };
 
 /**
@@ -1034,6 +1081,8 @@ window.addEventListener('load', () => {
   uiSelectFolder();
 
   resetFocalPointEl.addEventListener('click', handleResetFocalPoint);
-  saveCropCoordinatesToImageEl.addEventListener('click', handleSaveCropCoordinatesToImage);
+  readCropCoordinatesFromImageEl.addEventListener('click', handleReadCropCoordinatesFromImage);
+  removeCropCoordinatesFromImageEl.addEventListener('click', handleRemoveCropCoordinatesFromImage);
+  writeCropCoordinatesToImageEl.addEventListener('click', handleWriteCropCoordinatesToImage);
   thumbsEl.addEventListener('click', handleThumbSelect);
 });

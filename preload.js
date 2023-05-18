@@ -13,5 +13,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // ipcRenderer.send() sends to ipcMain.on()
   // ipcRenderer.invoke() invokes ipcMain.handle()
   selectFolder: () => ipcRenderer.invoke('dialog:selectFolder'),
-  saveCropCoordinatesToImage: (data) => ipcRenderer.invoke('test:saveCropCoordinatesToImage', data)
+  removeCropCoordinatesFromImage: (data) => ipcRenderer.invoke('storage:removeCropCoordinatesFromImage', data),
+  writeCropCoordinatesToImage: (data) => ipcRenderer.invoke('storage:writeCropCoordinatesToImage', data)
 });

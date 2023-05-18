@@ -114,13 +114,9 @@ const getImagesData = async (imageFiles) => {
   return imagesData;
 };
 
-// https://www.geeksforgeeks.org/node-js-fs-rename-method/
-// https://nodejs.dev/en/learn/nodejs-file-paths/
-const handleSaveCropCoordinatesToImage = async (event, data) => {
+const handleRemoveCropCoordinatesFromImage = async (event, data) => {
   const {
-    fileName,
-    percentageTop,
-    percentageLeft
+    fileName
   } = data;
 
   let fileNameStr = fileName;
@@ -134,9 +130,12 @@ const handleSaveCropCoordinatesToImage = async (event, data) => {
 
   const folderPath = resolve(__dirname, dirName); // same same
 
-  // ok
   const oldFileName = `${folderPath}/${fileNameOnly}${extName}`;
-  const newFileName = `${folderPath}/${fileNameOnly}__[x${percentageLeft}%-y${percentageTop}%]${extName}`;
+  const regex = /__\[([0-9]+)%,([0-9]+)%\]/g;
+  const newFileName = oldFileName.replace(regex, '');
+
+  console.log('oldFileName', oldFileName);
+  console.log('newFileName', newFileName);
 
   fs.rename(oldFileName, newFileName, (error) => {
     if (error) {
@@ -144,7 +143,44 @@ const handleSaveCropCoordinatesToImage = async (event, data) => {
     }
   });
 
-  return `Renamed\n ${oldFileName}\n to\n ${newFileName}`;
+  return newFileName;
+};
+
+// https://www.geeksforgeeks.org/node-js-fs-rename-method/
+// https://nodejs.dev/en/learn/nodejs-file-paths/
+const handleWriteCropCoordinatesToImage = async (event, data) => {
+  const {
+    fileName,
+    imagePercentageTop,
+    imagePercentageLeft
+  } = data;
+
+  let fileNameStr = fileName;
+  fileNameStr = fileNameStr.replace('file://', '');
+  fileNameStr = fileNameStr.replace(/%20/g, ' ');
+
+  const regex = /__\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
+
+  const dirName = path.dirname(fileNameStr);
+  const fileName2 = path.basename(fileNameStr); // foo.ext
+  const extName = path.extname(fileNameStr); // .ext
+  const fileNameOnly = fileName2.replace(extName, '').replace(regex, '');
+
+  const folderPath = resolve(__dirname, dirName); // same same
+
+  const oldFileName = `${folderPath}/${fileNameOnly}${extName}`;
+  const newFileName = `${folderPath}/${fileNameOnly}__[${imagePercentageLeft}%,${imagePercentageTop}%]${extName}`;
+
+  console.log('oldFileName', oldFileName);
+  console.log('newFileName', newFileName);
+
+  fs.rename(oldFileName, newFileName, (error) => {
+    if (error) {
+      console.log(error);
+    }
+  });
+
+  return newFileName;
 };
 
 async function handleSelectFolder() {
@@ -187,7 +223,8 @@ async function handleSelectFolder() {
 app.whenReady().then(() => {
   // ipcMain module for inter-process communication (IPC) with render process
   ipcMain.handle('dialog:selectFolder', handleSelectFolder);
-  ipcMain.handle('test:saveCropCoordinatesToImage', handleSaveCropCoordinatesToImage);
+  ipcMain.handle('storage:removeCropCoordinatesFromImage', handleRemoveCropCoordinatesFromImage);
+  ipcMain.handle('storage:writeCropCoordinatesToImage', handleWriteCropCoordinatesToImage);
 
   createWindow();
 
