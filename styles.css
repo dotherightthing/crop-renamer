@@ -270,11 +270,18 @@ img {
 }
 
 .debug-action {
+  position: relative;
+  z-index: 1;
   display: grid;
   align-content: start;
   text-align: left;
   border-color: var(--color-border-secondary);
   border-radius: .2rem;
+  margin-right: var(--gutter-half);
+}
+
+.debug-action .legend {
+  pointer-events: none;
 }
 
 .debug-param {
@@ -328,7 +335,7 @@ img {
 }
 
 .control > input {
-  width: 1.6rem;
+  width: 2.1rem; /* 2 dp */
   background-color: inherit;
   color: var(--color-input);
   font-size: inherit;

@@ -11,6 +11,7 @@ const croppersClass = 'grid-croppers';
 const debugBarEl = document.getElementById('debug-bar');
 const debugMsgClass = 'debug-param';
 const rotateEl = document.getElementById('rotate');
+const resetFocalPointEl = document.getElementById('reset-focal-point');
 const saveCropCoordinatesToImageEl = document.getElementById('save-crop-coordinates-to-image');
 const selectedClass = 'btn-selected';
 const thumbButtonClass = 'btn-thumb';
@@ -150,37 +151,6 @@ const destroyCroppers = () => {
   });
 
   croppers = [];
-};
-
-/**
- * @function getCropCenterAsPercentage
- * @summary Get the X or Y coordinate as a percentage of the image dimension, so that it can be stored and recalled later.
- * @param {Number} cropCenter - Crop center (X or Y axis)
- * @param {Number} dimensionLength - Dimension length (width or height)
- * @param {boolean} subtractExtras - Whether to subtract widths which interfere with the debug bar display value.
- * @returns {Number} percentage
- */
-const getCropCenterAsPercentage = (cropCenter, dimensionLength, subtractExtras) => {
-  const boxShadowWidth = (4 / 100);
-  const unknownWidth = (1 / 100);
-  let percentage = cropCenter / dimensionLength;
-
-  if (subtractExtras) {
-    percentage = (percentage - boxShadowWidth - unknownWidth);
-  }
-
-  if (percentage < 0) {
-    percentage = 0;
-  }
-
-  if (percentage > 100) {
-    percentage = 100;
-  }
-
-  // In testing, rounding changes the results by 1-4 units.
-  // This causes little visual difference but makes the numbers much easier to store.
-
-  return Math.round(percentage * 100);
 };
 
 /**
@@ -531,6 +501,10 @@ const initCroppers = (imageSrc) => {
         cropbox: [
           'canvas_top_offset',
           'canvas_top',
+          'expected_center_x',
+          'expected_center_y',
+          'actual_center_x',
+          'actual_center_y',
           'percentage_top',
           'percentage_left',
           'set_top',
@@ -578,61 +552,215 @@ const initCroppers = (imageSrc) => {
   }, 5000);
 };
 
-const applyFocalPoint = ({ imagePercentageTop, imagePercentageLeft }) => {
-  // simulate click event
-  masterCropperCropBoxWasDragged = false;
-
+/**
+ * @function getCropBoxLeftTopFromPageXY
+ * @param {object} { pageX, pageY }
+ * @returns {object} { cropBoxLeft, cropBoxTop }
+ */
+const getCropBoxLeftTopFromPageXY = ({ pageX, pageY }) => {
   const masterCropperInstance = getMasterCropper().cropperInstance;
 
   const {
-    width: masterCropperImageWidth,
-    height: masterCropperImageHeight
-  } = masterCropperInstance.getImageData();
+    top: canvasTop,
+    left: canvasLeft
+  } = masterCropperInstance.getCanvasData();
+
+  const {
+    top: canvasOffsetTop,
+    left: canvasOffsetLeft
+  } = getCropperCanvasOffsets(masterCropperInstance);
 
   const {
     width: cropperWidth,
     height: cropperHeight
   } = masterCropperInstance.getCropBoxData();
 
+  const pageXOffset = pageX + canvasLeft - canvasOffsetLeft;
+  const cropBoxLeft = pageXOffset - (cropperWidth / 2);
+
+  const pageYOffset = pageY + canvasTop - canvasOffsetTop;
+  const cropBoxTop = pageYOffset - (cropperHeight / 2);
+
+  return {
+    cropBoxLeft,
+    cropBoxTop
+  };
+};
+
+/**
+ * @function getImagePercentageFromCropBoxCenter
+ * @summary Get the X or Y coordinate as a percentage of the image dimension, so that it can be stored and recalled later.
+ * @param {Number} cropCenter - Crop center (X or Y axis)
+ * @param {Number} dimensionLength - Dimension length (width or height)
+ * @returns {Number} percentage
+ */
+const getImagePercentageFromCropBoxCenter = (cropCenter, dimensionLength) => {
+  let percentage = cropCenter / dimensionLength;
+
+  if (percentage < 0) {
+    percentage = 0;
+  }
+
+  if (percentage > 100) {
+    percentage = 100;
+  }
+
+  // In testing, rounding changes the results by 1-4 units.
+  // This causes little visual difference but makes the numbers much easier to store.
+
+  return Math.round(percentage * 100);
+};
+
+/**
+ * @function getImagePercentageLeftTopFromPageXY
+ * @param {object} { pageX, pageY }
+ * @returns {object} { imagePercentageLeft, imagePercentageTop }
+ */
+const getImagePercentageLeftTopFromPageXY = ({ pageX, pageY }) => {
+  const masterCropper = getMasterCropper();
+  const masterCropperInstance = masterCropper.cropperInstance;
+
   const {
-    top: masterCropperCanvasTop,
-    left: masterCropperCanvasLeft
-  } = masterCropperInstance.getCanvasData();
+    width: cropBoxWidth,
+    height: cropBoxHeight
+  } = masterCropperInstance.getCropBoxData();
 
-  // const masterCropperCanvasOffsetTop = getCropperCanvasOffsets(masterCropperInstance).top;
+  const {
+    width: imageWidth,
+    height: imageHeight
+  } = masterCropperInstance.getImageData();
 
-  // debugging
-  gMasterCropperInstance = masterCropperInstance;
+  debugParameter(masterCropper, 'cropbox.expected_center_x', imageWidth / 2, false);
+  debugParameter(masterCropper, 'cropbox.expected_center_y', imageHeight / 2, false);
 
-  const imageX = ((imagePercentageLeft / 100) * masterCropperImageWidth);
-  const imageXOffset = imageX + masterCropperCanvasLeft;
-  const cropperCropBoxLeft = imageXOffset - (cropperWidth / 2);
+  const cropBoxCenterX = pageX - (cropBoxWidth / 2);
+  const cropBoxCenterY = pageY - (cropBoxHeight / 2);
 
-  const imageY = ((imagePercentageTop / 100) * masterCropperImageHeight);
-  const imageYOffset = imageY + masterCropperCanvasTop;
-  const cropperCropBoxTop = imageYOffset - (cropperHeight / 2);
+  debugParameter(masterCropper, 'cropbox.actual_center_x', cropBoxCenterX, false);
+  debugParameter(masterCropper, 'cropbox.actual_center_y', cropBoxCenterY, false);
 
+  const imagePercentageLeft = getImagePercentageFromCropBoxCenter(cropBoxCenterX, imageWidth, false);
+  const imagePercentageTop = getImagePercentageFromCropBoxCenter(cropBoxCenterY, imageHeight, false);
+
+  debugParameter(masterCropper, 'cropbox.percentage_top', imagePercentageTop, false);
+  debugParameter(masterCropper, 'cropbox.percentage_left', imagePercentageLeft, false);
+
+  return {
+    imagePercentageLeft,
+    imagePercentageTop
+  };
+};
+
+/**
+ * @function getImageXYFromPageXY
+ * @param {object} { pageX, pageY }
+ * @returns {object} { imageX, imageY }
+ */
+const getImageXYFromPageXY = ({ pageX, pageY }) => {
+  const masterCropperInstance = getMasterCropper().cropperInstance;
+
+  const {
+    left: canvasOffsetLeft,
+    top: canvasOffsetTop
+  } = getCropperCanvasOffsets(masterCropperInstance);
+
+  const imageX = pageX - canvasOffsetLeft;
+  const imageY = pageY - canvasOffsetTop;
+
+  return {
+    imageX,
+    imageY
+  };
+};
+
+/**
+ * @function getImageXYFromImagePercentageLeftTop
+ * @param {object} { imagePercentageLeft, imagePercentageTop }
+ * @returns {object} { imageX, imageY }
+ */
+const getImageXYFromImagePercentageLeftTop = ({ imagePercentageLeft, imagePercentageTop }) => {
+  const masterCropperInstance = getMasterCropper().cropperInstance;
+
+  const {
+    width: imageWidth,
+    height: imageHeight
+  } = masterCropperInstance.getImageData();
+
+  const imageX = ((imagePercentageLeft / 100) * imageWidth);
+  const imageY = ((imagePercentageTop / 100) * imageHeight);
+
+  return {
+    imageX,
+    imageY
+  };
+};
+
+/**
+ * @function getPageXYFromImageXY
+ * @param {object} { imageX, imageY }
+ * @returns {object} { pageX, pageY }
+ */
+const getPageXYFromImageXY = ({ imageX, imageY }) => {
+  const masterCropperInstance = getMasterCropper().cropperInstance;
+
+  const {
+    left: canvasOffsetLeft,
+    top: canvasOffsetTop
+  } = getCropperCanvasOffsets(masterCropperInstance);
+
+  const pageX = imageX + canvasOffsetLeft;
+  const pageY = imageY + canvasOffsetTop;
+
+  return {
+    pageX,
+    pageY
+  };
+};
+
+// convert image percentage X/Y to crop Left/Top
+const applyFocalPoint = ({ imagePercentageTop, imagePercentageLeft }) => {
+  // simulate click event
+  masterCropperCropBoxWasDragged = false;
+
+  // const masterCropperInstance = getMasterCropper().cropperInstance;
+
+  const {
+    imageX,
+    imageY
+  } = getImageXYFromImagePercentageLeftTop({ imagePercentageTop, imagePercentageLeft });
+
+  const {
+    pageX,
+    pageY
+  } = getPageXYFromImageXY({ imageX, imageY });
+
+  // const {
+  //   cropBoxLeft,
+  //   cropBoxTop
+  // } = getCropBoxLeftTopFromPageXY({ pageX, pageY });
+
+  // ok
+  // TODO call moveMasterCropperCropBox instead
+  // masterCropperInstance.setCropBoxData({
+  //   top: cropBoxTop,
+  //   left: cropBoxLeft
+  // });
 
   // const e = {
   //   detail: {
   //     originalEvent: {
-  //       pageX: imageX,
-  //       pageY: imageY
+  //       pageX,
+  //       pageY
   //     }
   //   }
   // };
 
   // moveCropperCropBoxToPageXY(e);
 
-  masterCropperInstance.setCropBoxData({
-    top: cropperCropBoxTop,
-    left: cropperCropBoxLeft
+  moveMasterCropperCropBox({
+    pageX,
+    pageY
   });
-
-  // moveMasterCropperCropBox({
-  //   pageX: imageX,
-  //   pageY: imageY
-  // });
 };
 
 /**
@@ -714,44 +842,24 @@ const moveMasterCropperCropBox = ({
   } = getCropperCanvasOffsets(masterCropperInstance);
 
   const {
-    width: cropperWidth,
-    height: cropperHeight
-  } = masterCropperInstance.getCropBoxData();
+    cropBoxLeft,
+    cropBoxTop
+  } = getCropBoxLeftTopFromPageXY({ pageX, pageY });
 
-  // new convert pageX to imageX if feasible
-
-  const pageXOffset = pageX; // TODO: + masterCropperCanvasLeft - masterCropperCanvasOffsetLeft
-  const cropBoxCenterX = pageX - (cropperWidth / 2);
-  const cropperCropBoxLeft = pageXOffset - (cropperWidth / 2);
-
-  const pageYOffset = pageY + masterCropperCanvasTop - masterCropperCanvasOffsetTop;
-  const cropBoxCenterY = pageY - (cropperHeight / 2);
-  const cropperCropBoxTop = pageYOffset - (cropperHeight / 2);
-
-  /*
-  TODO pageX to imageX, imageX to pageX
-
-  
-
-
-  */
-
-  masterCropperInstance.setCropBoxData({
-    top: cropperCropBoxTop,
-    left: cropperCropBoxLeft
-  });
-
-  // get percentage values for storage and retrieval
+  const {
+    imagePercentageLeft,
+    imagePercentageTop
+  } = getImagePercentageLeftTopFromPageXY({ pageX, pageY });
 
   const {
     width: imageWidth,
     height: imageHeight
   } = masterCropperInstance.getImageData();
 
-  // setCropPercentage
-  const imagePercentageTop = getCropCenterAsPercentage(cropBoxCenterY, imageHeight, false);
-  const imagePercentageLeftDisplay = getCropCenterAsPercentage(cropBoxCenterX, imageWidth, true);
-  const imagePercentageLeft = Math.round(getCropCenterAsPercentage(cropBoxCenterX, imageWidth, false));
+  masterCropperInstance.setCropBoxData({
+    top: cropBoxTop,
+    left: cropBoxLeft
+  });
 
   // test that the value is restored correctly if the percentages are applied
 
@@ -763,10 +871,9 @@ const moveMasterCropperCropBox = ({
 
   debugParameter(masterCropper, 'cropbox.canvas_top_offset', masterCropperCanvasOffsetTop, true);
   debugParameter(masterCropper, 'cropbox.canvas_top', masterCropperCanvasTop, true);
-  debugParameter(masterCropper, 'cropbox.percentage_top', imagePercentageTop, true);
-  debugParameter(masterCropper, 'cropbox.percentage_left', imagePercentageLeftDisplay, true);
-  debugParameter(masterCropper, 'cropbox.set_top', cropperCropBoxTop, true);
-  debugParameter(masterCropper, 'cropbox.set_left', cropperCropBoxLeft, true);
+
+  debugParameter(masterCropper, 'cropbox.set_top', cropBoxTop, true);
+  debugParameter(masterCropper, 'cropbox.set_left', cropBoxLeft, true);
   debugParameter(masterCropper, 'cropbox.restored_top', restoredTop, true);
   debugParameter(masterCropper, 'cropbox.restored_left', restoredLeft, true);
 
@@ -828,8 +935,21 @@ const moveSlaveCropperCropBox = ({
 const readFocalPointFromImage = () => {
   return {
     imagePercentageTop: 50,
-    imagePercentageLeft: 50 
+    imagePercentageLeft: 50
   };
+};
+
+/**
+ * @function handleResetFocalPoint
+ * @summary Set default focal point position
+ */
+const handleResetFocalPoint = () => {
+  const position = {
+    imagePercentageTop: 50,
+    imagePercentageLeft: 50
+  };
+
+  applyFocalPoint(position);
 };
 
 /**
@@ -913,6 +1033,7 @@ window.addEventListener('load', () => {
   document.body.addEventListener('keydown', handleKeyDown);
   uiSelectFolder();
 
+  resetFocalPointEl.addEventListener('click', handleResetFocalPoint);
   saveCropCoordinatesToImageEl.addEventListener('click', handleSaveCropCoordinatesToImage);
   thumbsEl.addEventListener('click', handleThumbSelect);
 });
