@@ -20,7 +20,8 @@ const thumbButtonClass = 'btn-thumb';
 const thumbClass = 'thumb';
 const thumbImgClass = 'thumb-img';
 const thumbMetaClass = 'thumb-meta';
-const thumbsCount = document.getElementById('thumbs-count');
+const thumbsCount = document.getElementById('thumb-count-num');
+const thumbsFolder = document.getElementById('thumb-folder');
 const thumbsEl = document.getElementById('thumbs');
 
 let croppers = [];
@@ -1046,17 +1047,20 @@ const scrollToSelectedThumb = () => {
 // const storeCropCenterAsPercentages = (cropBoxCenterX, cropBoxCenterY, imageWidth, imageHeight) => {};
 
 async function uiSelectFolder() {
-  const loadedThumbs = await window.electronAPI.selectFolder();
+  const data = await window.electronAPI.selectFolder();
   let html = '';
 
   // if folder select was cancelled
-  if (typeof loadedThumbs === 'undefined') {
+  if (typeof data === 'undefined') {
     return;
   }
 
-  thumbsCount.textContent = loadedThumbs.length;
+  const { folderPath, imagesData } = data;
 
-  loadedThumbs.forEach((loadedThumb, i) => {
+  thumbsCount.textContent = imagesData.length;
+  thumbsFolder.textContent = folderPath;
+
+  imagesData.forEach((loadedThumb, i) => {
     const { src, dateTimeOriginal } = loadedThumb;
 
     html += `<li class="${thumbClass}">
@@ -1068,7 +1072,7 @@ async function uiSelectFolder() {
 
     thumbsEl.innerHTML = html;
 
-    if (i === loadedThumbs.length - 1) {
+    if (i === imagesData.length - 1) {
       thumbsEl.querySelectorAll(`.${thumbButtonClass}`)[0].click();
     }
   });

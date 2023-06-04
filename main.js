@@ -97,7 +97,18 @@ const createWindow = () => {
   }, 100);
 };
 
-const getImagesData = async (imageFiles) => {
+/**
+ * getFolderData
+ *
+ * @summary Get the path to a folder and the supported images within it
+ *  1. renderer.js - uiSelectFolder -> window.electronAPI.selectFolder()
+ *  2. preload.js - window.electronAPI.selectFolder -> ipcRenderer.invoke('dialog:selectFolder')
+ *  3. main.js - ipcMain.handle('dialog:selectFolder') -> handleSelectFolder -> getFolderData
+ * @param {string} folderPath - Full drive path to selected image folder
+ * @param {Array} imageFiles - Supported file types contained within the folder
+ * @returns {object}
+ */
+const getFolderData = async (folderPath, imageFiles) => {
   const imagesData = [];
 
   for (let i = 0; i < imageFiles.length; i += 1) {
@@ -111,7 +122,10 @@ const getImagesData = async (imageFiles) => {
     });
   }
 
-  return imagesData;
+  return {
+    folderPath,
+    imagesData
+  };
 };
 
 const handleRemoveCropCoordinatesFromImage = async (event, data) => {
@@ -202,7 +216,7 @@ async function handleSelectFolder() {
     );
   }
 
-  let result = [];
+  let result = {};
 
   if (!canceled && filePaths.length) {
     const folderPath = filePaths[0];
@@ -211,7 +225,7 @@ async function handleSelectFolder() {
 
     const imageFiles = files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
 
-    result = getImagesData(imageFiles);
+    result = getFolderData(folderPath, imageFiles); // promise
   }
 
   return result;

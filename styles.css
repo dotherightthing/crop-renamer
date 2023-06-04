@@ -234,8 +234,22 @@ img {
   right: 0;
   bottom: 0;
   left: 0;
-  text-align: right;
+
+  display: grid;
+  grid-template-areas: "folderName fileCount";
+  grid-template-columns: 1fr 10rem;
+  column-gap: var(--gutter);
+
   border: var(--gutter) solid var(--color-bg-primary);
+}
+
+.thumbs-summary-meta .thumb-folder {
+  grid-area: folderName;
+}
+
+.thumbs-summary-meta .thumb-count {
+  grid-area: fileCount;
+  text-align: right;
 }
 
 /* .meta */
