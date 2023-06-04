@@ -11,7 +11,6 @@ const {
 } = require('electron');
 
 const fs = require('fs');
-const { rename } = require('fs');
 const path = require('path');
 const { resolve } = require('path');
 const ExifReader = require('exifreader');
