@@ -18,6 +18,7 @@ const ExifReader = require('exifreader');
 const contextMenu = require('electron-context-menu');
 
 const appDebug = true;
+const appDebugDir = "/Volumes/DanHDD4TB1/Don't Believe The Hype/2022.12.31 - 2023.01.08 - Wellington to Acheron, St James, Rainbow, to Wellington/Day 04 - 2023.01.03 - Aratere Valley to Acheron Campsite";
 const appName = 'Image cropper';
 const appDimensions = [ 1280, 1024 ];
 
@@ -189,9 +190,7 @@ async function handleSelectFolder() {
 
   if (appDebug) {
     canceled = false;
-    filePaths = [
-      "/Volumes/DanBackup4TB/Not cloud synced/Don't Believe The Hype (302.96GB)/2022.12.31 - 2023.01.08 - Wellington to Acheron, St James, Rainbow, to Wellington/Day 04 - 2023.01.03 - Aratere Valley to Acheron Campsite"
-    ];
+    filePaths = [ appDebugDir ];
   } else {
     // https://stackoverflow.com/a/59416470
     (
