@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html id="root">
   <head>
     <meta charset="UTF-8" />
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'" />
-    <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'" />
+    <link rel="stylesheet" href="./node_modules/cropperjs/dist/cropper.css">
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
@@ -15,31 +15,31 @@
             <span class="legend">Reset</span>
             Focal point
           </button>
-          <button type="button" class="debug-action" id="write-crop-coordinates-to-image">
+          <button type="button" class="debug-action" id="save-crop-coordinates">
             <span class="legend">Write</span>
             Crop coordinates to image
           </button>
-          <button type="button" class="debug-action" id="read-crop-coordinates-from-image">
+          <button type="button" class="debug-action" id="read-crop-coordinates">
             <span class="legend">Read</span>
             Crop coordinates from image
           </button>
-          <button type="button" class="debug-action" id="remove-crop-coordinates-from-image">
+          <button type="button" class="debug-action" id="delete-crop-coordinates">
             <span class="legend">Remove</span>
             Crop coordinates from image
           </button>
         </div>
-        <div class="grid-croppers">
+        <div class="grid-croppers" id="croppers">
           <div class="img-container cropper-master">
-            <img src="" alt="" id="image1" class="cropperImage" data-cropper-aspect-ratio="1:1" data-cropper-master="true" data-cropper-label="Master">
+            <img alt="" id="image1" class="cropperImage" data-cropper-aspect-ratio="1:1" data-is-cropper-master="true" data-cropper-label="Master">
           </div>
           <div class="img-container cropper-banner">
-            <img src="" alt="" id="image4" class="cropperImage" data-cropper-aspect-ratio="3088:748" data-cropper-label="Stack Banner">
+            <img alt="" id="image4" class="cropperImage" data-cropper-aspect-ratio="3088:748" data-cropper-label="Stack Banner">
           </div>
           <div class="img-container cropper-collapsed">
-            <img src="" alt="" id="image2" class="cropperImage" data-cropper-aspect-ratio="865:368" data-cropper-label="Gallery Collapsed">
+            <img alt="" id="image2" class="cropperImage" data-cropper-aspect-ratio="865:368" data-cropper-label="Gallery Collapsed">
           </div>
           <div class="img-container cropper-thumbnail">
-            <img src="" alt="" id="image3" class="cropperImage" data-cropper-aspect-ratio="320:320" data-cropper-label="Thumbnail">
+            <img alt="" id="image3" class="cropperImage" data-cropper-aspect-ratio="320:320" data-cropper-label="Thumbnail">
           </div>
         </div>
       </div>
@@ -55,7 +55,15 @@
         </div>
       </div>
     </div>
+    <script type="importmap">
+      {
+        "imports": {
+          "dtrt-string-utils": "./node_modules/dtrt-string-utils/dist/dtrt-string-utils.mjs",
+          "dtrt-type-validate": "./node_modules/dtrt-type-validate/dist/dtrt-type-validate.mjs"
+        }
+      }
+    </script>
+    <script src="./node_modules/cropperjs/dist/cropper.js"></script>
+    <script src="./renderer.mjs" type="module"></script>
   </body>
-  <script src="node_modules/cropperjs/dist/cropper.js"></script>
-  <script src="./renderer.js"></script>
 </html>

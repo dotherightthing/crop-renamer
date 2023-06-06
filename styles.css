@@ -147,9 +147,6 @@ img {
 
 .editor {
   position: relative; /* AP */
-}
-
-.editor {
   background-color: var(--color-bg-tertiary);
 }
 
@@ -171,7 +168,7 @@ img {
 .thumbs {
   counter-reset: thumb-counter;
   background-color: var(--color-bg-primary);
-  padding-bottom: 2rem;
+  padding-bottom: 2.7rem;
   border: var(--gutter) solid var(--color-bg-primary);
   scroll-behavior: auto;
   overflow-x: auto;
@@ -217,8 +214,8 @@ img {
 .thumb-img {
   width: 100%;
   height: auto;
-  filter: grayscale(10%) brightness(var(--opacity-thumb-brightness));
   border-bottom: var(--gutter-half) solid;
+  filter: grayscale(10%) brightness(var(--opacity-thumb-brightness));
 }
 
 .btn-selected .thumb-img {
@@ -230,12 +227,12 @@ img {
 }
 
 .thumbs-summary-meta {
+  display: grid;
   position: fixed;
   right: 0;
   bottom: 0;
   left: 0;
 
-  display: grid;
   grid-template-areas: "folderName fileCount";
   grid-template-columns: 1fr 10rem;
   column-gap: var(--gutter);
@@ -270,6 +267,10 @@ img {
   margin: 0;
 }
 
+.meta.thumbs-summary-meta p {
+  margin: 0.5em 0;
+}
+
 /* .debug-action, .debug-param */
 
 .debug-action,
@@ -284,12 +285,12 @@ img {
 }
 
 .debug-action {
+  display: grid;
   position: relative;
   z-index: 1;
-  display: grid;
+  max-width: 7rem;
   align-content: start;
   text-align: left;
-  max-width: 7rem;
   border-color: var(--color-border-secondary);
   border-radius: .2rem;
   margin-right: var(--gutter-half);
@@ -318,9 +319,9 @@ img {
 }
 
 .debug-bar .legend {
-  text-transform: uppercase;
   font-size: inherit;
   line-height: 1;
+  text-transform: uppercase;
   margin: 0 0 var(--gutter-half);
 }
 
@@ -335,8 +336,8 @@ img {
 .controls,
 .control {
   display: flex;
-  flex-wrap: nowrap;
   align-items: start;
+  flex-wrap: nowrap;
 }
 
 .control {
@@ -362,8 +363,8 @@ img {
 .btn-thumb {
   display: grid; /* aligns child img to top */
   position: relative;
-  background: transparent;
   height: 100%;
+  background: transparent;
   padding: 0;
   border: 0;
   margin: 0;
