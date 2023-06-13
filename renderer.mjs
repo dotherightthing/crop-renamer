@@ -21,6 +21,37 @@ const appDebugDir = "/Volumes/DanHDD4TB1/Don't Believe The Hype/2022.12.31 - 202
  * @function uiSelectFolder
  */
 async function uiSelectFolder() {
+  // npm run serve
+  if (typeof window.electronAPI === 'undefined') {
+    CrUtilsUi.emitEvent('root', 'selectedFolder', {
+      folderPath: appDebugDir,
+      imagesData: [
+        {
+          src: './data/Tour1/Day1/portrait.jpeg',
+          dateTimeOriginal: '2023:01:03 05:35:26'
+        },
+        {
+          src: './data/Tour1/Day1/square.jpg',
+          dateTimeOriginal: '2023:01:03 06:35:26'
+        },
+        {
+          src: './data/Tour1/Day1/screenshot.PNG',
+          dateTimeOriginal: '2023:01:03 07:35:26'
+        },
+        {
+          src: './data/Tour1/Day1/landscape.jpeg',
+          dateTimeOriginal: '2023:01:03 08:35:26'
+        },
+        {
+          src: './data/Tour1/Day1/panorama.jpeg',
+          dateTimeOriginal: '2023:01:03 09:35:26'
+        }
+      ]
+    });
+
+    return;
+  }
+
   const { folderPath, imagesData } = await window.electronAPI.selectFolder({
     appDebugDir
   });
