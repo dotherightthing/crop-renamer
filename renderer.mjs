@@ -27,6 +27,10 @@ async function uiSelectFolder() {
       folderPath: appDebugDir,
       imagesData: [
         {
+          src: './data/Tour1/Day1/default.jpeg',
+          dateTimeOriginal: '2023:01:03 04:35:26'
+        },
+        {
           src: './data/Tour1/Day1/portrait.jpeg',
           dateTimeOriginal: '2023:01:03 05:35:26'
         },

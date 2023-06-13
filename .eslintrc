@@ -9,6 +9,7 @@
   },
   "extends": [
     "airbnb-base/legacy",
+    "plugin:cypress/recommended",
     "plugin:jsdoc/recommended"
   ],
   "globals": {

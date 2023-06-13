@@ -8,9 +8,11 @@
     "lint:css": "stylelint ./*.css",
     "lint:js": "npx eslint ./*.*js && npx eslint ./classes/*.*js",
     "prepare": "husky install",
-    "serve": "serve ./ & open -a \"Firefox Developer Edition\" --args --kiosk -private-window http://localhost:3000/ -devtools",
+    "serve": "http-server ./ --port 8000 --silent",
+    "serve:firefox": "http-server ./ --port 8000 --silent && open -a \"Firefox Developer Edition\" --args --kiosk -private-window http://127.0.0.1:8000/ -devtools",
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "start-server-and-test serve:firefox http://127.0.0.1:8000 test:cypress",
+    "test:cypress": "cypress run"
   },
   "repository": {
     "type": "git",
@@ -32,12 +34,15 @@
     "stylelint-order": "^6.0.3"
   },
   "devDependencies": {
+    "cypress": "^12.14.0",
     "electron": "^24.1.2",
     "eslint": "^8.39.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-cypress": "^2.13.3",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsdoc": "^43.1.1",
+    "http-server": "^14.1.1",
     "husky": "^8.0.3",
-    "serve": "^14.2.0"
+    "start-server-and-test": "^2.0.0"
   }
 }

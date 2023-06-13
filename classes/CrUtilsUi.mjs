@@ -25,6 +25,8 @@ export class CrUtilsUi { // eslint-disable-line no-unused-vars
    * @param {object} eventDetail - name-value pair
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent}
    * @see {@link https://gomakethings.com/callbacks-vs.-custom-events-in-vanilla-js/}
+   * @memberof CrUtilsUi
+   * @static
    */
   static emitEvent(elementId, eventName, eventDetail = {}) {
     const event = new CustomEvent(eventName, {
