@@ -166,8 +166,8 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   static async saveCropCoordinates(data) {
     const {
       fileName,
-      imagePercentageTop,
-      imagePercentageLeft
+      imagePercentY,
+      imagePercentX
     } = data;
 
     let fileNameStr = fileName;
@@ -184,7 +184,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     const folderPath = resolve(__dirname, dirName); // same same
 
     const oldFileName = `${folderPath}/${fileNameOnly}${extName}`;
-    const newFileName = `${folderPath}/${fileNameOnly}__[${imagePercentageLeft}%,${imagePercentageTop}%]${extName}`;
+    const newFileName = `${folderPath}/${fileNameOnly}__[${imagePercentX}%,${imagePercentY}%]${extName}`;
 
     console.log('oldFileName', oldFileName);
     console.log('newFileName', newFileName);

@@ -27,28 +27,24 @@ async function uiSelectFolder() {
       folderPath: appDebugDir,
       imagesData: [
         {
-          src: './data/Tour1/Day1/default.jpeg',
+          src: './cypress/fixtures/landscape.jpeg',
           dateTimeOriginal: '2023:01:03 04:35:26'
         },
         {
-          src: './data/Tour1/Day1/portrait.jpeg',
+          src: './cypress/fixtures/portrait.jpeg',
           dateTimeOriginal: '2023:01:03 05:35:26'
         },
         {
-          src: './data/Tour1/Day1/square.jpg',
+          src: './cypress/fixtures/panorama.jpeg',
+          dateTimeOriginal: '2023:01:03 09:35:26'
+        },
+        {
+          src: './cypress/fixtures/square.jpg',
           dateTimeOriginal: '2023:01:03 06:35:26'
         },
         {
-          src: './data/Tour1/Day1/screenshot.PNG',
+          src: './cypress/fixtures/screenshot.PNG',
           dateTimeOriginal: '2023:01:03 07:35:26'
-        },
-        {
-          src: './data/Tour1/Day1/landscape.jpeg',
-          dateTimeOriginal: '2023:01:03 08:35:26'
-        },
-        {
-          src: './data/Tour1/Day1/panorama.jpeg',
-          dateTimeOriginal: '2023:01:03 09:35:26'
         }
       ]
     });
@@ -96,7 +92,7 @@ window.addEventListener('DOMContentLoaded', () => {
       modal: true, // Show the black modal above the image and under the crop box
       movable: false, // Enable to move the image
       preview: '', // Add extra elements (containers) for preview
-      responsive: true, // Re-render the cropper when resizing the window
+      responsive: (typeof Cypress === 'undefined'), // Re-render the cropper when resizing the window
       restore: true, // Restore the cropped area after resizing the window
       rotatable: true, // TODO: rotate should affect entire image, not just the crop, so requires an additional pre-crop
       scalable: false, // Enable to scale the image
@@ -146,12 +142,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('croppers').addEventListener('click', (event) => {
-    const { masterCropper } = crCroppersUiInstance;
-
-    crDebugUiInstance.debugClickLocation(event, masterCropper);
-  });
-
   document.getElementById('croppers').addEventListener('createdMasterCropper', () => {
     crDebugUiInstance.clearDebugFields();
     crDebugUiInstance.injectDebugFields();
@@ -189,8 +179,8 @@ window.addEventListener('DOMContentLoaded', () => {
     crThumbsUiInstance.generateThumbsHtml(folderPath, imagesData);
   });
 
-  document.getElementById('save-crop-coordinates').addEventListener('click', (event) => {
-    crCroppersUiInstance.saveCropCoordinatesEl(event);
+  document.getElementById('save-crop-coordinates').addEventListener('click', () => {
+    crCroppersUiInstance.writeCropCoordinatesToImage();
   });
 
   document.getElementById('thumbs').addEventListener('click', (event) => {

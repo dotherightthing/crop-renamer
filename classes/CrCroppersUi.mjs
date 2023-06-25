@@ -35,6 +35,9 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       initDelay
     });
 
+    // assign Expando property to expose methods during E2E testing
+    document.getElementById(croppersId).crCroppersUi = this;
+
     this.croppers = [];
     this.masterCropperCropBoxWasDragged = false;
   }
@@ -193,12 +196,12 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @function setFocalPoint
    * @summary Convert image percentage X/Y to crop Left/Top
    * @param {object} args - Arguments
-   * @param {number} args.imagePercentageTop - Image percentage top
-   * @param {number} args.imagePercentageLeft - Image percentage left
+   * @param {number} args.imagePercentY - Image percentage top
+   * @param {number} args.imagePercentX - Image percentage left
    * @memberof CrCroppersUi
    * @todo Reset position is incorrect for image #5
    */
-  setFocalPoint({ imagePercentageTop, imagePercentageLeft }) {
+  setFocalPoint({ imagePercentY, imagePercentX }) {
     // const { masterCropper } = this;
 
     // simulate click event
@@ -207,23 +210,23 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     const {
       imageX,
       imageY
-    } = this.getImageXYFromImagePercentageLeftTop({ imagePercentageTop, imagePercentageLeft });
+    } = this.calcImageXYFromImagePercentXY({ imagePercentY, imagePercentX });
 
     const {
       pageX,
       pageY
-    } = this.getPageXYFromImageXY({ imageX, imageY });
+    } = this.calcPageXYFromImageXY({ imageX, imageY });
 
     // const {
-    //   cropBoxLeft,
-    //   cropBoxTop
-    // } = getCropBoxLeftTopFromPageXY({ pageX, pageY });
+    //   cropBoxX,
+    //   cropBoxY
+    // } = calcCropBoxXYFromPageXY({ pageX, pageY });
 
     // ok
     // TODO call moveMasterCropperCropBox instead
     // masterCropper.cropperInstance.setCropBoxData({
-    //   top: cropBoxTop,
-    //   left: cropBoxLeft
+    //   top: cropBoxY,
+    //   left: cropBoxX
     // });
 
     // const e = {
@@ -235,12 +238,211 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     //   }
     // };
 
-    // this.moveCropperCropBoxToPageXY(e);
+    // this.moveCroppercropBoxYageXY(e);
 
     this.moveMasterCropperCropBox({
       pageX,
       pageY
     });
+  }
+
+  /**
+   * @function calcCanvasOffsets
+   * @summary cropper.getCanvasData().top ignores preceding UI and returns 0, this function returns the actual offset
+   * @returns {object} { top, left }
+   * @memberof CrCroppersUi
+   * @see {@link cypress/e2e/electron-spec.cy.js}
+   */
+  calcCanvasOffsets() {
+    const {
+      cropperCanvasClass,
+      masterCropper
+    } = this;
+
+    const {
+      element: cropperImage
+    } = masterCropper.cropperInstance;
+
+    const cropperContainerEl = cropperImage.nextSibling;
+    const cropperCanvasEl = cropperContainerEl.querySelector(`.${cropperCanvasClass}`);
+
+    const { top } = CrUtilsUi.getOffset(cropperCanvasEl);
+    const { left } = masterCropper.cropperInstance.getCanvasData();
+
+    return { top, left };
+  }
+
+  /**
+   * @function calcCropBoxXYFromPageXY
+   * @param {object} args - Arguments
+   * @param {number} args.pageX - Page X
+   * @param {number} args.pageY - Page Y
+   * @returns {object} { cropBoxX, cropBoxY }
+   * @memberof CrCroppersUi
+   */
+  calcCropBoxXYFromPageXY({ pageX, pageY }) {
+    const { masterCropper } = this;
+
+    const {
+      top: canvasTop,
+      left: canvasLeft
+    } = masterCropper.cropperInstance.getCanvasData();
+
+    const {
+      top: canvasOffsetTop,
+      left: canvasOffsetLeft
+    } = this.calcCanvasOffsets();
+
+    const {
+      width: cropperWidth,
+      height: cropperHeight
+    } = masterCropper.cropperInstance.getCropBoxData();
+
+    const pageXOffset = pageX + canvasLeft - canvasOffsetLeft;
+    const cropBoxX = pageXOffset - (cropperWidth / 2);
+
+    const pageYOffset = pageY + canvasTop - canvasOffsetTop;
+    const cropBoxY = pageYOffset - (cropperHeight / 2);
+
+    return {
+      cropBoxX,
+      cropBoxY
+    };
+  }
+
+  /**
+   * @function calcImageXYFromImagePercentXY
+   * @param {object} args - Arguments
+   * @param {number} args.imagePercentX - Image percentage left
+   * @param {number} args.imagePercentY -  Image percentage top
+   * @returns {object} { imageX, imageY }
+   * @memberof CrCroppersUi
+   * @see {@link cypress/e2e/electron-spec.cy.js}
+   */
+  calcImageXYFromImagePercentXY({ imagePercentX, imagePercentY }) {
+    const { masterCropper } = this;
+
+    const {
+      width: imageWidth,
+      height: imageHeight
+    } = masterCropper.cropperInstance.getImageData();
+
+    const imageX = ((imagePercentX / 100) * imageWidth);
+    const imageY = ((imagePercentY / 100) * imageHeight);
+
+    return {
+      imageX,
+      imageY
+    };
+  }
+
+  /**
+   * @function calcImageXYFromPageXY
+   * @param {object} args - Arguments
+   * @param {number} args.pageX - Page X
+   * @param {number} args.pageY - Page Y
+   * @returns {object} { imageX, imageY }
+   * @memberof CrCroppersUi
+   */
+  calcImageXYFromPageXY({ pageX, pageY }) {
+    const {
+      left: canvasOffsetLeft,
+      top: canvasOffsetTop
+    } = this.calcCanvasOffsets();
+
+    const imageX = pageX - canvasOffsetLeft;
+    const imageY = pageY - canvasOffsetTop;
+
+    return {
+      imageX,
+      imageY
+    };
+  }
+
+  /**
+   * @function calcPageXYFromImageXY
+   * @param {object} args - Arguments
+   * @param {number} args.imageX - Image X
+   * @param {number} args.imageY - Image Y
+   * @returns {object} { pageX, pageY }
+   * @memberof CrCroppersUi
+   * @see {@link cypress/e2e/electron-spec.cy.js}
+   */
+  calcPageXYFromImageXY({ imageX, imageY }) {
+    const {
+      left: canvasOffsetLeft,
+      top: canvasOffsetTop
+    } = this.calcCanvasOffsets();
+
+    const pageX = imageX + canvasOffsetLeft;
+    const pageY = imageY + canvasOffsetTop;
+
+    return {
+      pageX,
+      pageY
+    };
+  }
+
+  /**
+   * @function calcRoundedImagePercentXYFromImageXorY
+   * @summary Get the X or Y coordinate as a percentage of the image dimension, so that it can be stored and recalled later.
+   * @param {number} imageXorY - Image X or Image Y
+   * @param {number} dimensionLength - Dimension length (width or height)
+   * @returns {number} percentage
+   * @memberof CrCroppersUi
+   * @see {@link cypress/e2e/electron-spec.cy.js}
+   */
+  calcRoundedImagePercentXYFromImageXorY(imageXorY, dimensionLength) {
+    let percentage = imageXorY / dimensionLength;
+
+    if (percentage < 0) {
+      percentage = 0;
+    }
+
+    if (percentage > 100) {
+      percentage = 100;
+    }
+
+    // In testing, rounding changes the results by 1-4 units.
+    // This causes little visual difference but makes the numbers much easier to store.
+
+    return Math.round(percentage * 100);
+  }
+
+  /**
+   * @function calcRoundedImagePercentXYFromPageXY
+   * @param {object} args - Arguments
+   * @param {number} args.pageX - Page X
+   * @param {number} args.pageY - Page Y
+   * @returns {object} { imagePercentX, imagePercentY }
+   * @memberof CrCroppersUi
+   * @see {@link cypress/e2e/electron-spec.cy.js}
+   */
+  calcRoundedImagePercentXYFromPageXY({ pageX, pageY }) {
+    const {
+      masterCropper
+    } = this;
+
+    const {
+      width: imageWidth,
+      height: imageHeight
+    } = masterCropper.cropperInstance.getImageData();
+
+    const { top, left } = this.calcCanvasOffsets();
+
+    const imageX = pageX - left;
+    const imageY = pageY - top;
+
+    const imagePercentX = this.calcRoundedImagePercentXYFromImageXorY(imageX, imageWidth, false);
+    const imagePercentY = this.calcRoundedImagePercentXYFromImageXorY(imageY, imageHeight, false);
+
+    CrDebugUi.debugParameter(masterCropper, 'cropbox.percentage_y', imagePercentY, false);
+    CrDebugUi.debugParameter(masterCropper, 'cropbox.percentage_x', imagePercentX, false);
+
+    return {
+      imagePercentX,
+      imagePercentY
+    };
   }
 
   /**
@@ -257,32 +459,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     this.imageSrc = newImageSrc;
     this.init();
-  }
-
-  /**
-   * @function croppersImageIsValid
-   * @summary Check that the croppers' image src is valid
-   * @returns {boolean} valid
-   * @memberof CrCroppersUi
-   */
-  croppersImageIsValid() {
-    const { croppersId } = this;
-    const cropperImages = document.querySelectorAll(`#${croppersId} img`);
-    let isValid = true;
-
-    if (!cropperImages.length) {
-      isValid = false;
-    }
-
-    cropperImages.forEach(cropperImage => {
-      if (cropperImage.getAttribute('src') === null) {
-        isValid = false;
-      } else if (cropperImage.getAttribute('src').indexOf('/undefined') !== -1) {
-        isValid = false;
-      }
-    });
-
-    return isValid;
   }
 
   /**
@@ -305,44 +481,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function getCropBoxLeftTopFromPageXY
-   * @param {object} args - Arguments
-   * @param {number} args.pageX - Page X
-   * @param {number} args.pageY - Page Y
-   * @returns {object} { cropBoxLeft, cropBoxTop }
-   * @memberof CrCroppersUi
-   */
-  getCropBoxLeftTopFromPageXY({ pageX, pageY }) {
-    const { masterCropper } = this;
-
-    const {
-      top: canvasTop,
-      left: canvasLeft
-    } = masterCropper.cropperInstance.getCanvasData();
-
-    const {
-      top: canvasOffsetTop,
-      left: canvasOffsetLeft
-    } = this.getCropperCanvasOffsets();
-
-    const {
-      width: cropperWidth,
-      height: cropperHeight
-    } = masterCropper.cropperInstance.getCropBoxData();
-
-    const pageXOffset = pageX + canvasLeft - canvasOffsetLeft;
-    const cropBoxLeft = pageXOffset - (cropperWidth / 2);
-
-    const pageYOffset = pageY + canvasTop - canvasOffsetTop;
-    const cropBoxTop = pageYOffset - (cropperHeight / 2);
-
-    return {
-      cropBoxLeft,
-      cropBoxTop
-    };
-  }
-
-  /**
    * @function getCropCoordinatesFromImage
    * @summary Get the crop coordinates stored in the filename
    * @returns {object} position
@@ -360,39 +498,12 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     if (matchesArr.length) {
       position = {
-        imagePercentageLeft: matchesArr[0][1],
-        imagePercentageTop: matchesArr[0][2]
+        imagePercentX: matchesArr[0][1],
+        imagePercentY: matchesArr[0][2]
       };
     }
 
     return position;
-  }
-
-  /**
-   * @function getCropperCanvasOffsets
-   * @summary cropper.getCanvasData().top ignores preceding UI and returns 0, this function returns the actual offset
-   * @returns {object} { top, left }
-   * @memberof CrCroppersUi
-   */
-  getCropperCanvasOffsets() {
-    const {
-      cropperCanvasClass,
-      masterCropper
-    } = this;
-
-    const {
-      element: cropperImage
-    } = masterCropper.cropperInstance;
-
-    const cropperContainerEl = cropperImage.nextSibling;
-    const cropperCanvasEl = cropperContainerEl.querySelector(`.${cropperCanvasClass}`);
-
-    const {
-      top,
-      left
-    } = CrUtilsUi.getOffset(cropperCanvasEl);
-
-    return { top, left };
   }
 
   /**
@@ -411,7 +522,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     if (isCropperMaster) {
       Object.assign(options, {
-        autoCropArea: 0.2,
+        autoCropArea: 0.2, // size of circular cropbox (20%)
         cropBoxMovable: true,
         guides: false,
         movable: true,
@@ -421,7 +532,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
           this.masterCropperCropBoxWasDragged = true; // differentiate between a click and a move
         },
         cropend: (e) => { // dragEnd callback, see https://github.com/fengyuanchen/cropperjs/issues/669; fires after move
-          this.moveCropperCropBoxToPageXY(e);
+          this.moveCroppercropBoxYageXY(e);
         }
       }); // https://codepen.io/saleemnaufa/pen/gVewZw
     }
@@ -431,123 +542,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     Object.assign(options, { aspectRatio: a / b });
 
     return options;
-  }
-
-  /**
-   * @function getImagePercentageFromCropBoxCenter
-   * @summary Get the X or Y coordinate as a percentage of the image dimension, so that it can be stored and recalled later.
-   * @param {number} cropCenter - Crop center (X or Y axis)
-   * @param {number} dimensionLength - Dimension length (width or height)
-   * @returns {number} percentage
-   * @memberof CrCroppersUi
-   */
-  getImagePercentageFromCropBoxCenter(cropCenter, dimensionLength) {
-    let percentage = cropCenter / dimensionLength;
-
-    if (percentage < 0) {
-      percentage = 0;
-    }
-
-    if (percentage > 100) {
-      percentage = 100;
-    }
-
-    // In testing, rounding changes the results by 1-4 units.
-    // This causes little visual difference but makes the numbers much easier to store.
-
-    return Math.round(percentage * 100);
-  }
-
-  /**
-   * @function getImagePercentageLeftTopFromPageXY
-   * @param {object} args - Arguments
-   * @param {number} args.pageX - Page X
-   * @param {number} args.pageY - Page Y
-   * @returns {object} { imagePercentageLeft, imagePercentageTop }
-   * @memberof CrCroppersUi
-   */
-  getImagePercentageLeftTopFromPageXY({ pageX, pageY }) {
-    const {
-      masterCropper
-    } = this;
-
-    const {
-      width: cropBoxWidth,
-      height: cropBoxHeight
-    } = masterCropper.cropperInstance.getCropBoxData();
-
-    const {
-      width: imageWidth,
-      height: imageHeight
-    } = masterCropper.cropperInstance.getImageData();
-
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.expected_center_x', imageWidth / 2, false);
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.expected_center_y', imageHeight / 2, false);
-
-    const cropBoxCenterX = pageX - (cropBoxWidth / 2);
-    const cropBoxCenterY = pageY - (cropBoxHeight / 2);
-
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.actual_center_x', cropBoxCenterX, false);
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.actual_center_y', cropBoxCenterY, false);
-
-    const imagePercentageLeft = this.getImagePercentageFromCropBoxCenter(cropBoxCenterX, imageWidth, false);
-    const imagePercentageTop = this.getImagePercentageFromCropBoxCenter(cropBoxCenterY, imageHeight, false);
-
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.percentage_top', imagePercentageTop, false);
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.percentage_left', imagePercentageLeft, false);
-
-    return {
-      imagePercentageLeft,
-      imagePercentageTop
-    };
-  }
-
-  /**
-   * @function getImageXYFromImagePercentageLeftTop
-   * @param {object} args - Arguments
-   * @param {number} args.imagePercentageLeft - Image percentage left
-   * @param {number} args.imagePercentageTop -  Image percentage top
-   * @returns {object} { imageX, imageY }
-   * @memberof CrCroppersUi
-   */
-  getImageXYFromImagePercentageLeftTop({ imagePercentageLeft, imagePercentageTop }) {
-    const { masterCropper } = this;
-
-    const {
-      width: imageWidth,
-      height: imageHeight
-    } = masterCropper.cropperInstance.getImageData();
-
-    const imageX = ((imagePercentageLeft / 100) * imageWidth);
-    const imageY = ((imagePercentageTop / 100) * imageHeight);
-
-    return {
-      imageX,
-      imageY
-    };
-  }
-
-  /**
-   * @function getImageXYFromPageXY
-   * @param {object} args - Arguments
-   * @param {number} args.pageX - Page X
-   * @param {number} args.pageY - Page Y
-   * @returns {object} { imageX, imageY }
-   * @memberof CrCroppersUi
-   */
-  getImageXYFromPageXY({ pageX, pageY }) {
-    const {
-      left: canvasOffsetLeft,
-      top: canvasOffsetTop
-    } = this.getCropperCanvasOffsets();
-
-    const imageX = pageX - canvasOffsetLeft;
-    const imageY = pageY - canvasOffsetTop;
-
-    return {
-      imageX,
-      imageY
-    };
   }
 
   /**
@@ -562,29 +556,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     const masterCroppers = croppers.filter(cropper => cropper.isMaster);
 
     return masterCroppers[0];
-  }
-
-  /**
-   * @function getPageXYFromImageXY
-   * @param {object} args - Arguments
-   * @param {number} args.imageX - Image X
-   * @param {number} args.imageY - Image Y
-   * @returns {object} { pageX, pageY }
-   * @memberof CrCroppersUi
-   */
-  getPageXYFromImageXY({ imageX, imageY }) {
-    const {
-      left: canvasOffsetLeft,
-      top: canvasOffsetTop
-    } = this.getCropperCanvasOffsets();
-
-    const pageX = imageX + canvasOffsetLeft;
-    const pageY = imageY + canvasOffsetTop;
-
-    return {
-      pageX,
-      pageY
-    };
   }
 
   /**
@@ -635,13 +606,16 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     //   rotateEl.prop('disabled', true);
     // }
 
-    setTimeout(() => {
-      this.resetFocalPoint();
+    // prevent position reset when visually debugging e2e tests via npx cypress open
+    if (typeof Cypress === 'undefined') {
+      setTimeout(() => {
+        this.resetFocalPoint();
 
-      const position = this.readFocalPointFromImage();
+        const position = this.readFocalPointFromImage();
 
-      this.setFocalPoint(position);
-    }, this.initDelay);
+        this.setFocalPoint(position);
+      }, this.initDelay);
+    }
   }
 
   /**
@@ -720,13 +694,13 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function moveCropperCropBoxToPageXY
+   * @function moveCroppercropBoxYageXY
    * @param {event} e - Event
    * @memberof CrCroppersUi
    * @todo This sometimes needs to be clicked twice, needs to support a shaky hand (#5)
    * @todo Also support end of dragging
    */
-  moveCropperCropBoxToPageXY(e) {
+  moveCroppercropBoxYageXY(e) {
     const { masterCropper } = this;
 
     const cropperWasDragged = this.masterCropperCropBoxWasDragged;
@@ -743,7 +717,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     const {
       top: masterCropperCanvasOffsetTop
       // left: masterCropperCanvasOffsetLeft
-    } = this.getCropperCanvasOffsets();
+    } = this.calcCanvasOffsets();
 
     const {
       top: masterCropperCanvasTop,
@@ -799,23 +773,23 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     const {
       top: masterCropperCanvasOffsetTop,
       left: masterCropperCanvasOffsetLeft
-    } = this.getCropperCanvasOffsets();
+    } = this.calcCanvasOffsets();
 
     console.log('masterCropperCanvasOffsetTop', masterCropperCanvasOffsetTop, 'masterCropperCanvasOffsetLeft', masterCropperCanvasOffsetLeft);
 
     const {
-      cropBoxLeft,
-      cropBoxTop
-    } = this.getCropBoxLeftTopFromPageXY({ pageX, pageY });
+      cropBoxX,
+      cropBoxY
+    } = this.calcCropBoxXYFromPageXY({ pageX, pageY });
 
-    console.log('cropBoxLeft', cropBoxLeft, 'cropBoxTop', cropBoxTop);
+    console.log('cropBoxX', cropBoxX, 'cropBoxY', cropBoxY);
 
     const {
-      imagePercentageLeft,
-      imagePercentageTop
-    } = this.getImagePercentageLeftTopFromPageXY({ pageX, pageY });
+      imagePercentX,
+      imagePercentY
+    } = this.calcRoundedImagePercentXYFromPageXY({ pageX, pageY });
 
-    console.log('imagePercentageLeft', imagePercentageLeft, 'imagePercentageTop', imagePercentageTop);
+    console.log('imagePercentX', imagePercentX, 'imagePercentY', imagePercentY);
 
     const {
       width: imageWidth,
@@ -823,38 +797,29 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     } = masterCropper.cropperInstance.getImageData();
 
     masterCropper.cropperInstance.setCropBoxData({
-      top: cropBoxTop,
-      left: cropBoxLeft
+      top: cropBoxY,
+      left: cropBoxX
     });
 
-    console.log('cropBoxTop', cropBoxTop, 'cropBoxLeft', cropBoxLeft);
+    console.log('cropBoxY', cropBoxY, 'cropBoxX', cropBoxX);
 
     // test that the value is restored correctly if the percentages are applied
 
     // eslint-disable-next-line max-len
-    const restoredTop = ((imagePercentageTop / 100) * imageHeight) + masterCropperCanvasTop - masterCropperCanvasOffsetTop;
-    const restoredLeft = ((imagePercentageLeft / 100) * imageWidth);
+    const restoredTop = ((imagePercentY / 100) * imageHeight) + masterCropperCanvasTop - masterCropperCanvasOffsetTop;
+    const restoredLeft = ((imagePercentX / 100) * imageWidth);
 
     console.log('restoredTop', restoredTop, 'restoredLeft', restoredLeft);
 
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.canvas_top_offset', masterCropperCanvasOffsetTop, true);
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.canvas_top', masterCropperCanvasTop, true);
-
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.set_top', cropBoxTop, true);
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.set_left', cropBoxLeft, true);
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.restored_top', restoredTop, true);
-    CrDebugUi.debugParameter(masterCropper, 'cropbox.restored_left', restoredLeft, true);
-
-    CrDebugUi.debugParameter(masterCropper, 'image.width', imageWidth, true);
-    CrDebugUi.debugParameter(masterCropper, 'image.height', imageHeight, true);
-
     // visual delay so its clear what's happening
-    setTimeout(() => {
-      masterCropper.cropperInstance.setCropBoxData({
-        top: restoredTop,
-        left: restoredLeft
-      });
-    }, 500);
+    if (typeof Cypress === 'undefined') {
+      setTimeout(() => {
+        masterCropper.cropperInstance.setCropBoxData({
+          top: restoredTop,
+          left: restoredLeft
+        });
+      }, 500); // TODO add param updateDelay
+    }
   }
 
   /**
@@ -886,26 +851,26 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     const cropBoxCenterX = this.scaleSlaveVal(cropper, pageX) - (cropperWidth / 2);
     const cropBoxCenterY = this.scaleSlaveVal(cropper, pageY) - (cropperHeight / 2);
-    const cropperCropBoxTop = cropperCanvasTop + cropBoxCenterY - this.scaleSlaveVal(cropper, masterCropperCanvasOffsetTop); // eslint-disable-line max-len
-    const cropperCropBoxLeft = cropBoxCenterX - this.scaleSlaveVal(cropper, masterCropperCanvasLeft);
+    const croppercropBoxY = cropperCanvasTop + cropBoxCenterY - this.scaleSlaveVal(cropper, masterCropperCanvasOffsetTop); // eslint-disable-line max-len
+    const croppercropBoxX = cropBoxCenterX - this.scaleSlaveVal(cropper, masterCropperCanvasLeft);
 
     cropper.setCropBoxData({
-      top: cropperCropBoxTop,
-      left: cropperCropBoxLeft
+      top: croppercropBoxY,
+      left: croppercropBoxX
     });
   }
 
   /**
    * @function readFocalPointFromImage
    * @summary Read focal point position from filename
-   * @returns {object} { imagePercentageTop, imagePercentageLeft }
+   * @returns {object} { imagePercentY, imagePercentX }
    * @memberof CrCroppersUi
    * @todo Finish - this is only placeholder code for testing purposes.
    */
   readFocalPointFromImage() {
     return {
-      imagePercentageTop: 50,
-      imagePercentageLeft: 50
+      imagePercentY: 50,
+      imagePercentX: 50
     };
   }
 
@@ -947,8 +912,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    */
   resetFocalPoint() {
     const position = {
-      imagePercentageTop: 50,
-      imagePercentageLeft: 50
+      imagePercentY: 50,
+      imagePercentX: 50
     };
 
     this.setFocalPoint(position);
@@ -979,6 +944,32 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function validateCroppersImage
+   * @summary Check that the croppers' image src is valid
+   * @returns {boolean} valid
+   * @memberof CrCroppersUi
+   */
+  validateCroppersImage() {
+    const { croppersId } = this;
+    const cropperImages = document.querySelectorAll(`#${croppersId} img`);
+    let isValid = true;
+
+    if (!cropperImages.length) {
+      isValid = false;
+    }
+
+    cropperImages.forEach(cropperImage => {
+      if (cropperImage.getAttribute('src') === null) {
+        isValid = false;
+      } else if (cropperImage.getAttribute('src').indexOf('/undefined') !== -1) {
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  }
+
+  /**
    * @function writeCropCoordinatesToImage
    * @summary Save the crop XY to the image file
    * @memberof CrCroppersUi
@@ -993,8 +984,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     const { deleteCropCoordinates } = controlIds;
 
-    const imagePercentageTop = CrDebugUi.getDebugParameterValue(masterCropper, 'cropbox.percentage_top');
-    const imagePercentageLeft = CrDebugUi.getDebugParameterValue(masterCropper, 'cropbox.percentage_left');
+    const imagePercentY = CrDebugUi.getDebugParameterValue(masterCropper, 'cropbox.percentage_y');
+    const imagePercentX = CrDebugUi.getDebugParameterValue(masterCropper, 'cropbox.percentage_x');
 
     const fileName = masterCropper.cropperInstance.element.src;
 
@@ -1002,8 +993,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     const newFileName = await window.electronAPI.saveCropCoordinates({
       fileName,
-      imagePercentageTop,
-      imagePercentageLeft
+      imagePercentY,
+      imagePercentX
     });
 
     document.getElementById(deleteCropCoordinates).disabled = false;

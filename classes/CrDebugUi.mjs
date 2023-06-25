@@ -76,20 +76,6 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function debugClickLocation
-   * @summary Output the pointer location
-   * @param {event} e - Event
-   * @param {object} masterCropper - Master cropper
-   * @memberof CrDebugUi
-   */
-  debugClickLocation(e, masterCropper) {
-    const { outputIds } = masterCropper;
-
-    document.getElementById(outputIds.mouse.page_x).value = Math.round(e.clientX);
-    document.getElementById(outputIds.mouse.page_y).value = Math.round(e.clientY);
-  }
-
-  /**
    * @function getDebugFields
    * @summary Get the IDs of debug fields used by a cropper
    * @returns {object} outputIds
@@ -98,25 +84,9 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
   getDebugFields() {
     const debugFieldIds = {};
     const debugFieldNames = {
-      mouse: [
-        'page_x', 'page_y'
-      ], // same as 'client_x', 'client_y'
-      // cropper: [ 'x', 'y' ],
-      // container: [ 'width', 'height' ],
-      // canvas: [ 'left', 'top' ],
-      image: [
-        'width', 'height'
-      ],
-      // drg: [ 'top' ],
       cropbox: [
-        'canvas_top',
-        'canvas_top_offset',
-        'expected_center_x', 'actual_center_x',
-        'expected_center_y', 'actual_center_y',
-        'percentage_top',
-        'percentage_left',
-        'set_top', 'restored_top',
-        'set_left', 'restored_left'
+        'percentage_x',
+        'percentage_y'
       ]
     };
 

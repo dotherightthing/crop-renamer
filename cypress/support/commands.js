@@ -24,10 +24,29 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('roundTo1dp', (value) => {
-  return Number(value.toFixed(1));
+/**
+ * Round a number to the specified number of decimal places
+ * @param {number} value - Value
+ * @param {number} numberOfDp - Number of decimal places
+ * @returns {number} rounded number
+ */
+Cypress.Commands.add('roundToDp', (value, numberOfDp) => {
+  return Number(value.toFixed(numberOfDp));
 });
 
-Cypress.Commands.add('roundTo2dp', (value) => {
-  return Number(value.toFixed(2));
+/**
+ * Get style.transform.translateX
+ * @param {object} cyElement - Cypress DOM element
+ * @returns {number} translateX
+ * @see {@link https://stackoverflow.com/a/55517628}
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix}
+ */
+Cypress.Commands.add('getTransformTranslateX', (cyElement) => {
+  const $el = cyElement[0];
+  const win = $el.ownerDocument.defaultView;
+  const style = win.getComputedStyle($el);
+  const matrix = new DOMMatrix(style.transform);
+  const translateX = matrix.m41;
+
+  return translateX;
 });
