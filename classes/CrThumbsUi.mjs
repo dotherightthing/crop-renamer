@@ -19,8 +19,8 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       thumbClass,
       thumbImgClass,
       thumbMetaClass,
+      thumbPathId,
       thumbsCountId,
-      thumbsFolderId,
       thumbsId
     } = config;
 
@@ -30,8 +30,8 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       thumbClass,
       thumbImgClass,
       thumbMetaClass,
+      thumbPathId,
       thumbsCountId,
-      thumbsFolderId,
       thumbsId
     });
   }
@@ -104,6 +104,19 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * thumbPathId
+   * @type {string}
+   * @memberof CrCroppersUi
+   */
+  get thumbPathId() {
+    return this._thumbPathId;
+  }
+
+  set thumbPathId(thumbPathId) {
+    this._thumbPathId = dtrtValidate.validate(thumbPathId, 'string', 'CrThumbsUi.thumbPathId');
+  }
+
+  /**
    * thumbsCountId
    * @type {string}
    * @memberof CrCroppersUi
@@ -114,19 +127,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
 
   set thumbsCountId(thumbsCountId) {
     this._thumbsCountId = dtrtValidate.validate(thumbsCountId, 'string', 'CrThumbsUi.thumbsCountId');
-  }
-
-  /**
-   * thumbsFolderId
-   * @type {string}
-   * @memberof CrCroppersUi
-   */
-  get thumbsFolderId() {
-    return this._thumbsFolderId;
-  }
-
-  set thumbsFolderId(thumbsFolderId) {
-    this._thumbsFolderId = dtrtValidate.validate(thumbsFolderId, 'string', 'CrThumbsUi.thumbsFolderId');
   }
 
   /* Instance methods */
@@ -160,6 +160,30 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function displayCount
+   * @param {number} count - Count
+   * @memberof CrThumbsUi
+   */
+  displayCount(count) {
+    const { thumbsCountId } = this;
+
+    document.getElementById(thumbsCountId).textContent = count;
+  }
+
+  /**
+   * @function displayPath
+   * @param {string} path - Path
+   * @memberof CrThumbsUi
+   */
+  displayPath(path) {
+    const { thumbPathId } = this;
+
+    const html = `<a href="${path}">${path}</a>`;
+
+    document.getElementById(thumbPathId).innerHTML = html;
+  }
+
+  /**
    * @function getSelectedIndex
    * @summary Get the index of the selected node in a nodelist
    * @param {NodeList} nodeList = NodeList
@@ -183,18 +207,15 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * @function generateThumbsHtml
    * @summary Inject the thumb images and their scaffolding, then select the first thumb
-   * @param {string} folderPath - Folder path
    * @param {Array} imagesData - Images data
    * @memberof CrThumbsUi
    */
-  generateThumbsHtml(folderPath, imagesData) {
+  generateThumbsHtml(imagesData) {
     const {
       thumbButtonClass,
       thumbClass,
       thumbImgClass,
       thumbMetaClass,
-      thumbsCountId,
-      thumbsFolderId,
       thumbsId
     } = this;
 
@@ -216,8 +237,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       }
     });
 
-    document.getElementById(thumbsCountId).textContent = imagesData.length;
-    document.getElementById(thumbsFolderId).textContent = folderPath;
+    this.displayCount(imagesData.length);
   }
 
   /**

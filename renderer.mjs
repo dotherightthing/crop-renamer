@@ -24,7 +24,6 @@ async function uiSelectFolder() {
   // npm run serve
   if (typeof window.electronAPI === 'undefined') {
     CrUtilsUi.emitEvent('root', 'selectedFolder', {
-      folderPath: appDebugDir,
       imagesData: [
         {
           src: './cypress/fixtures/landscape.jpeg',
@@ -62,7 +61,6 @@ async function uiSelectFolder() {
   }
 
   CrUtilsUi.emitEvent('root', 'selectedFolder', {
-    folderPath,
     imagesData
   });
 }
@@ -71,6 +69,8 @@ async function uiSelectFolder() {
 
 window.addEventListener('DOMContentLoaded', () => {
   // instantiate classes
+
+  const thumbPathId = 'thumb-path';
 
   const crCroppersUiInstance = new CrCroppersUi({
     Cropper: window.Cropper,
@@ -121,8 +121,8 @@ window.addEventListener('DOMContentLoaded', () => {
     thumbClass: 'thumb',
     thumbImgClass: 'thumb-img',
     thumbMetaClass: 'thumb-meta',
+    thumbPathId,
     thumbsCountId: 'thumb-count-num',
-    thumbsFolderId: 'thumb-folder',
     thumbsId: 'thumbs'
   });
 
@@ -168,7 +168,6 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('croppers').addEventListener('statusChange', (event) => {
     const { msg } = event.detail;
 
-    crDebugUiInstance.clearDebugMsg();
     crDebugUiInstance.setDebugMsg(msg);
   });
 
@@ -193,9 +192,9 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('root').addEventListener('selectedFolder', (event) => {
-    const { folderPath, imagesData } = event.detail;
+    const { imagesData } = event.detail;
 
-    crThumbsUiInstance.generateThumbsHtml(folderPath, imagesData);
+    crThumbsUiInstance.generateThumbsHtml(imagesData);
   });
 
   document.getElementById('save-crop-coordinates').addEventListener('click', () => {
@@ -204,12 +203,32 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('thumbs').addEventListener('click', (event) => {
     const target = crThumbsUiInstance.getClickedButton(event);
+    const newImageSrc = target.querySelector('img').getAttribute('src');
 
     crThumbsUiInstance.applySelectedClass(target);
     crThumbsUiInstance.scrollToThumb('selected');
+    crThumbsUiInstance.displayPath(newImageSrc);
 
     // calls crCroppersUiInstance.init
     crCroppersUiInstance.changeSourceImage(target);
+  });
+
+  document.getElementById(thumbPathId).addEventListener('click', (event) => {
+    event.preventDefault();
+
+    if (typeof window.electronAPI === 'undefined') {
+      crDebugUiInstance.setDebugMsg('Error: Finder links require Electron');
+
+      return;
+    }
+
+    const href = event.target.getAttribute('href');
+
+    if (href) {
+      window.electronAPI.openInFinder({
+        href
+      });
+    }
   });
 
   window.addEventListener('resize', () => {

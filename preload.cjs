@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // function in renderer.js or frontend class calls window.electronAPI.methodName, with or without a data object
   // backend responds and returns data to calling function
 
+  openInFinder: (data) => ipcRenderer.invoke('CrFile:openInFinder', data),
   selectFolder: (data) => ipcRenderer.invoke('CrFile:selectFolder', data),
   deleteCropCoordinates: (data) => ipcRenderer.invoke('CrFile:deleteCropCoordinates', data),
   saveCropCoordinates: (data) => ipcRenderer.invoke('CrFile:saveCropCoordinates', data)

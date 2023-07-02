@@ -246,7 +246,7 @@ img {
   border: var(--gutter) solid var(--color-bg-primary);
 }
 
-.thumbs-summary-meta .thumb-folder {
+.thumbs-summary-meta .thumb-path {
   grid-area: folderName;
 }
 
@@ -271,6 +271,11 @@ img {
   color: var(--color-secondary);
   font-size: var(--text-small);
   margin: 0;
+}
+
+.meta.thumbs-summary-meta * {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-secondary);
 }
 
 .meta.thumbs-summary-meta p {

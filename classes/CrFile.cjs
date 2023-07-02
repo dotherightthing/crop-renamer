@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { resolve } = require('path');
 const ExifReader = require('exifreader');
-const { dialog } = require('electron');
+const { dialog, shell } = require('electron');
 
 module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /**
@@ -105,6 +105,20 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       folderPath,
       imagesData
     };
+  }
+
+  /**
+   * @function openInFinder
+   * @param {event} event - CrFile:openInFinder event captured by ipcMain.handle
+   * @param {object} data - Data
+   * @param {string} data.href - HREF
+   * @memberof CrFile
+   * @static
+   */
+  static openInFinder(event, data) {
+    const { href } = data;
+
+    shell.showItemInFolder(href);
   }
 
   /**

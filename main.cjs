@@ -81,6 +81,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
   // ipcMain module for inter-process communication (IPC) with render process
 
+  ipcMain.handle('CrFile:openInFinder', CrFile.openInFinder);
   ipcMain.handle('CrFile:selectFolder', CrFile.selectFolder);
   ipcMain.handle('CrFile:deleteCropCoordinates', CrFile.deleteCropCoordinates);
   ipcMain.handle('CrFile:saveCropCoordinates', CrFile.saveCropCoordinates);
