@@ -195,24 +195,6 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
   /* Static methods */
 
   /**
-   * @function setDebugParameter
-   * @summary Output the parameter value
-   * @param {object} cropper - Cropper from croppers array
-   * @param {string} parameter - Output ID parameter
-   * @param {number} value - Value to display
-   * @memberof CrDebugUi
-   * @static
-   * @todo Replace with event emitter
-   */
-  static setDebugParameter(cropper, parameter, value) {
-    const { outputIds } = cropper;
-    const outputValue = value;
-    const [ group, param ] = parameter.split('.');
-
-    document.getElementById(outputIds[group][param]).value = outputValue;
-  }
-
-  /**
    * @function getDebugField
    * @summary Create UI to display debugging parameters
    * @param {object} args - Arguments
@@ -287,5 +269,23 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
     }
 
     return -1;
+  }
+
+  /**
+   * @function setDebugParameter
+   * @summary Output the parameter value
+   * @param {object} cropper - Cropper from croppers array
+   * @param {string} parameter - Output ID parameter
+   * @param {number} value - Value to display
+   * @memberof CrDebugUi
+   * @static
+   * @todo Replace with event emitter
+   */
+  static setDebugParameter(cropper, parameter, value) {
+    const { outputIds } = cropper;
+    const outputValue = value;
+    const [ group, param ] = parameter.split('.');
+
+    document.getElementById(outputIds[group][param]).value = outputValue;
   }
 }

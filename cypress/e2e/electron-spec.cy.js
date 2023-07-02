@@ -110,7 +110,7 @@ describe('template spec', () => {
     describe('CrCroppersUi', () => {
       images.forEach((image, imageIndex) => {
         describe(image, () => {
-          it.skip('displayFocalpoint', () => {});
+          /* Instance methods */
 
           it('calcCanvasOffsets', () => {
             cy.get('#thumbs .thumb').eq(imageIndex).find('button').click();
@@ -143,7 +143,7 @@ describe('template spec', () => {
             });
           });
 
-          it.skip('calcImageXYFromPageXY', () => {});
+          it.skip('calcCropBoxXYFromPageXY', () => {});
 
           it('calcImageXYFromImagePercentXY', () => {
             cy.get('#thumbs .thumb').eq(imageIndex).find('button').click();
@@ -190,6 +190,9 @@ describe('template spec', () => {
               });
             });
           });
+
+          it.skip('calcImageXYFromPageXY', () => {});
+          it.skip('calcPageXYForRoundedImagePercentXY', () => {});
 
           it('calcPageXYFromImageXY', () => {
             cy.get('#thumbs .thumb').eq(imageIndex).find('button').click();
@@ -333,42 +336,69 @@ describe('template spec', () => {
           });
 
           it.skip('changeSourceImage', () => {});
-
           it.skip('destroy', () => {});
-
+          it.skip('displayFocalpoint', () => {});
           it.skip('getCropCoordinatesFromImage', () => {});
-
           it.skip('getCropperOptions', () => {});
-
           it.skip('getMasterCropper', () => {});
-
           it.skip('getSlaveCroppers', () => {});
-
           it.skip('init', () => {});
-
           it.skip('initCropper', () => {});
-
           it.skip('injectHeading', () => {});
-
-          it.skip('moveCropperCropBoxToPageXY', () => {}); // TODO fix name
-
+          it.skip('moveCropperCropBoxToPageXY', () => {});
           it.skip('moveMasterCropperCropBoxToPageXY', () => {});
-
           it.skip('moveSlaveCropperCropBoxToPageXY', () => {});
-
           it.skip('readFocalpointFromImage', () => {});
-
           it.skip('removeCropCoordinatesFromImage', () => {});
-
           it.skip('resetFocalpoint', () => {});
-
           it.skip('scaleSlaveVal', () => {});
-
           it.skip('validateCroppersImage', () => {});
-
           it.skip('writeCropCoordinatesToImage', () => {});
+
+          /* Static methods */
         });
       });
+    });
+
+    describe('CrDebugUi', () => {
+      /* Instance methods */
+      it.skip('clearDebugFields', () => {});
+      it.skip('clearDebugMsg', () => {});
+      it.skip('getDebugFields', () => {});
+      it.skip('injectDebugFields', () => {});
+      it.skip('setDebugMsg', () => {});
+
+      /* Static methods */
+      it.skip('getDebugField', () => {});
+      it.skip('getDebugParameterValue', () => {});
+      it.skip('setDebugParameter', () => {});
+    });
+
+    describe('CrThumbsUi', () => {
+      /* Instance methods */
+      it.skip('applySelectedClass', () => {});
+      it.skip('changeSelectedImageSrc', () => {});
+      it.skip('containsThumbs', () => {});
+      it.skip('displayCount', () => {});
+      it.skip('displayPath', () => {});
+      it.skip('generateThumbsHtml', () => {});
+      it.skip('getClickedButton', () => {});
+      it.skip('getSelectedIndex', () => {});
+      it.skip('removeSelectedClass', () => {});
+      it.skip('scrollToThumb', () => {});
+      it.skip('selectFirstThumb', () => {});
+
+      /* Static methods */
+      it.skip('getNextIndex', () => {});
+      it.skip('getPreviousIndex', () => {});
+    });
+
+    describe('CrUtilsUi', () => {
+      /* Instance methods */
+
+      /* Static methods */
+      it.skip('emitEvent', () => {});
+      it.skip('getOffset', () => {});
     });
   });
 });

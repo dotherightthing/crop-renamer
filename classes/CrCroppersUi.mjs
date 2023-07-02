@@ -208,48 +208,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   /* Instance methods */
 
   /**
-   * @function displayFocalpoint
-   * @summary Show focalpoint in UI
-   * @param {object} args - Arguments
-   * @param {number} args.imagePercentY - Image percentage top
-   * @param {number} args.imagePercentX - Image percentage left
-   * @memberof CrCroppersUi
-   */
-  displayFocalpoint({ imagePercentY, imagePercentX }) {
-    const {
-      croppersId,
-      masterCropper
-    } = this;
-
-    // simulate click event
-    this.masterCropperCropBoxWasDragged = false;
-
-    const {
-      imageX,
-      imageY
-    } = this.calcImageXYFromImagePercentXY({ imagePercentY, imagePercentX });
-
-    const {
-      pageX,
-      pageY
-    } = this.calcPageXYFromImageXY({ imageX, imageY });
-
-    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
-      element: masterCropper,
-      parameter: 'image.focalpoint_x',
-      value: imagePercentX
-    });
-
-    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
-      element: masterCropper,
-      parameter: 'image.focalpoint_y',
-      value: imagePercentY
-    });
-
-    this.moveCropperCropBoxToPageXY({ pageX, pageY });
-  }
-
-  /**
    * @function calcCanvasOffsets
    * @summary cropper.getCanvasData().top ignores preceding UI and returns 0, this function returns the actual offset
    * @returns {object} { top, left }
@@ -525,6 +483,48 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     });
 
     this.croppers = [];
+  }
+
+  /**
+   * @function displayFocalpoint
+   * @summary Show focalpoint in UI
+   * @param {object} args - Arguments
+   * @param {number} args.imagePercentY - Image percentage top
+   * @param {number} args.imagePercentX - Image percentage left
+   * @memberof CrCroppersUi
+   */
+  displayFocalpoint({ imagePercentY, imagePercentX }) {
+    const {
+      croppersId,
+      masterCropper
+    } = this;
+
+    // simulate click event
+    this.masterCropperCropBoxWasDragged = false;
+
+    const {
+      imageX,
+      imageY
+    } = this.calcImageXYFromImagePercentXY({ imagePercentY, imagePercentX });
+
+    const {
+      pageX,
+      pageY
+    } = this.calcPageXYFromImageXY({ imageX, imageY });
+
+    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+      element: masterCropper,
+      parameter: 'image.focalpoint_x',
+      value: imagePercentX
+    });
+
+    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+      element: masterCropper,
+      parameter: 'image.focalpoint_y',
+      value: imagePercentY
+    });
+
+    this.moveCropperCropBoxToPageXY({ pageX, pageY });
   }
 
   /**

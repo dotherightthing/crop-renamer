@@ -146,6 +146,16 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function changeSelectedImageSrc
+   * @param {string} newFileName - New file name
+   */
+  changeSelectedImageSrc(newFileName) {
+    const { selectedClass } = this;
+
+    document.querySelector(`.${selectedClass} img`).src = newFileName;
+  }
+
+  /**
    * @function containsThumbs
    * @summary Whether the thumb area of the UI contains any thumbs
    * @returns {number} thumbLength (truthy|falsy)
@@ -181,27 +191,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     const html = `<a href="${path}">${path}</a>`;
 
     document.getElementById(thumbPathId).innerHTML = html;
-  }
-
-  /**
-   * @function getSelectedIndex
-   * @summary Get the index of the selected node in a nodelist
-   * @param {NodeList} nodeList = NodeList
-   * @returns {number} selectedIndex | -1
-   * @memberof CrThumbsUi
-   */
-  getSelectedIndex(nodeList) {
-    const { selectedClass } = this;
-
-    let selectedIndex = -1;
-
-    nodeList.forEach((node, index) => {
-      if (node.classList.contains(selectedClass)) {
-        selectedIndex = index;
-      }
-    });
-
-    return selectedIndex;
   }
 
   /**
@@ -241,6 +230,48 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function getClickedButton
+   * @param {object} event - Event
+   * @returns {HTMLElement} button
+   * @memberof CrThumbsUi
+   */
+  getClickedButton(event) {
+    const e = event || window.event;
+    let target = e.target || e.srcElement;
+
+    if (!document.querySelectorAll('#thumbs img').length) {
+      return null;
+    }
+
+    while (target.tagName.toLowerCase() !== 'button') {
+      target = target.parentNode;
+    }
+
+    return target;
+  }
+
+  /**
+   * @function getSelectedIndex
+   * @summary Get the index of the selected node in a nodelist
+   * @param {NodeList} nodeList = NodeList
+   * @returns {number} selectedIndex | -1
+   * @memberof CrThumbsUi
+   */
+  getSelectedIndex(nodeList) {
+    const { selectedClass } = this;
+
+    let selectedIndex = -1;
+
+    nodeList.forEach((node, index) => {
+      if (node.classList.contains(selectedClass)) {
+        selectedIndex = index;
+      }
+    });
+
+    return selectedIndex;
+  }
+
+  /**
    * @function removeSelectedClass
    * @summary Remove the 'selected' class from the selected thumb
    * @memberof CrThumbsUi
@@ -276,12 +307,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     const thumbsButtonSelectedIndex = this.getSelectedIndex(thumbsButtons);
     let thumbsButtonNextIndex = -1;
 
-    // let masterCropper = getMasterCropper();
-
-    // if (!masterCropper) {
-    //   return;
-    // }
-
     if (position === 'previous') {
       thumbsButtonNextIndex = CrThumbsUi.getPreviousIndex(thumbsButtons, thumbsButtonSelectedIndex);
     } else if (position === 'next') {
@@ -310,37 +335,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     const { thumbButtonClass } = this;
 
     document.querySelectorAll(`.${thumbButtonClass}`)[0].click();
-  }
-
-  /**
-   * @function getClickedButton
-   * @param {object} event - Event
-   * @returns {HTMLElement} button
-   * @memberof CrThumbsUi
-   */
-  getClickedButton(event) {
-    const e = event || window.event;
-    let target = e.target || e.srcElement;
-
-    if (!document.querySelectorAll('#thumbs img').length) {
-      return null;
-    }
-
-    while (target.tagName.toLowerCase() !== 'button') {
-      target = target.parentNode;
-    }
-
-    return target;
-  }
-
-  /**
-   * @function changeSelectedImageSrc
-   * @param {string} newFileName - New file name
-   */
-  changeSelectedImageSrc(newFileName) {
-    const { selectedClass } = this;
-
-    document.querySelector(`.${selectedClass} img`).src = newFileName;
   }
 
   /* Static methods */
