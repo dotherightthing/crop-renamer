@@ -231,7 +231,7 @@ describe('template spec', () => {
             });
           });
 
-          it('calcRoundedImagePercentXYFromImageXorY', () => {
+          it('calcImagePercentXYFromImageXorY', () => {
             cy.get('#thumbs .thumb').eq(imageIndex).find('button').click();
             cy.get('#thumbs .thumb').eq(imageIndex).find('button').should('have.class', 'btn-selected');
             cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
@@ -263,8 +263,17 @@ describe('template spec', () => {
                     const imageX = fixtureX * scale;
                     const imageY = fixtureY * scale;
 
-                    const imagePercentX = crCroppersUi.calcRoundedImagePercentXYFromImageXorY(imageX, imageW, false);
-                    const imagePercentY = crCroppersUi.calcRoundedImagePercentXYFromImageXorY(imageY, imageH, false);
+                    const imagePercentX = crCroppersUi.calcImagePercentXYFromImageXorY({
+                      imageXorY: imageX,
+                      dimensionLength: imageW,
+                      round: true
+                    });
+
+                    const imagePercentY = crCroppersUi.calcImagePercentXYFromImageXorY({
+                      imageXorY: imageY,
+                      dimensionLength: imageH,
+                      round: true
+                    });
 
                     expect(imagePercentX).to.equal(fixturePercentX);
                     expect(imagePercentY).to.equal(fixturePercentY);
@@ -274,7 +283,7 @@ describe('template spec', () => {
             });
           });
 
-          it('calcRoundedImagePercentXYFromPageXY', () => {
+          it('calcImagePercentXYFromPageXY', () => {
             cy.get('#thumbs .thumb').eq(imageIndex).find('button').click();
             cy.get('#thumbs .thumb').eq(imageIndex).find('button').should('have.class', 'btn-selected');
             cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
@@ -311,7 +320,7 @@ describe('template spec', () => {
                       const {
                         imagePercentX,
                         imagePercentY
-                      } = crCroppersUi.calcRoundedImagePercentXYFromPageXY({ pageX, pageY });
+                      } = crCroppersUi.calcImagePercentXYFromPageXY({ pageX, pageY, round: true });
 
                       expect(imagePercentX).to.equal(fixturePercentX);
                       expect(imagePercentY).to.equal(fixturePercentY);
@@ -340,11 +349,11 @@ describe('template spec', () => {
 
           it.skip('injectHeading', () => {});
 
-          it.skip('moveCroppercropBoxYageXY', () => {}); // TODO fix name
+          it.skip('moveCropperCropBoxToPageXY', () => {}); // TODO fix name
 
-          it.skip('moveMasterCropperCropBox', () => {});
+          it.skip('moveMasterCropperCropBoxToPageXY', () => {});
 
-          it.skip('moveSlaveCropperCropBox', () => {});
+          it.skip('moveSlaveCropperCropBoxToPageXY', () => {});
 
           it.skip('readFocalPointFromImage', () => {});
 

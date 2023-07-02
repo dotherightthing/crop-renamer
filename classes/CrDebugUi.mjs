@@ -108,9 +108,9 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
   getDebugFields() {
     const debugFieldIds = {};
     const debugFieldNames = {
-      cropbox: [
-        'percentage_x',
-        'percentage_y'
+      image: [
+        'focalpoint_x',
+        'focalpoint_y'
       ]
     };
 
@@ -124,7 +124,7 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
 
       const { html, outputIds } = CrDebugUi.getDebugField({
         id: `cropper${index}-${debugFieldKey}`,
-        title: `${title} ${index}`,
+        title,
         outputs: debugFieldNames[debugFieldKey]
       });
 
@@ -195,18 +195,18 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
   /* Static methods */
 
   /**
-   * @function debugParameter
-   * @summary Output the pointer location
+   * @function setDebugParameter
+   * @summary Output the parameter value
    * @param {object} cropper - Cropper from croppers array
    * @param {string} parameter - Output ID parameter
    * @param {number} value - Value to display
-   * @param {boolean} round - Whether to round the value
    * @memberof CrDebugUi
    * @static
+   * @todo Replace with event emitter
    */
-  static debugParameter(cropper, parameter, value, round = false) {
+  static setDebugParameter(cropper, parameter, value) {
     const { outputIds } = cropper;
-    let outputValue = round ? Math.round(value) : value;
+    const outputValue = value;
     const [ group, param ] = parameter.split('.');
 
     document.getElementById(outputIds[group][param]).value = outputValue;

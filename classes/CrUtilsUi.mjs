@@ -19,7 +19,8 @@ export class CrUtilsUi { // eslint-disable-line no-unused-vars
   /* Static methods */
 
   /**
-   * @function Emit a custom event
+   * @function emitEvent
+   * @summary Emit a custom event
    * @param {string} elementId - ID of the element that will dispatch the event
    * @param {string} eventName - Event names are case-sensitive
    * @param {object} eventDetail - name-value pair
