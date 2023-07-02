@@ -105,7 +105,8 @@ window.addEventListener('DOMContentLoaded', () => {
     controlIds: {
       deleteCropCoordinates: 'delete-crop-coordinates'
     },
-    initDelay: 5000
+    initDelay: 5000,
+    updateDelay: (typeof Cypress !== 'undefined') ? 0 : 1000
   });
 
   const crDebugUiInstance = new CrDebugUi({
@@ -152,6 +153,16 @@ window.addEventListener('DOMContentLoaded', () => {
     const { newFileName } = event.detail;
 
     crThumbsUiInstance.changeSelectedImageSrc(newFileName);
+  });
+
+  document.getElementById('croppers').addEventListener('paramChange', (event) => {
+    const {
+      element,
+      parameter,
+      value
+    } = event.detail;
+
+    CrDebugUi.setDebugParameter(element, parameter, value);
   });
 
   document.getElementById('croppers').addEventListener('statusChange', (event) => {

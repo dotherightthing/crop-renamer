@@ -24,6 +24,7 @@ Excluding anything that requires a subscription fee or complex serverside setup.
    * <https://github.com/danfickle/bulk-image-cropper> - no overview of crop position for multiple images (one at a time)
    * <https://w3codegenerator.com/code-snippets/javascript/how-to-crop-multiple-images-with-cropper-js>
 * <https://pqina.nl/blog/rename-a-file-with-javascript/>
+* <https://codepen.io/saleemnaufa/pen/gVewZw>
 
 ## Considerations
 

@@ -22,7 +22,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       cropperImageClass,
       croppersId,
       croppersOptions,
-      initDelay
+      initDelay,
+      updateDelay
     } = config;
 
     Object.assign(this, {
@@ -32,7 +33,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       cropperImageClass,
       croppersId,
       croppersOptions,
-      initDelay
+      initDelay,
+      updateDelay
     });
 
     // assign Expando property to expose methods during E2E testing
@@ -190,6 +192,19 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     this._slaveCroppers = dtrtValidate.validate(slaveCroppers, 'Array', 'CrCroppersUi.slaveCroppers');
   }
 
+  /**
+   * updateDelay
+   * @type {number}
+   * @memberof CrCroppersUi
+   */
+  get updateDelay() {
+    return this._updateDelay;
+  }
+
+  set updateDelay(updateDelay) {
+    this._updateDelay = dtrtValidate.validate(updateDelay, 'number', 'CrCroppersUi.updateDelay');
+  }
+
   /* Instance methods */
 
   /**
@@ -202,6 +217,11 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @todo Reset position is incorrect for image #5
    */
   displayFocalpoint({ imagePercentY, imagePercentX }) {
+    const {
+      croppersId,
+      masterCropper
+    } = this;
+
     // simulate click event
     this.masterCropperCropBoxWasDragged = false;
 
@@ -215,16 +235,19 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       pageY
     } = this.calcPageXYFromImageXY({ imageX, imageY });
 
-    const e = {
-      detail: {
-        originalEvent: {
-          pageX,
-          pageY
-        }
-      }
-    };
+    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+      element: masterCropper,
+      parameter: 'image.focalpoint_x',
+      value: imagePercentX
+    });
 
-    this.moveCropperCropBoxToPageXY(e);
+    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+      element: masterCropper,
+      parameter: 'image.focalpoint_y',
+      value: imagePercentY
+    });
+
+    this.moveCropperCropBoxToPageXY({ pageX, pageY });
   }
 
   /**
@@ -341,6 +364,41 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function calcPageXYForRoundedImagePercentXY
+   * @summary Change x and y so they correspond with a rounded percentage
+   * @param {object} args - Method arguments
+   * @param {number} args.pageXRaw - Page X raw (unrounded)
+   * @param {number} args.pageYRaw - Page Y raw (unrounded)
+   * @returns {object} { pageX, pageY }
+   * @memberof CrCroppersUi
+   */
+  calcPageXYForRoundedImagePercentXY({ pageXRaw, pageYRaw }) {
+    const {
+      imagePercentX,
+      imagePercentY
+    } = this.calcImagePercentXYFromPageXY({
+      pageX: pageXRaw,
+      pageY: pageYRaw,
+      round: true
+    });
+
+    const {
+      imageX,
+      imageY
+    } = this.calcImageXYFromImagePercentXY({ imagePercentX, imagePercentY });
+
+    const {
+      pageX,
+      pageY
+    } = this.calcPageXYFromImageXY({ imageX, imageY });
+
+    return {
+      pageX,
+      pageY
+    };
+  }
+
+  /**
    * @function calcPageXYFromImageXY
    * @param {object} args - Arguments
    * @param {number} args.imageX - Image X
@@ -388,9 +446,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     // In testing, rounding changes the results by 1-4 units.
     // This causes little visual difference but makes the numbers much easier to store.
-
-    // CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_y', imagePercentY);
-    // CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_x', imagePercentX);
 
     return round ? Math.round(percentage * 100) : percentage * 100;
   }
@@ -508,6 +563,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    */
   getCropperOptions(cropperAspectRatio, isCropperMaster) {
     const {
+      croppersId,
       croppersOptions
     } = this;
 
@@ -525,9 +581,54 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
           this.masterCropperCropBoxWasDragged = true; // differentiate between a click and a move
         },
         cropend: (e) => { // dragEnd callback, see https://github.com/fengyuanchen/cropperjs/issues/669; fires after move
-          this.moveCropperCropBoxToPageXY(e);
+          const {
+            masterCropper,
+            updateDelay
+          } = this;
+
+          const {
+            pageX: pageXRaw,
+            pageY: pageYRaw
+          } = e.detail.originalEvent;
+
+          const pageXYRaw = {
+            pageX: pageXRaw,
+            pageY: pageYRaw
+          };
+
+          const pageXYRounded = this.calcPageXYForRoundedImagePercentXY({ pageXRaw, pageYRaw });
+
+          [ pageXYRaw, pageXYRounded ].forEach((pageXY, i) => {
+            const { pageX, pageY } = pageXY;
+            const isPageXYRounded = i > 0;
+
+            const {
+              imagePercentX,
+              imagePercentY
+            } = this.calcImagePercentXYFromPageXY({ pageX, pageY, round: isPageXYRounded });
+
+            setTimeout(() => {
+              this.moveCropperCropBoxToPageXY({ pageX, pageY });
+
+              CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+                element: masterCropper,
+                parameter: 'image.focalpoint_x',
+                value: imagePercentX
+              });
+
+              CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+                element: masterCropper,
+                parameter: 'image.focalpoint_y',
+                value: imagePercentY
+              });
+
+              CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+                msg: isPageXYRounded ? '' : 'Rounding percentages for storage...'
+              });
+            }, isPageXYRounded ? updateDelay : 0);
+          });
         }
-      }); // https://codepen.io/saleemnaufa/pen/gVewZw
+      });
     }
 
     const [ a, b ] = cropperAspectRatio.split(':');
@@ -571,7 +672,11 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @memberof CrCroppersUi
    */
   init() {
-    const { croppersId, imageSrc } = this;
+    const {
+      croppersId,
+      imageSrc,
+      initDelay
+    } = this;
 
     if (typeof imageSrc === 'undefined') {
       return;
@@ -610,7 +715,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
         const position = this.readFocalpointFromImage();
 
         this.displayFocalpoint(position);
-      }, this.initDelay);
+      }, initDelay);
     }
   }
 
@@ -691,49 +796,21 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function moveCropperCropBoxToPageXY
-   * @param {event} e - Event
+   * @param {object} args - Method arguments
+   * @param {number} args.pageX - Page X
+   * @param {number} args.pageY - Page Y
    * @memberof CrCroppersUi
    * @todo This sometimes needs to be clicked twice, needs to support a shaky hand (#5)
    * @todo Also support end of dragging
    */
-  moveCropperCropBoxToPageXY(e) {
+  moveCropperCropBoxToPageXY({ pageX, pageY }) {
     const {
-      croppersId,
       masterCropper
     } = this;
 
     const cropperWasDragged = this.masterCropperCropBoxWasDragged;
 
     this.masterCropperCropBoxWasDragged = false;
-
-    const {
-      pageX,
-      pageY
-    } = e.detail.originalEvent;
-
-    const {
-      imagePercentX: imagePercentXRaw,
-      imagePercentY: imagePercentYRaw
-    } = this.calcImagePercentXYFromPageXY({ pageX, pageY, round: false });
-
-    // change x and y so they correspond with a rounded percentage
-    const {
-      imagePercentX: imagePercentXRounded,
-      imagePercentY: imagePercentYRounded
-    } = this.calcImagePercentXYFromPageXY({ pageX, pageY, round: true });
-
-    const {
-      imageX,
-      imageY
-    } = this.calcImageXYFromImagePercentXY({
-      imagePercentX: imagePercentXRounded,
-      imagePercentY: imagePercentYRounded
-    });
-
-    const {
-      pageX: newPageX,
-      pageY: newPageY
-    } = this.calcPageXYFromImageXY({ imageX, imageY });
 
     const slaveCroppers = this.getSlaveCroppers(); // arr
 
@@ -748,92 +825,28 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     } = masterCropper.cropperInstance.getCanvasData();
 
     if (!cropperWasDragged) {
-      if (typeof Cypress === 'undefined') {
-        // two step process for visual awareness of rounding process
+      // two step process for visual awareness of rounding process
 
-        CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_x', imagePercentXRaw);
-        CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_y', imagePercentYRaw);
+      // move the cropper to the click location
+      this.moveMasterCropperCropBoxToPageXY({
+        pageX,
+        pageY
+      });
 
-        // move the cropper to the click location
-        this.moveMasterCropperCropBoxToPageXY({
+      slaveCroppers.forEach(cropper => {
+        const {
+          cropperInstance
+        } = cropper;
+
+        this.moveSlaveCropperCropBoxToPageXY({
+          cropper: cropperInstance,
           pageX,
-          pageY
+          pageY,
+          masterCropperCanvasOffsetTop,
+          masterCropperCanvasTop,
+          masterCropperCanvasLeft
         });
-
-        slaveCroppers.forEach(cropper => {
-          const {
-            cropperInstance
-          } = cropper;
-
-          this.moveSlaveCropperCropBoxToPageXY({
-            cropper: cropperInstance,
-            pageX,
-            pageY,
-            masterCropperCanvasOffsetTop,
-            masterCropperCanvasTop,
-            masterCropperCanvasLeft
-          });
-        });
-
-        CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-          msg: 'Rounding percentages for storage...'
-        });
-
-        setTimeout(() => {
-          // adjust the cropper position to reflect whole percentage values
-          CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_x', imagePercentXRounded);
-          CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_y', imagePercentYRounded);
-
-          this.moveMasterCropperCropBoxToPageXY({
-            pageX: newPageX,
-            pageY: newPageY
-          });
-
-          slaveCroppers.forEach(cropper => {
-            const {
-              cropperInstance
-            } = cropper;
-
-            this.moveSlaveCropperCropBoxToPageXY({
-              cropper: cropperInstance,
-              pageX: newPageX,
-              pageY: newPageY,
-              masterCropperCanvasOffsetTop,
-              masterCropperCanvasTop,
-              masterCropperCanvasLeft
-            });
-          });
-
-          CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-            msg: ''
-          });
-        }, 1000);
-      } else {
-        // single step process
-
-        CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_x', imagePercentXRounded);
-        CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_y', imagePercentYRounded);
-
-        this.moveMasterCropperCropBoxToPageXY({
-          pageX: newPageX,
-          pageY: newPageY
-        });
-
-        slaveCroppers.forEach(cropper => {
-          const {
-            cropperInstance
-          } = cropper;
-
-          this.moveSlaveCropperCropBoxToPageXY({
-            cropper: cropperInstance,
-            pageX: newPageX,
-            pageY: newPageY,
-            masterCropperCanvasOffsetTop,
-            masterCropperCanvasTop,
-            masterCropperCanvasLeft
-          });
-        });
-      }
+      });
     }
   }
 
