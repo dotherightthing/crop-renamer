@@ -153,6 +153,8 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     const { selectedClass } = this;
 
     document.querySelector(`.${selectedClass} img`).src = newFileName;
+
+    this.displayPath(newFileName);
   }
 
   /**

@@ -107,7 +107,7 @@ window.addEventListener('DOMContentLoaded', () => {
       zoomOnWheel: false // Enable to zoom the image by mouse wheeling
     },
     controlIds: {
-      deleteCropCoordinates: 'delete-crop-coordinates'
+      deleteImagePercentXYFromImage: 'delete-crop-coordinates'
     },
     initDelay: 5000,
     updateDelay: (typeof Cypress !== 'undefined') ? 0 : 1000
@@ -186,7 +186,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('read-crop-coordinates').addEventListener('click', () => {
-    const position = crCroppersUiInstance.getCropCoordinatesFromImage();
+    const position = crCroppersUiInstance.getImagePercentXYFromImage();
 
     crCroppersUiInstance.displayFocalpoint(position);
   });

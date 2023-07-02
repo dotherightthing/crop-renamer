@@ -23,13 +23,13 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /* Static methods */
 
   /**
-   * @function deleteCropCoordinates
+   * @function deleteImagePercentXYFromImage
    * @param {object} data - Data
    * @returns {string} newFileName
    * @memberof CrFile
    * @static
    */
-  static async deleteCropCoordinates(data) {
+  static async deleteImagePercentXYFromImage(data) {
     const { fileName } = data;
 
     let fileNameStr = fileName;
@@ -166,15 +166,19 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function saveCropCoordinates
+   * @function saveImagePercentXYToImage
+   * @param {event} event - CrFile:saveImagePercentXYToImage event captured by ipcMain.handle
    * @param {object} data - Data
+   * @param {string} data.fileName - File name
+   * @param {number} data.imagePercentX - Image percent X
+   * @param {number} data.imagePercentY - Image percent Y
    * @returns {string} newFileName
    * @memberof CrFile
    * @static
    * @see {@link https://www.geeksforgeeks.org/node-js-fs-rename-method/ }
    * @see {@link https://nodejs.dev/en/learn/nodejs-file-paths/ }
    */
-  static async saveCropCoordinates(data) {
+  static async saveImagePercentXYToImage(event, data) {
     const {
       fileName,
       imagePercentY,

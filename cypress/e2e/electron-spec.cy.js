@@ -18,7 +18,7 @@ describe('template spec', () => {
     cy.get('#image4').as('cropperBannerImg');
 
     cy.get('#read-crop-coordinates').as('readCropCoordinatesButton');
-    cy.get('#save-crop-coordinates').as('saveCropCoordinatesButton');
+    cy.get('#save-crop-coordinates').as('saveImagePercentXYToImageButton');
 
     cy.get('.cropper-master .cropper-canvas').as('cropperMasterCanvas');
     cy.get('.cropper-banner .cropper-canvas').as('cropperBannerCanvas');
@@ -338,8 +338,8 @@ describe('template spec', () => {
           it.skip('changeSourceImage', () => {});
           it.skip('destroy', () => {});
           it.skip('displayFocalpoint', () => {});
-          it.skip('getCropCoordinatesFromImage', () => {});
           it.skip('getCropperOptions', () => {});
+          it.skip('getImagePercentXYFromImage', () => {});
           it.skip('getMasterCropper', () => {});
           it.skip('getSlaveCroppers', () => {});
           it.skip('init', () => {});

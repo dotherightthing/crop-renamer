@@ -83,8 +83,8 @@ app.whenReady().then(() => {
 
   ipcMain.handle('CrFile:openInFinder', CrFile.openInFinder);
   ipcMain.handle('CrFile:selectFolder', CrFile.selectFolder);
-  ipcMain.handle('CrFile:deleteCropCoordinates', CrFile.deleteCropCoordinates);
-  ipcMain.handle('CrFile:saveCropCoordinates', CrFile.saveCropCoordinates);
+  ipcMain.handle('CrFile:deleteImagePercentXYFromImage', CrFile.deleteImagePercentXYFromImage);
+  ipcMain.handle('CrFile:saveImagePercentXYToImage', CrFile.saveImagePercentXYToImage);
 
   createWindow();
 

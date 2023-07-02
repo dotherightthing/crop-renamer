@@ -528,32 +528,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function getCropCoordinatesFromImage
-   * @summary Get the crop coordinates stored in the filename
-   * @returns {object} position
-   * @memberof CrCroppersUi
-   */
-  getCropCoordinatesFromImage() {
-    const { masterCropper } = this;
-    let position = {};
-
-    const masterCropperImageSrc = masterCropper.cropperInstance.element.src;
-
-    const regexp = /\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
-    const matches = masterCropperImageSrc.matchAll(regexp);
-    const matchesArr = [ ...matches ];
-
-    if (matchesArr.length) {
-      position = {
-        imagePercentX: matchesArr[0][1],
-        imagePercentY: matchesArr[0][2]
-      };
-    }
-
-    return position;
-  }
-
-  /**
    * @function getCropperOptions
    * @param {string} cropperAspectRatio - Cropper Aspect Ratio
    * @param {string} isCropperMaster - Is Cropper Master?
@@ -638,6 +612,32 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function getImagePercentXYFromImage
+   * @summary Get the crop coordinates stored in the filename
+   * @returns {object} position
+   * @memberof CrCroppersUi
+   */
+  getImagePercentXYFromImage() {
+    const { masterCropper } = this;
+    let position = {};
+
+    const masterCropperImageSrc = masterCropper.cropperInstance.element.src;
+
+    const regexp = /\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
+    const matches = masterCropperImageSrc.matchAll(regexp);
+    const matchesArr = [ ...matches ];
+
+    if (matchesArr.length) {
+      position = {
+        imagePercentX: matchesArr[0][1],
+        imagePercentY: matchesArr[0][2]
+      };
+    }
+
+    return position;
+  }
+
+  /**
    * @function getMasterCropper
    * @summary Get the object for the master cropper (which contains the cropperInstance)
    * @returns {object} { cropperInstance, isMaster, outputIds }
@@ -669,6 +669,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @function init
    * @summary Initialise cropper instances (master and slaves)
    * @memberof CrCroppersUi
+   * @todo initDelay is a bandaid - see #15
    */
   init() {
     const {
@@ -706,14 +707,26 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     //   rotateEl.prop('disabled', true);
     // }
 
-    // prevent position reset when visually debugging e2e tests via npx cypress open
     if (typeof Cypress === 'undefined') {
       setTimeout(() => {
-        this.resetFocalpoint();
+        const {
+          imagePercentX,
+          imagePercentY
+        } = this.getImagePercentXYFromImage();
 
-        const position = this.readFocalpointFromImage();
+        if ((typeof imagePercentX === 'undefined') || (typeof imagePercentY === 'undefined')) {
+          this.resetFocalpoint();
 
-        this.displayFocalpoint(position);
+          CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+            msg: 'Reset focalpoint'
+          });
+        } else {
+          this.displayFocalpoint({ imagePercentX, imagePercentY });
+
+          CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+            msg: 'Applied focalpoint from image'
+          });
+        }
       }, initDelay);
     }
   }
@@ -943,17 +956,17 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       masterCropper
     } = this;
 
-    const { deleteCropCoordinates } = controlIds;
+    const { deleteImagePercentXYFromImage } = controlIds;
 
     const fileName = masterCropper.cropperInstance.element.src;
 
-    document.getElementById(deleteCropCoordinates).disabled = true;
+    document.getElementById(deleteImagePercentXYFromImage).disabled = true;
 
-    const newFileName = await window.electronAPI.deleteCropCoordinates({
+    const newFileName = await window.electronAPI.deleteImagePercentXYFromImage({
       fileName
     });
 
-    document.getElementById(deleteCropCoordinates).disabled = false;
+    document.getElementById(deleteImagePercentXYFromImage).disabled = false;
 
     masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
 
@@ -973,8 +986,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    */
   resetFocalpoint() {
     const position = {
-      imagePercentY: 50,
-      imagePercentX: 50
+      imagePercentX: 50,
+      imagePercentY: 50
     };
 
     this.displayFocalpoint(position);
@@ -1040,28 +1053,32 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   async writeCropCoordinatesToImage() {
     const {
       controlIds,
+      croppersId,
       masterCropper
     } = this;
 
-    const { deleteCropCoordinates } = controlIds;
+    const { deleteImagePercentXYFromImage } = controlIds;
 
     const imagePercentY = CrDebugUi.getDebugParameterValue(masterCropper, 'image.focalpoint_y');
     const imagePercentX = CrDebugUi.getDebugParameterValue(masterCropper, 'image.focalpoint_x');
 
     const fileName = masterCropper.cropperInstance.element.src;
 
-    document.getElementById(deleteCropCoordinates).disabled = true;
+    document.getElementById(deleteImagePercentXYFromImage).disabled = true;
 
-    const newFileName = await window.electronAPI.saveCropCoordinates({
+    const newFileName = await window.electronAPI.saveImagePercentXYToImage({
       fileName,
       imagePercentY,
       imagePercentX
     });
 
-    document.getElementById(deleteCropCoordinates).disabled = false;
+    CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
+      newFileName
+    });
+
+    document.getElementById(deleteImagePercentXYFromImage).disabled = false;
 
     masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
-    document.querySelectorAll('.thumbs .btn-selected img').src = newFileName;
   }
 
   /* Static methods */

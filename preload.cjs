@@ -19,6 +19,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   openInFinder: (data) => ipcRenderer.invoke('CrFile:openInFinder', data),
   selectFolder: (data) => ipcRenderer.invoke('CrFile:selectFolder', data),
-  deleteCropCoordinates: (data) => ipcRenderer.invoke('CrFile:deleteCropCoordinates', data),
-  saveCropCoordinates: (data) => ipcRenderer.invoke('CrFile:saveCropCoordinates', data)
+  deleteImagePercentXYFromImage: (data) => ipcRenderer.invoke('CrFile:deleteImagePercentXYFromImage', data),
+  saveImagePercentXYToImage: (data) => ipcRenderer.invoke('CrFile:saveImagePercentXYToImage', data)
 });
