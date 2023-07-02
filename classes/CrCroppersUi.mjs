@@ -193,17 +193,15 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   /* Instance methods */
 
   /**
-   * @function setFocalPoint
-   * @summary Convert image percentage X/Y to crop Left/Top
+   * @function displayFocalpoint
+   * @summary Show focalpoint in UI
    * @param {object} args - Arguments
    * @param {number} args.imagePercentY - Image percentage top
    * @param {number} args.imagePercentX - Image percentage left
    * @memberof CrCroppersUi
    * @todo Reset position is incorrect for image #5
    */
-  setFocalPoint({ imagePercentY, imagePercentX }) {
-    // const { masterCropper } = this;
-
+  displayFocalpoint({ imagePercentY, imagePercentX }) {
     // simulate click event
     this.masterCropperCropBoxWasDragged = false;
 
@@ -217,33 +215,16 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       pageY
     } = this.calcPageXYFromImageXY({ imageX, imageY });
 
-    // const {
-    //   cropBoxX,
-    //   cropBoxY
-    // } = calcCropBoxXYFromPageXY({ pageX, pageY });
+    const e = {
+      detail: {
+        originalEvent: {
+          pageX,
+          pageY
+        }
+      }
+    };
 
-    // ok
-    // TODO call moveMasterCropperCropBoxToPageXY instead
-    // masterCropper.cropperInstance.setCropBoxData({
-    //   top: cropBoxY,
-    //   left: cropBoxX
-    // });
-
-    // const e = {
-    //   detail: {
-    //     originalEvent: {
-    //       pageX,
-    //       pageY
-    //     }
-    //   }
-    // };
-
-    // this.moveCropperCropBoxToPageXY(e);
-
-    this.moveMasterCropperCropBoxToPageXY({
-      pageX,
-      pageY
-    });
+    this.moveCropperCropBoxToPageXY(e);
   }
 
   /**
@@ -624,11 +605,11 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     // prevent position reset when visually debugging e2e tests via npx cypress open
     if (typeof Cypress === 'undefined') {
       setTimeout(() => {
-        this.resetFocalPoint();
+        this.resetFocalpoint();
 
-        const position = this.readFocalPointFromImage();
+        const position = this.readFocalpointFromImage();
 
-        this.setFocalPoint(position);
+        this.displayFocalpoint(position);
       }, this.initDelay);
     }
   }
@@ -716,7 +697,10 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @todo Also support end of dragging
    */
   moveCropperCropBoxToPageXY(e) {
-    const { masterCropper, croppersId } = this;
+    const {
+      croppersId,
+      masterCropper
+    } = this;
 
     const cropperWasDragged = this.masterCropperCropBoxWasDragged;
 
@@ -734,14 +718,17 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     // change x and y so they correspond with a rounded percentage
     const {
-      imagePercentX,
-      imagePercentY
+      imagePercentX: imagePercentXRounded,
+      imagePercentY: imagePercentYRounded
     } = this.calcImagePercentXYFromPageXY({ pageX, pageY, round: true });
 
     const {
       imageX,
       imageY
-    } = this.calcImageXYFromImagePercentXY({ imagePercentX, imagePercentY });
+    } = this.calcImageXYFromImagePercentXY({
+      imagePercentX: imagePercentXRounded,
+      imagePercentY: imagePercentYRounded
+    });
 
     const {
       pageX: newPageX,
@@ -794,8 +781,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
         setTimeout(() => {
           // adjust the cropper position to reflect whole percentage values
-          CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_x', imagePercentX);
-          CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_y', imagePercentY);
+          CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_x', imagePercentXRounded);
+          CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_y', imagePercentYRounded);
 
           this.moveMasterCropperCropBoxToPageXY({
             pageX: newPageX,
@@ -824,8 +811,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       } else {
         // single step process
 
-        CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_x', imagePercentX);
-        CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_y', imagePercentY);
+        CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_x', imagePercentXRounded);
+        CrDebugUi.setDebugParameter(masterCropper, 'image.focalpoint_y', imagePercentYRounded);
 
         this.moveMasterCropperCropBoxToPageXY({
           pageX: newPageX,
@@ -913,13 +900,13 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function readFocalPointFromImage
+   * @function readFocalpointFromImage
    * @summary Read focal point position from filename
    * @returns {object} { imagePercentY, imagePercentX }
    * @memberof CrCroppersUi
    * @todo Finish - this is only placeholder code for testing purposes.
    */
-  readFocalPointFromImage() {
+  readFocalpointFromImage() {
     const { croppersId } = this;
 
     CrUtilsUi.emitEvent(croppersId, 'statusChange', {
@@ -968,17 +955,17 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function resetFocalPoint
+   * @function resetFocalpoint
    * @summary Set default focal point position
    * @memberof CrCroppersUi
    */
-  resetFocalPoint() {
+  resetFocalpoint() {
     const position = {
       imagePercentY: 50,
       imagePercentX: 50
     };
 
-    this.setFocalPoint(position);
+    this.displayFocalpoint(position);
   }
 
   /**

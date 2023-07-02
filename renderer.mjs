@@ -174,11 +174,11 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('read-crop-coordinates').addEventListener('click', () => {
     const position = crCroppersUiInstance.getCropCoordinatesFromImage();
 
-    crCroppersUiInstance.setFocalPoint(position);
+    crCroppersUiInstance.displayFocalpoint(position);
   });
 
   document.getElementById('reset-focal-point').addEventListener('click', (event) => {
-    crCroppersUiInstance.resetFocalPoint(event);
+    crCroppersUiInstance.resetFocalpoint(event);
   });
 
   document.getElementById('root').addEventListener('selectedFolder', (event) => {

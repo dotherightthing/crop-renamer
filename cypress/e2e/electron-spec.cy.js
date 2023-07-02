@@ -60,15 +60,15 @@ describe('template spec', () => {
               const { width, naturalWidth } = cropper.getImageData();
               const scale = width / naturalWidth;
 
-              cy.fixture(`${image}.json`).then(imageFocalPoints => {
-                imageFocalPoints.forEach(imageFocalPoint => {
+              cy.fixture(`${image}.json`).then(imageFocalpoints => {
+                imageFocalpoints.forEach(imageFocalpoint => {
                   const {
                     id,
                     x: fixtureX,
                     y: fixtureY,
                     percentX: fixturePercentX,
                     percentY: fixturePercentY
-                  } = imageFocalPoint;
+                  } = imageFocalpoint;
 
                   const imageX = fixtureX * scale;
                   const imageY = fixtureY * scale;
@@ -109,7 +109,7 @@ describe('template spec', () => {
     describe('CrCroppersUi', () => {
       images.forEach((image, imageIndex) => {
         describe(image, () => {
-          it.skip('setFocalPoint', () => {});
+          it.skip('displayFocalpoint', () => {});
 
           it('calcCanvasOffsets', () => {
             cy.get('#thumbs .thumb').eq(imageIndex).find('button').click();
@@ -160,14 +160,14 @@ describe('template spec', () => {
               cy.get('@croppers').then($el2 => {
                 const { crCroppersUi } = $el2[0];
 
-                cy.fixture(`${image}.json`).then(imageFocalPoints => {
-                  imageFocalPoints.forEach(imageFocalPoint => {
+                cy.fixture(`${image}.json`).then(imageFocalpoints => {
+                  imageFocalpoints.forEach(imageFocalpoint => {
                     const {
                       x: fixtureX,
                       y: fixtureY,
                       percentX: fixturePercentX,
                       percentY: fixturePercentY
-                    } = imageFocalPoint;
+                    } = imageFocalpoint;
 
                     const imagePercentX = fixturePercentX;
                     const imagePercentY = fixturePercentY;
@@ -247,8 +247,8 @@ describe('template spec', () => {
               cy.get('@croppers').then($el2 => {
                 const { crCroppersUi } = $el2[0];
 
-                cy.fixture(`${image}.json`).then(imageFocalPoints => {
-                  imageFocalPoints.forEach(imageFocalPoint => {
+                cy.fixture(`${image}.json`).then(imageFocalpoints => {
+                  imageFocalpoints.forEach(imageFocalpoint => {
                     const {
                       w: fixtureW,
                       h: fixtureH,
@@ -256,7 +256,7 @@ describe('template spec', () => {
                       y: fixtureY,
                       percentX: fixturePercentX,
                       percentY: fixturePercentY
-                    } = imageFocalPoint;
+                    } = imageFocalpoint;
 
                     const imageW = fixtureW * scale;
                     const imageH = fixtureH * scale;
@@ -303,14 +303,14 @@ describe('template spec', () => {
                   const canvasLeft = $el3[0].getBoundingClientRect().left;
                   const canvasTop = $el3[0].getBoundingClientRect().top;
 
-                  cy.fixture(`${image}.json`).then(imageFocalPoints => {
-                    imageFocalPoints.forEach(imageFocalPoint => {
+                  cy.fixture(`${image}.json`).then(imageFocalpoints => {
+                    imageFocalpoints.forEach(imageFocalpoint => {
                       const {
                         x: fixtureX,
                         y: fixtureY,
                         percentX: fixturePercentX,
                         percentY: fixturePercentY
-                      } = imageFocalPoint;
+                      } = imageFocalpoint;
 
                       const imageX = fixtureX * scale;
                       const imageY = fixtureY * scale;
@@ -355,11 +355,11 @@ describe('template spec', () => {
 
           it.skip('moveSlaveCropperCropBoxToPageXY', () => {});
 
-          it.skip('readFocalPointFromImage', () => {});
+          it.skip('readFocalpointFromImage', () => {});
 
           it.skip('removeCropCoordinatesFromImage', () => {});
 
-          it.skip('resetFocalPoint', () => {});
+          it.skip('resetFocalpoint', () => {});
 
           it.skip('scaleSlaveVal', () => {});
 
