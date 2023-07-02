@@ -34,6 +34,10 @@ async function uiSelectFolder() {
           dateTimeOriginal: '2023:01:03 05:35:26'
         },
         {
+          src: './cypress/fixtures/portrait-with-rotation.jpeg',
+          dateTimeOriginal: '2023:01:03 05:35:26'
+        },
+        {
           src: './cypress/fixtures/panorama.jpeg',
           dateTimeOriginal: '2023:01:03 09:35:26'
         },
@@ -83,7 +87,7 @@ window.addEventListener('DOMContentLoaded', () => {
       background: true, // Show the grid background of the container
       center: true, // Show the center indicator above the crop box
       checkCrossOrigin: true, // Check if the current image is a cross-origin image
-      checkOrientation: true, // Check the current image's Exif Orientation information
+      checkOrientation: false, // Check the current image's Exif Orientation information
       cropBoxMovable: false, // Enable to move the crop box by dragging
       cropBoxResizable: false, // Enable to resize the crop box by dragging
       dragMode: 'none', // create a new crop box | move the canvas | do nothing

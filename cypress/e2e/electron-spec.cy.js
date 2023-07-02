@@ -1,6 +1,7 @@
 const images = [
   'landscape.jpeg',
   'portrait.jpeg',
+  'portrait-with-rotation.jpeg',
   'panorama.jpeg',
   'square.jpg',
   'screenshot.PNG'

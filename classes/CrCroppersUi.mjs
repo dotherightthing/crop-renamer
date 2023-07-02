@@ -214,7 +214,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @param {number} args.imagePercentY - Image percentage top
    * @param {number} args.imagePercentX - Image percentage left
    * @memberof CrCroppersUi
-   * @todo Reset position is incorrect for image #5
    */
   displayFocalpoint({ imagePercentY, imagePercentX }) {
     const {
