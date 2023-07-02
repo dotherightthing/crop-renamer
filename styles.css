@@ -57,7 +57,7 @@ body {
 
 /* .debug-bar */
 
-.debug-bar {
+.debug-bar > div {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -80,6 +80,12 @@ img {
   grid-template-rows: var(--cropper-slave-height) var(--cropper-slave-height);
   grid-template-columns: 1fr 20% 20%;
   row-gap: var(--gutter);
+  column-gap: var(--gutter);
+}
+
+.grid-debug-bar {
+  display: grid;
+  grid-template-columns: 1fr calc(40% + var(--gutter));
   column-gap: var(--gutter);
 }
 
@@ -274,7 +280,8 @@ img {
 /* .debug-action, .debug-param */
 
 .debug-action,
-.debug-param {
+.debug-param,
+.debug-status-msg {
   background-color: var(--color-bg-tertiary);
   color: var(--color-primary);
   font-family: sans-serif;
@@ -300,7 +307,8 @@ img {
   pointer-events: none;
 }
 
-.debug-param {
+.debug-param,
+.debug-status-msg {
   height: var(--height-debug-bar-inner);
   padding: var(--gutter-half) var(--gutter-double);
   border: 0;
@@ -316,6 +324,17 @@ img {
   padding: 0;
   border: 0;
   margin: 0;
+}
+
+.debug-status-msg {
+  background-color: transparent;
+  padding: var(--gutter-half);
+  border: 0;
+  margin: 0;
+}
+
+.debug-status-msg > span:last-child {
+  display: block;
 }
 
 .debug-bar .legend {

@@ -595,7 +595,10 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     });
 
     if (!this.croppers.length) {
-      console.log('Croppers could not be initialised');
+      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+        msg: 'Croppers could not be initialised'
+      });
+
       return;
     }
 
@@ -868,6 +871,12 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @todo Finish - this is only placeholder code for testing purposes.
    */
   readFocalPointFromImage() {
+    const { croppersId } = this;
+
+    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+      msg: 'Loaded focal point from image'
+    });
+
     return {
       imagePercentY: 50,
       imagePercentX: 50
@@ -899,6 +908,10 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     document.getElementById(deleteCropCoordinates).disabled = false;
 
     masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
+
+    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+      msg: `Renamed ${fileName} to ${newFileName}`
+    });
 
     CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
       newFileName

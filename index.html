@@ -10,23 +10,31 @@
   <body>
     <div class="layout">
       <div class="editor">
-        <div class="debug-bar" id="debug-bar">
-          <button type="button" class="debug-action" id="reset-focal-point">
-            <span class="legend">Reset</span>
-            Focal point
-          </button>
-          <button type="button" class="debug-action" id="save-crop-coordinates">
-            <span class="legend">Write</span>
-            Crop coordinates to image
-          </button>
-          <button type="button" class="debug-action" id="read-crop-coordinates">
-            <span class="legend">Read</span>
-            Crop coordinates from image
-          </button>
-          <button type="button" class="debug-action" id="delete-crop-coordinates">
-            <span class="legend">Remove</span>
-            Crop coordinates from image
-          </button>
+        <div class="debug-bar grid-debug-bar">
+          <div class="debug-actions-params" id="debug-bar">
+            <button type="button" class="debug-action" id="reset-focal-point">
+              <span class="legend">Reset</span>
+              Focal point
+            </button>
+            <button type="button" class="debug-action" id="save-crop-coordinates">
+              <span class="legend">Write</span>
+              Crop coordinates to image
+            </button>
+            <button type="button" class="debug-action" id="read-crop-coordinates">
+              <span class="legend">Read</span>
+              Crop coordinates from image
+            </button>
+            <button type="button" class="debug-action" id="delete-crop-coordinates">
+              <span class="legend">Remove</span>
+              Crop coordinates from image
+            </button>
+          </div>
+          <div class="debug-status">
+            <p class="debug-status-msg">
+              <span class="legend">Status: </span>
+              <span id="debug-status"></span>
+            </p>
+          </div>
         </div>
         <div class="grid-croppers" id="croppers">
           <div class="img-container cropper-master">

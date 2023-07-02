@@ -17,12 +17,14 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
     // select the relevant arguments from the config object passed in
     const {
       debugBarId,
-      debugFieldClass
+      debugFieldClass,
+      debugMsgId
     } = config;
 
     Object.assign(this, {
       debugBarId,
-      debugFieldClass
+      debugFieldClass,
+      debugMsgId
     });
   }
 
@@ -54,6 +56,19 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
     this._debugFieldClass = dtrtValidate.validate(debugFieldClass, 'string', 'CrDebugUi.debugFieldClass');
   }
 
+  /**
+   * debugMsgId
+   * @type {string}
+   * @memberof CrDebugUi
+   */
+  get debugMsgId() {
+    return this._debugMsgId;
+  }
+
+  set debugMsgId(debugMsgId) {
+    this._debugMsgId = dtrtValidate.validate(debugMsgId, 'string', 'CrDebugUi.debugMsgId');
+  }
+
   /* Instance methods */
 
   /**
@@ -73,6 +88,15 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
     inputs.forEach(input => {
       input.value = '-';
     });
+  }
+
+  /**
+   * @function clearDebugMsg
+   * @summary Clear debug message in UI
+   * @memberof CrDebugUi
+   */
+  clearDebugMsg() {
+    this.setDebugMsg('');
   }
 
   /**
@@ -154,6 +178,18 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
     CrUtilsUi.emitEvent(debugBarId, 'injectedDebugFields', {
       cropperDebugFieldIds
     });
+  }
+
+  /**
+   * @function setDebugMsg
+   * @summary Display debug message in UI
+   * @param {string} msg - Message
+   * @memberof CrDebugUi
+   */
+  setDebugMsg(msg) {
+    const { debugMsgId } = this;
+
+    document.getElementById(debugMsgId).innerHTML = msg;
   }
 
   /* Static methods */

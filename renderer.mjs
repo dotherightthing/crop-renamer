@@ -110,7 +110,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const crDebugUiInstance = new CrDebugUi({
     debugBarId: 'debug-bar',
-    debugFieldClass: 'debug-param'
+    debugFieldClass: 'debug-param',
+    debugMsgId: 'debug-status'
   });
 
   const crThumbsUiInstance = new CrThumbsUi({
@@ -151,6 +152,13 @@ window.addEventListener('DOMContentLoaded', () => {
     const { newFileName } = event.detail;
 
     crThumbsUiInstance.changeSelectedImageSrc(newFileName);
+  });
+
+  document.getElementById('croppers').addEventListener('statusChange', (event) => {
+    const { msg } = event.detail;
+
+    crDebugUiInstance.clearDebugMsg();
+    crDebugUiInstance.setDebugMsg(msg);
   });
 
   document.getElementById('debug-bar').addEventListener('injectedDebugFields', (event) => {
