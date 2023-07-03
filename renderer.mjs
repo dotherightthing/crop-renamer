@@ -182,17 +182,11 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('delete-crop-coordinates').addEventListener('click', (event) => {
-    crCroppersUiInstance.removeCropCoordinatesFromImage(event);
-  });
-
-  document.getElementById('read-crop-coordinates').addEventListener('click', () => {
-    const position = crCroppersUiInstance.getImagePercentXYFromImage();
-
-    crCroppersUiInstance.displayFocalpoint(position);
+    crCroppersUiInstance.deleteImagePercentXYFromImage(event);
   });
 
   document.getElementById('reset-focal-point').addEventListener('click', (event) => {
-    crCroppersUiInstance.resetFocalpoint(event);
+    crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
   });
 
   document.getElementById('root').addEventListener('selectedFolder', (event) => {
@@ -202,7 +196,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('save-crop-coordinates').addEventListener('click', () => {
-    crCroppersUiInstance.writeCropCoordinatesToImage();
+    crCroppersUiInstance.writeImagePercentXYToImage();
   });
 
   document.getElementById('thumbs').addEventListener('click', (event) => {

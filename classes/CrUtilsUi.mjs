@@ -58,4 +58,21 @@ export class CrUtilsUi { // eslint-disable-line no-unused-vars
 
     return offset;
   }
+
+  /**
+   * @function isEmptyObject
+   * @summary Determine whether an object is empty ({})
+   * @param {object} obj - Object
+   * @returns {boolean} is empty
+   * @see {@link https://stackoverflow.com/a/49729848}
+   * @memberof CrUtilsUi
+   * @static
+   */
+  static isEmptyObject(obj) {
+    return (
+      Object.getPrototypeOf(obj) === Object.prototype
+      && Object.getOwnPropertyNames(obj).length === 0
+      && Object.getOwnPropertySymbols(obj).length === 0
+    );
+  }
 }

@@ -24,12 +24,14 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function deleteImagePercentXYFromImage
+   * @param {event} event - CrFile:openInFinder event captured by ipcMain.handle
    * @param {object} data - Data
+   * @param {string} data.fileName - Filename
    * @returns {string} newFileName
    * @memberof CrFile
    * @static
    */
-  static async deleteImagePercentXYFromImage(data) {
+  static async deleteImagePercentXYFromImage(event, data) {
     const { fileName } = data;
 
     let fileNameStr = fileName;
@@ -37,9 +39,9 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     fileNameStr = fileNameStr.replace(/%20/g, ' ');
 
     const dirName = path.dirname(fileNameStr);
-    const fileName2 = path.basename(fileNameStr); // foo.ext
+    const fileNameAndExt = path.basename(fileNameStr); // foo.ext
     const extName = path.extname(fileNameStr); // .ext
-    const fileNameOnly = fileName2.replace(extName, '');
+    const fileNameOnly = fileNameAndExt.replace(extName, '');
 
     const folderPath = resolve(__dirname, dirName); // same same
 
@@ -192,13 +194,13 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     const regex = /__\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
 
     const dirName = path.dirname(fileNameStr);
-    const fileName2 = path.basename(fileNameStr); // foo.ext
+    const fileNameAndExt = path.basename(fileNameStr); // foo.ext | foo__[nn%,nn%].ext
     const extName = path.extname(fileNameStr); // .ext
-    const fileNameOnly = fileName2.replace(extName, '').replace(regex, '');
+    const fileNameOnly = fileNameAndExt.replace(extName, '').replace(regex, ''); // foo
 
     const folderPath = resolve(__dirname, dirName); // same same
 
-    const oldFileName = `${folderPath}/${fileNameOnly}${extName}`;
+    const oldFileName = `${folderPath}/${fileNameAndExt}`;
     const newFileName = `${folderPath}/${fileNameOnly}__[${imagePercentX}%,${imagePercentY}%]${extName}`;
 
     fs.rename(oldFileName, newFileName, (error) => {

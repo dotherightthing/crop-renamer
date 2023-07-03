@@ -486,14 +486,14 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function displayFocalpoint
+   * @function displayImagePercentXY
    * @summary Show focalpoint in UI
    * @param {object} args - Arguments
    * @param {number} args.imagePercentY - Image percentage top
    * @param {number} args.imagePercentX - Image percentage left
    * @memberof CrCroppersUi
    */
-  displayFocalpoint({ imagePercentY, imagePercentX }) {
+  displayImagePercentXY({ imagePercentY, imagePercentX }) {
     const {
       croppersId,
       masterCropper
@@ -613,13 +613,17 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function getImagePercentXYFromImage
-   * @summary Get the crop coordinates stored in the filename
-   * @returns {object} position
+   * @summary Get the values stored in the filename
+   * @returns {object} imagePercentXY
    * @memberof CrCroppersUi
    */
   getImagePercentXYFromImage() {
-    const { masterCropper } = this;
-    let position = {};
+    const {
+      croppersId,
+      masterCropper
+    } = this;
+
+    let imagePercentXY = {};
 
     const masterCropperImageSrc = masterCropper.cropperInstance.element.src;
 
@@ -628,13 +632,17 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     const matchesArr = [ ...matches ];
 
     if (matchesArr.length) {
-      position = {
+      imagePercentXY = {
         imagePercentX: matchesArr[0][1],
         imagePercentY: matchesArr[0][2]
       };
+
+      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+        msg: 'Read focalpoint from filename'
+      });
     }
 
-    return position;
+    return imagePercentXY;
   }
 
   /**
@@ -715,17 +723,13 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
         } = this.getImagePercentXYFromImage();
 
         if ((typeof imagePercentX === 'undefined') || (typeof imagePercentY === 'undefined')) {
-          this.resetFocalpoint();
+          this.reinstateImagePercentXYFromImage();
 
           CrUtilsUi.emitEvent(croppersId, 'statusChange', {
             msg: 'Reset focalpoint'
           });
         } else {
-          this.displayFocalpoint({ imagePercentX, imagePercentY });
-
-          CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-            msg: 'Applied focalpoint from image'
-          });
+          this.displayImagePercentXY({ imagePercentX, imagePercentY });
         }
       }, initDelay);
     }
@@ -925,31 +929,10 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function readFocalpointFromImage
-   * @summary Read focal point position from filename
-   * @returns {object} { imagePercentY, imagePercentX }
+   * @function deleteImagePercentXYFromImage
    * @memberof CrCroppersUi
-   * @todo Finish - this is only placeholder code for testing purposes.
    */
-  readFocalpointFromImage() {
-    const { croppersId } = this;
-
-    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-      msg: 'Loaded focal point from image'
-    });
-
-    return {
-      imagePercentY: 50,
-      imagePercentX: 50
-    };
-  }
-
-  /**
-   * @function removeCropCoordinatesFromImage
-   * @memberof CrCroppersUi
-   * @static
-   */
-  async removeCropCoordinatesFromImage() {
+  async deleteImagePercentXYFromImage() {
     const {
       controlIds,
       croppersId,
@@ -971,7 +954,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
 
     CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-      msg: `Renamed ${fileName} to ${newFileName}`
+      msg: 'Removed focalpoint from filename'
     });
 
     CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
@@ -980,17 +963,20 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function resetFocalpoint
-   * @summary Set default focal point position
+   * @function reinstateImagePercentXYFromImage
    * @memberof CrCroppersUi
    */
-  resetFocalpoint() {
-    const position = {
-      imagePercentX: 50,
-      imagePercentY: 50
-    };
+  reinstateImagePercentXYFromImage() {
+    let imagePercentXY = this.getImagePercentXYFromImage();
 
-    this.displayFocalpoint(position);
+    if (CrUtilsUi.isEmptyObject(imagePercentXY)) {
+      imagePercentXY = {
+        imagePercentX: 50,
+        imagePercentY: 50
+      };
+    }
+
+    this.displayImagePercentXY(imagePercentXY);
   }
 
   /**
@@ -1044,13 +1030,11 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function writeCropCoordinatesToImage
-   * @summary Save the crop XY to the image file
+   * @function writeImagePercentXYToImage
+   * @summary Save the values to the image filename
    * @memberof CrCroppersUi
-   * @todo Working but top and left aren't correct for both tested images
-   * @todo Refresh thumbnail and image src after renaming image file
    */
-  async writeCropCoordinatesToImage() {
+  async writeImagePercentXYToImage() {
     const {
       controlIds,
       croppersId,
@@ -1063,6 +1047,14 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     const imagePercentX = CrDebugUi.getDebugParameterValue(masterCropper, 'image.focalpoint_x');
 
     const fileName = masterCropper.cropperInstance.element.src;
+
+    if (isNaN(imagePercentX) || isNaN(imagePercentY)) { // eslint-disable-line no-restricted-globals
+      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+        msg: 'Write failed - focalpoint percentages not available. Please click image to set a focalpoint.'
+      });
+
+      return;
+    }
 
     document.getElementById(deleteImagePercentXYFromImage).disabled = true;
 
@@ -1079,6 +1071,10 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     document.getElementById(deleteImagePercentXYFromImage).disabled = false;
 
     masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
+
+    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+      msg: 'Saved focalpoint to filename'
+    });
   }
 
   /* Static methods */

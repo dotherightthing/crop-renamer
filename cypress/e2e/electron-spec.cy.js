@@ -17,9 +17,6 @@ describe('template spec', () => {
     cy.get('#image3').as('cropperThumbnailImg');
     cy.get('#image4').as('cropperBannerImg');
 
-    cy.get('#read-crop-coordinates').as('readCropCoordinatesButton');
-    cy.get('#save-crop-coordinates').as('saveImagePercentXYToImageButton');
-
     cy.get('.cropper-master .cropper-canvas').as('cropperMasterCanvas');
     cy.get('.cropper-banner .cropper-canvas').as('cropperBannerCanvas');
     cy.get('.cropper-collapsed .cropper-canvas').as('cropperCollapsedCanvas');
@@ -192,48 +189,6 @@ describe('template spec', () => {
           });
 
           it.skip('calcImageXYFromPageXY', () => {});
-          it.skip('calcPageXYForRoundedImagePercentXY', () => {});
-
-          it('calcPageXYFromImageXY', () => {
-            cy.get('#thumbs .thumb').eq(imageIndex).find('button').click();
-            cy.get('#thumbs .thumb').eq(imageIndex).find('button').should('have.class', 'btn-selected');
-            cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
-
-            // avoid false negatives while image rendering into UI
-            cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
-
-            cy.get('@cropperMasterImg').then($el => {
-              const cropper = $el[0].cropper;
-              const { width, naturalWidth } = cropper.getImageData();
-              const scale = width / naturalWidth;
-              const imageX = 1609 * scale;
-              const imageY = 1735 * scale;
-
-              // and then check that programmatically retrieved coordinates are the same
-
-              cy.get('@croppers').then($c => {
-                const { crCroppersUi } = $c[0];
-                const { pageX, pageY } = crCroppersUi.calcPageXYFromImageXY({ imageX, imageY });
-
-                cy.get('@cropperMasterCanvas').then($el2 => {
-                  const canvasTop = $el2[0].getBoundingClientRect().top;
-
-                  cy.getTransformTranslateX($el2).then(val => {
-                    if (image === 'screenshot.PNG') {
-                      // rounding avoids fail: screenshot.PNG expected 770.5129310344828 to equal 770.5132689828356
-                      cy.roundToDp(imageX + val, 2).then(comboVal => {
-                        cy.roundToDp(pageX, 2).should('equal', comboVal);
-                      });
-                    } else {
-                      expect(pageX).to.equal(imageX + val);
-                    }
-                  });
-
-                  expect(pageY).to.equal(imageY + canvasTop);
-                });
-              });
-            });
-          });
 
           it('calcImagePercentXYFromImageXorY', () => {
             cy.get('#thumbs .thumb').eq(imageIndex).find('button').click();
@@ -335,9 +290,53 @@ describe('template spec', () => {
             });
           });
 
+          it.skip('calcPageXYForRoundedImagePercentXY', () => {});
+
+          it('calcPageXYFromImageXY', () => {
+            cy.get('#thumbs .thumb').eq(imageIndex).find('button').click();
+            cy.get('#thumbs .thumb').eq(imageIndex).find('button').should('have.class', 'btn-selected');
+            cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
+
+            // avoid false negatives while image rendering into UI
+            cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
+
+            cy.get('@cropperMasterImg').then($el => {
+              const cropper = $el[0].cropper;
+              const { width, naturalWidth } = cropper.getImageData();
+              const scale = width / naturalWidth;
+              const imageX = 1609 * scale;
+              const imageY = 1735 * scale;
+
+              // and then check that programmatically retrieved coordinates are the same
+
+              cy.get('@croppers').then($c => {
+                const { crCroppersUi } = $c[0];
+                const { pageX, pageY } = crCroppersUi.calcPageXYFromImageXY({ imageX, imageY });
+
+                cy.get('@cropperMasterCanvas').then($el2 => {
+                  const canvasTop = $el2[0].getBoundingClientRect().top;
+
+                  cy.getTransformTranslateX($el2).then(val => {
+                    if (image === 'screenshot.PNG') {
+                      // rounding avoids fail: screenshot.PNG expected 770.5129310344828 to equal 770.5132689828356
+                      cy.roundToDp(imageX + val, 2).then(comboVal => {
+                        cy.roundToDp(pageX, 2).should('equal', comboVal);
+                      });
+                    } else {
+                      expect(pageX).to.equal(imageX + val);
+                    }
+                  });
+
+                  expect(pageY).to.equal(imageY + canvasTop);
+                });
+              });
+            });
+          });
+
           it.skip('changeSourceImage', () => {});
+          it.skip('deleteImagePercentXYFromImage', () => {});
           it.skip('destroy', () => {});
-          it.skip('displayFocalpoint', () => {});
+          it.skip('displayImagePercentXY', () => {});
           it.skip('getCropperOptions', () => {});
           it.skip('getImagePercentXYFromImage', () => {});
           it.skip('getMasterCropper', () => {});
@@ -348,12 +347,10 @@ describe('template spec', () => {
           it.skip('moveCropperCropBoxToPageXY', () => {});
           it.skip('moveMasterCropperCropBoxToPageXY', () => {});
           it.skip('moveSlaveCropperCropBoxToPageXY', () => {});
-          it.skip('readFocalpointFromImage', () => {});
-          it.skip('removeCropCoordinatesFromImage', () => {});
-          it.skip('resetFocalpoint', () => {});
+          it.skip('reinstateImagePercentXYFromImage', () => {});
           it.skip('scaleSlaveVal', () => {});
           it.skip('validateCroppersImage', () => {});
-          it.skip('writeCropCoordinatesToImage', () => {});
+          it.skip('writeImagePercentXYToImage', () => {});
 
           /* Static methods */
         });
@@ -399,6 +396,7 @@ describe('template spec', () => {
       /* Static methods */
       it.skip('emitEvent', () => {});
       it.skip('getOffset', () => {});
+      it.skip('isEmptyObject', () => {});
     });
   });
 });
