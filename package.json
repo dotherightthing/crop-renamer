@@ -9,7 +9,6 @@
     "lint:js": "npx eslint ./*.*js && npx eslint ./classes/*.*js",
     "prepare": "husky install",
     "serve": "http-server ./ --port 8000 --silent",
-    "serve:firefox": "http-server ./ --port 8000 --silent && open -a \"Firefox Developer Edition\" --args --kiosk -private-window http://127.0.0.1:8000/ -devtools",
     "start": "electron .",
     "test": "start-server-and-test serve http://127.0.0.1:8000 test:cypress",
     "test:cypress": "cypress run --browser firefox:dev"
