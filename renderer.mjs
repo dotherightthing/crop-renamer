@@ -186,7 +186,10 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelector('#croppers .img-container:last-child img').addEventListener('ready', () => {
-    crCroppersUiInstance.initImagePercentXY();
+    // short timeout prevents intermittent (browser) error from CrCroppersUi.calcCanvasOffsets()
+    setTimeout(() => {
+      crCroppersUiInstance.initImagePercentXY();
+    }, 10);
   });
 
   document.getElementById('reset-focal-point').addEventListener('click', (event) => {

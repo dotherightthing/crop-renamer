@@ -22,7 +22,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       cropperImageClass,
       croppersId,
       croppersOptions,
-      initDelay,
       updateDelay
     } = config;
 
@@ -33,7 +32,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       cropperImageClass,
       croppersId,
       croppersOptions,
-      initDelay,
       updateDelay
     });
 
@@ -138,19 +136,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * initDelay
-   * @type {number}
-   * @memberof CrCroppersUi
-   */
-  get initDelay() {
-    return this._initDelay;
-  }
-
-  set initDelay(initDelay) {
-    this._initDelay = dtrtValidate.validate(initDelay, 'number', 'CrCroppersUi.initDelay');
-  }
-
-  /**
    * masterCropper
    * @summary The object containing the master cropper instance
    * @type {object}
@@ -226,6 +211,10 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     const cropperContainerEl = cropperImage.nextSibling;
     const cropperCanvasEl = cropperContainerEl.querySelector(`.${cropperCanvasClass}`);
+
+    if (cropperCanvasEl === null) {
+      throw new Error('Cropper canvas not found - cropper was not injected');
+    }
 
     const { top } = CrUtilsUi.getOffset(cropperCanvasEl);
     const { left } = masterCropper.cropperInstance.getCanvasData();
@@ -677,7 +666,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @function init
    * @summary Initialise cropper instances (master and slaves)
    * @memberof CrCroppersUi
-   * @todo initDelay is a bandaid - see #15
    */
   init() {
     const {
