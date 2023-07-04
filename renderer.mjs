@@ -185,6 +185,10 @@ window.addEventListener('DOMContentLoaded', () => {
     crCroppersUiInstance.deleteImagePercentXYFromImage(event);
   });
 
+  document.querySelector('#croppers .img-container:last-child img').addEventListener('ready', () => {
+    crCroppersUiInstance.initImagePercentXY();
+  });
+
   document.getElementById('reset-focal-point').addEventListener('click', (event) => {
     crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
   });

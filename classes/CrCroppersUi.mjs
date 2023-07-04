@@ -682,8 +682,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   init() {
     const {
       croppersId,
-      imageSrc,
-      initDelay
+      imageSrc
     } = this;
 
     if (typeof imageSrc === 'undefined') {
@@ -714,25 +713,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     // if (typeof document.createElement('cropper').style.transition === 'undefined') {
     //   rotateEl.prop('disabled', true);
     // }
-
-    if (typeof Cypress === 'undefined') {
-      setTimeout(() => {
-        const {
-          imagePercentX,
-          imagePercentY
-        } = this.getImagePercentXYFromImage();
-
-        if ((typeof imagePercentX === 'undefined') || (typeof imagePercentY === 'undefined')) {
-          this.reinstateImagePercentXYFromImage();
-
-          CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-            msg: 'Reset focalpoint'
-          });
-        } else {
-          this.displayImagePercentXY({ imagePercentX, imagePercentY });
-        }
-      }, initDelay);
-    }
   }
 
   /**
@@ -785,6 +765,30 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       cropperInstance,
       isMaster: isCropperMaster
     };
+  }
+
+  /**
+   * @function initImagePercentXY
+   * @summary Initialise focal point
+   * @memberof CrCroppersUi
+   */
+  initImagePercentXY() {
+    const { croppersId } = this;
+
+    const {
+      imagePercentX,
+      imagePercentY
+    } = this.getImagePercentXYFromImage();
+
+    if ((typeof imagePercentX === 'undefined') || (typeof imagePercentY === 'undefined')) {
+      this.reinstateImagePercentXYFromImage();
+
+      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+        msg: 'Reset focalpoint'
+      });
+    } else {
+      this.displayImagePercentXY({ imagePercentX, imagePercentY });
+    }
   }
 
   /**
