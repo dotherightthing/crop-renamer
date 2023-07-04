@@ -79,7 +79,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const crCroppersUiInstance = new CrCroppersUi({
     Cropper: window.Cropper,
     cropperCanvasClass: 'cropper-canvas',
-    cropperImageClass: 'cropperImage',
+    cropperImageClass: 'cropper-image',
     croppersId: 'croppers',
     croppersOptions: {
       autoCrop: true, // Enable to crop the image automatically when initialized

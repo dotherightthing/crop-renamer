@@ -12,15 +12,17 @@ describe('template spec', () => {
     cy.visit('http://127.0.0.1:8000/');
 
     cy.get('#croppers').as('croppers');
-    cy.get('#image1').as('cropperMasterImg');
-    cy.get('#image2').as('cropperCollapsedImg');
-    cy.get('#image3').as('cropperThumbnailImg');
-    cy.get('#image4').as('cropperBannerImg');
 
-    cy.get('.cropper-master .cropper-canvas').as('cropperMasterCanvas');
+    cy.get('.cropper-master .cropper-image').as('cropperMasterImg');
+    cy.get('.cropper-banner .cropper-image').as('cropperBannerImg');
+    cy.get('.cropper-collapsed .cropper-image').as('cropperCollapsedImg');
+    cy.get('.cropper-thumbnail .cropper-image').as('cropperThumbnailImg');
+
+    cy.get('.cropper-master .cropper-canvas').as('cropperMasterCanvas'); // first
     cy.get('.cropper-banner .cropper-canvas').as('cropperBannerCanvas');
     cy.get('.cropper-collapsed .cropper-canvas').as('cropperCollapsedCanvas');
     cy.get('.cropper-thumbnail .cropper-canvas').as('cropperThumbnailCanvas');
+
     cy.get('.cropper-master .cropper-crop-box').as('cropperMasterCropbox');
     cy.get('.cropper-master .cropper-center').as('cropperMasterCropboxCenter');
   });
