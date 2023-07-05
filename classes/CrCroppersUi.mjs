@@ -483,10 +483,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @memberof CrCroppersUi
    */
   displayImagePercentXY({ imagePercentY, imagePercentX }) {
-    const {
-      croppersId,
-      masterCropper
-    } = this;
+    const { croppersId } = this;
 
     // simulate click event
     this.masterCropperCropBoxWasDragged = false;
@@ -502,14 +499,12 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     } = this.calcPageXYFromImageXY({ imageX, imageY });
 
     CrUtilsUi.emitEvent(croppersId, 'paramChange', {
-      element: masterCropper,
-      parameter: 'image.focalpoint_x',
+      parameter: 'focalpoint-x',
       value: imagePercentX
     });
 
     CrUtilsUi.emitEvent(croppersId, 'paramChange', {
-      element: masterCropper,
-      parameter: 'image.focalpoint_y',
+      parameter: 'focalpoint-y',
       value: imagePercentY
     });
 
@@ -543,10 +538,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
           this.masterCropperCropBoxWasDragged = true; // differentiate between a click and a move
         },
         cropend: (e) => { // dragEnd callback, see https://github.com/fengyuanchen/cropperjs/issues/669; fires after move
-          const {
-            masterCropper,
-            updateDelay
-          } = this;
+          const { updateDelay } = this;
 
           const {
             pageX: pageXRaw,
@@ -573,14 +565,12 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
               this.moveCropperCropBoxToPageXY({ pageX, pageY });
 
               CrUtilsUi.emitEvent(croppersId, 'paramChange', {
-                element: masterCropper,
-                parameter: 'image.focalpoint_x',
+                parameter: 'focalpoint-x',
                 value: imagePercentX
               });
 
               CrUtilsUi.emitEvent(croppersId, 'paramChange', {
-                element: masterCropper,
-                parameter: 'image.focalpoint_y',
+                parameter: 'focalpoint-y',
                 value: imagePercentY
               });
 
@@ -637,7 +627,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   /**
    * @function getMasterCropper
    * @summary Get the object for the master cropper (which contains the cropperInstance)
-   * @returns {object} { cropperInstance, isMaster, outputIds }
+   * @returns {object} { cropperInstance, isMaster }
    * @memberof CrCroppersUi
    */
   getMasterCropper() {
@@ -1035,8 +1025,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     const { deleteImagePercentXYFromImage } = controlIds;
 
-    const imagePercentY = CrDebugUi.getDebugParameterValue(masterCropper, 'image.focalpoint_y');
-    const imagePercentX = CrDebugUi.getDebugParameterValue(masterCropper, 'image.focalpoint_x');
+    const imagePercentY = CrDebugUi.getDebugParameterValue('focalpoint-y');
+    const imagePercentX = CrDebugUi.getDebugParameterValue('focalpoint-x');
 
     const fileName = masterCropper.cropperInstance.element.src;
 

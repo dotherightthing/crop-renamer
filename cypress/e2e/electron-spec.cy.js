@@ -363,12 +363,9 @@ describe('template spec', () => {
       /* Instance methods */
       it.skip('clearDebugFields', () => {});
       it.skip('clearDebugMsg', () => {});
-      it.skip('getDebugFields', () => {});
-      it.skip('injectDebugFields', () => {});
       it.skip('setDebugMsg', () => {});
 
       /* Static methods */
-      it.skip('getDebugField', () => {});
       it.skip('getDebugParameterValue', () => {});
       it.skip('setDebugParameter', () => {});
     });

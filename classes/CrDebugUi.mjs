@@ -2,9 +2,7 @@
  * @file CrDebugUi.js
  */
 
-import dtrtStringUtils from 'dtrt-string-utils';
 import dtrtValidate from 'dtrt-type-validate';
-import { CrUtilsUi } from './CrUtilsUi.mjs';
 
 export class CrDebugUi { // eslint-disable-line no-unused-vars
   /**
@@ -86,7 +84,7 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
     const inputs = document.querySelectorAll(`#${debugBarId} .${debugFieldClass} input`);
 
     inputs.forEach(input => {
-      input.value = '-';
+      input.value = '';
     });
   }
 
@@ -97,87 +95,6 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
    */
   clearDebugMsg() {
     this.setDebugMsg('');
-  }
-
-  /**
-   * @function getDebugFields
-   * @summary Get the IDs of debug fields used by a cropper
-   * @returns {object} outputIds
-   * @memberof CrDebugUi
-   */
-  getDebugFields() {
-    const debugFieldIds = {};
-    const debugFieldNames = {
-      image: [
-        'focalpoint_x',
-        'focalpoint_y'
-      ]
-    };
-
-    const debugFieldKeys = Object.keys(debugFieldNames);
-
-    let debugBarFieldsHtmls = [];
-
-    debugFieldKeys.forEach(debugFieldKey => {
-      const index = 0;
-      const title = dtrtStringUtils.stringToCapitalised(debugFieldKey);
-
-      const { html, outputIds } = CrDebugUi.getDebugField({
-        id: `cropper${index}-${debugFieldKey}`,
-        title,
-        outputs: debugFieldNames[debugFieldKey]
-      });
-
-      debugBarFieldsHtmls.push(html);
-      debugFieldIds[debugFieldKey] = outputIds;
-    });
-
-    return {
-      debugBarFieldsHtmls,
-      debugFieldIds
-    };
-  }
-
-  /**
-   * @function injectDebugField
-   * @summary Inject debug field into the debug bar
-   * @param {string} html - HTML
-   * @memberof CrDebugUi
-   * @see {@link https://stackoverflow.com/a/37448747}
-   */
-  injectDebugField(html) {
-    const { debugBarId } = this;
-
-    document.getElementById(debugBarId).insertAdjacentHTML('beforeend', html);
-  }
-
-  /**
-   * @function injectDebugFields
-   * @summary Initialise debug bar
-   * @memberof CrDebugUi
-   */
-  injectDebugFields() {
-    const {
-      debugBarId,
-      debugFieldClass
-    } = this;
-
-    const {
-      debugBarFieldsHtmls,
-      debugFieldIds: cropperDebugFieldIds
-    } = this.getDebugFields(0);
-
-    const debugParamEls = document.querySelectorAll(`#${debugBarId} .${debugFieldClass}`);
-
-    if (!debugParamEls.length) {
-      debugBarFieldsHtmls.forEach(html => {
-        this.injectDebugField(html);
-      });
-    }
-
-    CrUtilsUi.emitEvent(debugBarId, 'injectedDebugFields', {
-      cropperDebugFieldIds
-    });
   }
 
   /**
@@ -195,74 +112,15 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
   /* Static methods */
 
   /**
-   * @function getDebugField
-   * @summary Create UI to display debugging parameters
-   * @param {object} args - Arguments
-   * @param {string} args.id - ID
-   * @param {string} args.title - Title
-   * @param {object} args.outputs - Outputs
-   * @returns {object} - { html, outputIds }
-   * @memberof CrDebugUi
-   * @static
-   * @todo generate this on load
-   */
-  static getDebugField({ id, title, outputs = {} }) {
-    let outputsHtml = '';
-    let outputIds = {};
-    const outputsKeys = Object.keys(outputs);
-
-    outputsKeys.forEach(outputKey => {
-      const output = outputs[outputKey];
-      const outputId = `${id}-output-${output}`;
-      const outputParts = output.split('_');
-      let outputLabel = '';
-
-      outputParts.forEach(part => {
-        outputLabel += dtrtStringUtils.stringToCapitalised(part) + ' ';
-      });
-
-      outputLabel = outputLabel.trim();
-
-      outputIds[output] = outputId;
-
-      outputsHtml += `<div class="control">
-    <label for="${outputId}">${outputLabel}</label>
-    <input type="text" value="-" id="${outputId}" readonly>
-  </div> 
-  `;
-    });
-
-    const html = `<div class="debug-param">
-    <fieldset>
-      <legend>
-        <div class="legend">${title}</div>
-      </legend>
-      <div class="controls">
-        ${outputsHtml}
-      </div>
-    </fieldset>
-  </div>
-  `;
-
-    return {
-      html,
-      outputIds
-    };
-  }
-
-  /**
    * @function getDebugParameterValue
    * @summary Get the value of a debugging field
-   * @param {object} cropper - Cropper from croppers array
    * @param {string} parameter - Output ID parameter
    * @returns {number} value - Displayed value
    * @memberof CrDebugUi
    * @static
    */
-  static getDebugParameterValue(cropper, parameter) {
-    const { outputIds } = cropper;
-    const [ group, param ] = parameter.split('.');
-    const field = document.getElementById(outputIds[group][param]);
+  static getDebugParameterValue(parameter) {
+    const field = document.getElementById(parameter);
 
     if (field !== null) {
       return field.value;
@@ -274,18 +132,13 @@ export class CrDebugUi { // eslint-disable-line no-unused-vars
   /**
    * @function setDebugParameter
    * @summary Output the parameter value
-   * @param {object} cropper - Cropper from croppers array
    * @param {string} parameter - Output ID parameter
    * @param {number} value - Value to display
    * @memberof CrDebugUi
    * @static
    * @todo Replace with event emitter
    */
-  static setDebugParameter(cropper, parameter, value) {
-    const { outputIds } = cropper;
-    const outputValue = value;
-    const [ group, param ] = parameter.split('.');
-
-    document.getElementById(outputIds[group][param]).value = outputValue;
+  static setDebugParameter(parameter, value) {
+    document.getElementById(parameter).value = value;
   }
 }

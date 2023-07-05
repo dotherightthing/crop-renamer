@@ -282,7 +282,7 @@ img {
   margin: 0.5em 0;
 }
 
-/* .debug-action, .debug-param */
+/* .debug-action, .debug-param, .debug-status-msg */
 
 .debug-action,
 .debug-param,
@@ -383,6 +383,12 @@ img {
   border: 0;
   margin: 0;
 }
+
+.control > input[type='number']::-webkit-inner-spin-button {
+  opacity: 1; /* force display of increment/decrement buttons */
+}
+
+/* .btn-thumb */
 
 .btn-thumb {
   display: grid; /* aligns child img to top */

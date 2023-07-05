@@ -150,7 +150,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('croppers').addEventListener('createdMasterCropper', () => {
     crDebugUiInstance.clearDebugFields();
-    crDebugUiInstance.injectDebugFields();
   });
 
   document.getElementById('croppers').addEventListener('imageRenamed', (event) => {
@@ -161,24 +160,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('croppers').addEventListener('paramChange', (event) => {
     const {
-      element,
       parameter,
       value
     } = event.detail;
 
-    CrDebugUi.setDebugParameter(element, parameter, value);
+    CrDebugUi.setDebugParameter(parameter, value);
   });
 
   document.getElementById('croppers').addEventListener('statusChange', (event) => {
     const { msg } = event.detail;
 
     crDebugUiInstance.setDebugMsg(msg);
-  });
-
-  document.getElementById('debug-bar').addEventListener('injectedDebugFields', (event) => {
-    const { cropperDebugFieldIds } = event.detail;
-
-    crCroppersUiInstance.getMasterCropper().outputIds = cropperDebugFieldIds;
   });
 
   document.getElementById('delete-crop-coordinates').addEventListener('click', (event) => {
@@ -190,6 +182,24 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       crCroppersUiInstance.initImagePercentXY();
     }, 10);
+  });
+
+  document.getElementById('focalpoint-x').addEventListener('change', (event) => {
+    if (event.isTrusted) {
+      const imagePercentX = CrDebugUi.getDebugParameterValue('focalpoint-x');
+      const imagePercentY = CrDebugUi.getDebugParameterValue('focalpoint-y');
+
+      crCroppersUiInstance.displayImagePercentXY({ imagePercentX, imagePercentY });
+    }
+  });
+
+  document.getElementById('focalpoint-y').addEventListener('change', (event) => {
+    if (event.isTrusted) {
+      const imagePercentX = CrDebugUi.getDebugParameterValue('focalpoint-x');
+      const imagePercentY = CrDebugUi.getDebugParameterValue('focalpoint-y');
+
+      crCroppersUiInstance.displayImagePercentXY({ imagePercentX, imagePercentY });
+    }
   });
 
   document.getElementById('reset-focal-point').addEventListener('click', (event) => {
