@@ -152,7 +152,10 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   changeSelectedImageSrc(newFileName) {
     const { selectedClass } = this;
 
-    document.querySelector(`.${selectedClass} img`).src = newFileName;
+    // timeout prevents broken thumbnail
+    setTimeout(() => {
+      document.querySelector(`.${selectedClass} img`).src = newFileName;
+    }, 500);
 
     this.displayPath(newFileName);
   }
