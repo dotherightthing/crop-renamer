@@ -14,73 +14,73 @@ export class CrControlsUi { // eslint-disable-line no-unused-vars
   constructor(config = {}) {
     // select the relevant arguments from the config object passed in
     const {
-      controlBarId,
-      controlFieldClass,
-      controlMsgId
+      containerId,
+      fieldClass,
+      statusId
     } = config;
 
     Object.assign(this, {
-      controlBarId,
-      controlFieldClass,
-      controlMsgId
+      containerId,
+      fieldClass,
+      statusId
     });
   }
 
   /* Getters and Setters */
 
   /**
-   * controlBarId
+   * containerId
    * @type {string}
    * @memberof CrControlsUi
    */
-  get controlBarId() {
-    return this._controlBarId;
+  get containerId() {
+    return this._containerId;
   }
 
-  set controlBarId(controlBarId) {
-    this._controlBarId = dtrtValidate.validate(controlBarId, 'string', 'CrControlsUi.controlBarId');
+  set containerId(containerId) {
+    this._containerId = dtrtValidate.validate(containerId, 'string', 'CrControlsUi.containerId');
   }
 
   /**
-   * controlFieldClass
+   * fieldClass
    * @type {string}
    * @memberof CrControlsUi
    */
-  get controlFieldClass() {
-    return this._controlFieldClass;
+  get fieldClass() {
+    return this._fieldClass;
   }
 
-  set controlFieldClass(controlFieldClass) {
-    this._controlFieldClass = dtrtValidate.validate(controlFieldClass, 'string', 'CrControlsUi.controlFieldClass');
+  set fieldClass(fieldClass) {
+    this._fieldClass = dtrtValidate.validate(fieldClass, 'string', 'CrControlsUi.fieldClass');
   }
 
   /**
-   * controlMsgId
+   * statusId
    * @type {string}
    * @memberof CrControlsUi
    */
-  get controlMsgId() {
-    return this._controlMsgId;
+  get statusId() {
+    return this._statusId;
   }
 
-  set controlMsgId(controlMsgId) {
-    this._controlMsgId = dtrtValidate.validate(controlMsgId, 'string', 'CrControlsUi.controlMsgId');
+  set statusId(statusId) {
+    this._statusId = dtrtValidate.validate(statusId, 'string', 'CrControlsUi.statusId');
   }
 
   /* Instance methods */
 
   /**
-   * @function clearControlFields
+   * @function clearParamValues
    * @summary Delete injected control fields
    * @memberof CrControlsUi
    */
-  clearControlFields() {
+  clearParamValues() {
     const {
-      controlBarId,
-      controlFieldClass
+      containerId,
+      fieldClass
     } = this;
 
-    const inputs = document.querySelectorAll(`#${controlBarId} .${controlFieldClass} input`);
+    const inputs = document.querySelectorAll(`#${containerId} .${fieldClass} input`);
 
     inputs.forEach(input => {
       input.value = '';
@@ -88,48 +88,35 @@ export class CrControlsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function clearControlMsg
-   * @summary Clear control message in UI
-   * @memberof CrControlsUi
-   */
-  clearControlMsg() {
-    this.setControlMsg('');
-  }
-
-  /**
-   * @function setControlMsg
+   * @function setStatus
    * @summary Display control message in UI
    * @param {string} msg - Message
    * @memberof CrControlsUi
    */
-  setControlMsg(msg) {
-    const { controlMsgId } = this;
+  setStatus(msg) {
+    const { statusId } = this;
 
-    document.getElementById(controlMsgId).innerHTML = msg;
+    document.getElementById(statusId).innerHTML = msg;
   }
 
   /* Static methods */
 
   /**
-   * @function getControlParameterValue
+   * @function getParamValue
    * @summary Get the value of a controlging field
    * @param {string} parameter - Output ID parameter
    * @returns {number} value - Displayed value
    * @memberof CrControlsUi
    * @static
    */
-  static getControlParameterValue(parameter) {
+  static getParamValue(parameter) {
     const field = document.getElementById(parameter);
 
-    if (field !== null) {
-      return field.value;
-    }
-
-    return -1;
+    return field.value;
   }
 
   /**
-   * @function setControlParameter
+   * @function setParamValue
    * @summary Output the parameter value
    * @param {string} parameter - Output ID parameter
    * @param {number} value - Value to display
@@ -137,7 +124,7 @@ export class CrControlsUi { // eslint-disable-line no-unused-vars
    * @static
    * @todo Replace with event emitter
    */
-  static setControlParameter(parameter, value) {
+  static setParamValue(parameter, value) {
     document.getElementById(parameter).value = value;
   }
 }

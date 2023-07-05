@@ -361,13 +361,12 @@ describe('template spec', () => {
 
     describe('CrControlsUi', () => {
       /* Instance methods */
-      it.skip('clearControlFields', () => {});
-      it.skip('clearControlMsg', () => {});
-      it.skip('setControlMsg', () => {});
+      it.skip('clearParamValues', () => {});
+      it.skip('setStatus', () => {});
 
       /* Static methods */
-      it.skip('getControlParameterValue', () => {});
-      it.skip('setControlParameter', () => {});
+      it.skip('getParamValue', () => {});
+      it.skip('setParamValue', () => {});
     });
 
     describe('CrThumbsUi', () => {

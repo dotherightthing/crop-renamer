@@ -1025,8 +1025,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     const { deleteImagePercentXYFromImage } = controlIds;
 
-    const imagePercentY = CrControlsUi.getControlParameterValue('focalpoint-y');
-    const imagePercentX = CrControlsUi.getControlParameterValue('focalpoint-x');
+    const imagePercentY = CrControlsUi.getParamValue('focalpoint-y');
+    const imagePercentX = CrControlsUi.getParamValue('focalpoint-x');
 
     const fileName = masterCropper.cropperInstance.element.src;
 
