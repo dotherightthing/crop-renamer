@@ -19,18 +19,13 @@
   --color-border-secondary: rgba(255, 255, 255, .5);
   --color-border-tertiary: rgba(51, 51, 51, 1);
   --color-border-active: rgba(170, 170, 170, 1);
-  --height-debug-bar-inner: 2.7rem;
-  --height-debug-bar-outer: 59px; /* calc(var(--height-debug-bar-inner) + var(--gutter-half) + var(--gutter-half)); */
+  --height-control-bar-inner: 2.7rem;
+  --height-control-bar-outer: 59px; /* calc(var(--height-control-bar-inner) + var(--gutter-half) + var(--gutter-half)); */
   --opacity-modal-overlay: .5;
   --opacity-thumb-brightness: .8;
-  --cropper-master-height: calc(70vh - var(--height-debug-bar-outer));
-  --cropper-slave-height: calc((70vh - var(--height-debug-bar-outer) - var(--gutter)) / 2);
+  --cropper-master-height: calc(70vh - var(--height-control-bar-outer));
+  --cropper-slave-height: calc((70vh - var(--height-control-bar-outer) - var(--gutter)) / 2);
 }
-
-/* debugging */
-/* .cropper-face {
-  cursor: pointer;
-} */
 
 /* prevent flash of white content when navigating thumbnails */
 html,
@@ -55,9 +50,9 @@ body {
   overflow: hidden;
 }
 
-/* .debug-bar */
+/* .control-bar */
 
-.debug-bar > div {
+.control-bar > div {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -83,7 +78,7 @@ img {
   column-gap: var(--gutter);
 }
 
-.grid-debug-bar {
+.grid-control-bar {
   display: grid;
   grid-template-columns: 1fr calc(40% + var(--gutter));
   column-gap: var(--gutter);
@@ -282,11 +277,11 @@ img {
   margin: 0.5em 0;
 }
 
-/* .debug-action, .debug-param, .debug-status-msg */
+/* .control-action, .control-param, .control-status-msg */
 
-.debug-action,
-.debug-param,
-.debug-status-msg {
+.control-action,
+.control-param,
+.control-status-msg {
   background-color: var(--color-bg-tertiary);
   color: var(--color-primary);
   font-family: sans-serif;
@@ -296,7 +291,7 @@ img {
   border-radius: 0;
 }
 
-.debug-action {
+.control-action {
   display: grid;
   position: relative;
   z-index: 1;
@@ -308,48 +303,48 @@ img {
   margin-right: var(--gutter-half);
 }
 
-.debug-action .legend {
+.control-action .legend {
   pointer-events: none;
 }
 
-.debug-param,
-.debug-status-msg {
-  height: var(--height-debug-bar-inner);
+.control-param,
+.control-status-msg {
+  height: var(--height-control-bar-inner);
   padding: var(--gutter-half) var(--gutter-double);
   border: 0;
   border-right: 1px solid var(--color-border-secondary);
   overflow: hidden;
 }
 
-.debug-param:first-child {
+.control-param:first-child {
   border-left: 1px solid var(--color-border-secondary);
 }
 
-.debug-param fieldset {
+.control-param fieldset {
   padding: 0;
   border: 0;
   margin: 0;
 }
 
-.debug-status-msg {
+.control-status-msg {
   background-color: transparent;
   padding: var(--gutter-half);
   border: 0;
   margin: 0;
 }
 
-.debug-status-msg > span:last-child {
+.control-status-msg > span:last-child {
   display: block;
 }
 
-.debug-bar .legend {
+.control-bar .legend {
   font-size: inherit;
   line-height: 1;
   text-transform: uppercase;
   margin: 0 0 var(--gutter-half);
 }
 
-.debug-bar .debug-param .legend {
+.control-bar .control-param .legend {
   margin-left: -.2em;
 }
 
@@ -357,24 +352,24 @@ img {
   visibility: hidden;
 }
 
-.controls,
-.control {
+.fields,
+.field {
   display: flex;
   align-items: start;
   flex-wrap: nowrap;
 }
 
-.control {
+.field {
   flex-direction: column;
   margin-right: var(--gutter);
 }
 
-.control > label {
+.field > label {
   white-space: nowrap;
   margin-bottom: var(--gutter-half);
 }
 
-.control > input {
+.field > input {
   width: 2.1rem; /* 2 dp */
   background-color: inherit;
   color: var(--color-input);
@@ -384,7 +379,7 @@ img {
   margin: 0;
 }
 
-.control > input[type='number']::-webkit-inner-spin-button {
+.field > input[type='number']::-webkit-inner-spin-button {
   opacity: 1; /* force display of increment/decrement buttons */
 }
 

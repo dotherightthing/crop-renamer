@@ -359,15 +359,15 @@ describe('template spec', () => {
       });
     });
 
-    describe('CrDebugUi', () => {
+    describe('CrControlsUi', () => {
       /* Instance methods */
-      it.skip('clearDebugFields', () => {});
-      it.skip('clearDebugMsg', () => {});
-      it.skip('setDebugMsg', () => {});
+      it.skip('clearControlFields', () => {});
+      it.skip('clearControlMsg', () => {});
+      it.skip('setControlMsg', () => {});
 
       /* Static methods */
-      it.skip('getDebugParameterValue', () => {});
-      it.skip('setDebugParameter', () => {});
+      it.skip('getControlParameterValue', () => {});
+      it.skip('setControlParameter', () => {});
     });
 
     describe('CrThumbsUi', () => {

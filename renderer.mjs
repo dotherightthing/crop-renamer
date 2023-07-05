@@ -1,7 +1,7 @@
 // Electron's render process (web page)
 
 import { CrCroppersUi } from './classes/CrCroppersUi.mjs';
-import { CrDebugUi } from './classes/CrDebugUi.mjs';
+import { CrControlsUi } from './classes/CrControlsUi.mjs';
 import { CrThumbsUi } from './classes/CrThumbsUi.mjs';
 import { CrUtilsUi } from './classes/CrUtilsUi.mjs';
 
@@ -113,10 +113,10 @@ window.addEventListener('DOMContentLoaded', () => {
     updateDelay: (typeof Cypress !== 'undefined') ? 0 : 1000
   });
 
-  const crDebugUiInstance = new CrDebugUi({
-    debugBarId: 'debug-bar',
-    debugFieldClass: 'debug-param',
-    debugMsgId: 'debug-status'
+  const crControlUiInstance = new CrControlsUi({
+    controlBarId: 'control-bar',
+    controlFieldClass: 'control-param',
+    controlMsgId: 'control-status'
   });
 
   const crThumbsUiInstance = new CrThumbsUi({
@@ -149,7 +149,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('croppers').addEventListener('createdMasterCropper', () => {
-    crDebugUiInstance.clearDebugFields();
+    crControlUiInstance.clearControlFields();
   });
 
   document.getElementById('croppers').addEventListener('imageRenamed', (event) => {
@@ -164,13 +164,13 @@ window.addEventListener('DOMContentLoaded', () => {
       value
     } = event.detail;
 
-    CrDebugUi.setDebugParameter(parameter, value);
+    CrControlsUi.setControlParameter(parameter, value);
   });
 
   document.getElementById('croppers').addEventListener('statusChange', (event) => {
     const { msg } = event.detail;
 
-    crDebugUiInstance.setDebugMsg(msg);
+    crControlUiInstance.setControlMsg(msg);
   });
 
   document.getElementById('delete-crop-coordinates').addEventListener('click', (event) => {
@@ -186,8 +186,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('focalpoint-x').addEventListener('change', (event) => {
     if (event.isTrusted) {
-      const imagePercentX = CrDebugUi.getDebugParameterValue('focalpoint-x');
-      const imagePercentY = CrDebugUi.getDebugParameterValue('focalpoint-y');
+      const imagePercentX = CrControlsUi.getControlParameterValue('focalpoint-x');
+      const imagePercentY = CrControlsUi.getControlParameterValue('focalpoint-y');
 
       crCroppersUiInstance.displayImagePercentXY({ imagePercentX, imagePercentY });
     }
@@ -195,8 +195,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('focalpoint-y').addEventListener('change', (event) => {
     if (event.isTrusted) {
-      const imagePercentX = CrDebugUi.getDebugParameterValue('focalpoint-x');
-      const imagePercentY = CrDebugUi.getDebugParameterValue('focalpoint-y');
+      const imagePercentX = CrControlsUi.getControlParameterValue('focalpoint-x');
+      const imagePercentY = CrControlsUi.getControlParameterValue('focalpoint-y');
 
       crCroppersUiInstance.displayImagePercentXY({ imagePercentX, imagePercentY });
     }
@@ -232,7 +232,7 @@ window.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
 
     if (typeof window.electronAPI === 'undefined') {
-      crDebugUiInstance.setDebugMsg('Error: Finder links require Electron');
+      crControlUiInstance.setControlMsg('Error: Finder links require Electron');
 
       return;
     }

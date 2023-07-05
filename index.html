@@ -10,31 +10,31 @@
   <body>
     <div class="layout">
       <div class="editor">
-        <div class="debug-bar grid-debug-bar">
-          <div class="debug-actions-params" id="debug-bar">
-            <button type="button" class="debug-action" id="reset-focal-point">
+        <div class="control-bar grid-control-bar">
+          <div class="control-actions-params" id="control-bar">
+            <button type="button" class="control-action" id="reset-focal-point">
               <span class="legend">Load</span>
               Focalpoint from image
             </button>
-            <button type="button" class="debug-action" id="save-crop-coordinates">
+            <button type="button" class="control-action" id="save-crop-coordinates">
               <span class="legend">Save</span>
               Focalpoint to image
             </button>
-            <button type="button" class="debug-action" id="delete-crop-coordinates">
+            <button type="button" class="control-action" id="delete-crop-coordinates">
               <span class="legend">Delete</span>
               Focalpoint from image
             </button>
-            <div class="debug-param">
+            <div class="control-param">
               <fieldset>
                 <legend>
                   <div class="legend">Focalpoint</div>
                 </legend>
-                <div class="controls">
-                  <div class="control">
+                <div class="fields">
+                  <div class="field">
                     <label for="focalpoint-x">X %</label>
                     <input type="number" min="0" max="100" value="" id="focalpoint-x">
                   </div> 
-                  <div class="control">
+                  <div class="field">
                     <label for="focalpoint-y">Y %</label>
                     <input type="number" min="0" max="100" value="" id="focalpoint-y">
                   </div> 
@@ -42,8 +42,8 @@
               </fieldset>
             </div>
           </div>
-          <div class="debug-status">
-            <p class="debug-status-msg" id="debug-status"></p>
+          <div class="control-status">
+            <p class="control-status-msg" id="control-status"></p>
           </div>
         </div>
         <div class="grid-croppers" id="croppers">

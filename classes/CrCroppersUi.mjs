@@ -2,7 +2,7 @@
  * @file CrCroppersUi.js
  */
 import dtrtValidate from 'dtrt-type-validate';
-import { CrDebugUi } from './CrDebugUi.mjs';
+import { CrControlsUi } from './CrControlsUi.mjs';
 import { CrUtilsUi } from './CrUtilsUi.mjs';
 
 export class CrCroppersUi { // eslint-disable-line no-unused-vars
@@ -1025,8 +1025,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     const { deleteImagePercentXYFromImage } = controlIds;
 
-    const imagePercentY = CrDebugUi.getDebugParameterValue('focalpoint-y');
-    const imagePercentX = CrDebugUi.getDebugParameterValue('focalpoint-x');
+    const imagePercentY = CrControlsUi.getControlParameterValue('focalpoint-y');
+    const imagePercentX = CrControlsUi.getControlParameterValue('focalpoint-x');
 
     const fileName = masterCropper.cropperInstance.element.src;
 
