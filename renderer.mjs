@@ -172,7 +172,7 @@ window.addEventListener('DOMContentLoaded', () => {
   els.croppers.addEventListener('statusChange', (event) => {
     const { msg } = event.detail;
 
-    els.status.innerHTML = msg;
+    els.status.innerHTML = (msg !== '') ? `${msg}.` : msg;
   });
 
   els.focalpointAutoSaveInput.forEach(radio => {
@@ -188,6 +188,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
   els.focalpointDelete.addEventListener('click', (event) => {
     crCroppersUiInstance.deleteImagePercentXYFromImage(event);
+
+    els.focalpointX.value = 50;
+    els.focalpointY.value = 50;
+
+    crCroppersUiInstance.displayImagePercentXY({
+      imagePercentX: els.focalpointX.value,
+      imagePercentY: els.focalpointY.value
+    });
   });
 
   els.focalpointInput.forEach(input => input.addEventListener('change', (event) => {

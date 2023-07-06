@@ -731,7 +731,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       this.reinstateImagePercentXYFromImage();
 
       CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-        msg: 'Reset focalpoint'
+        msg: 'Focalpoint reset'
       });
     } else {
       this.displayImagePercentXY({ imagePercentX, imagePercentY });

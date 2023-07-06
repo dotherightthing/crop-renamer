@@ -12,30 +12,22 @@
       <div class="editor">
         <div class="control-bar grid-control-bar">
           <div>
-            <button type="button" class="control-action" id="reset-focal-point">
-              <span class="legend">Reset</span>
-              Focalpoint from image
-            </button>
-            <button type="button" class="control-action" id="delete-crop-coordinates">
-              <span class="legend">Delete</span>
-              Focalpoint from image
-            </button>
-            <div class="control-param">
-              <fieldset>
+            <div class="control-section">
+              <fieldset class="control-fieldset">
                 <legend>
-                  <div class="legend">Focalpoint</div>
+                  <div class="control-legend">Focalpoint</div>
                 </legend>
-                <div class="fields">
-                  <div class="field">
+                <div class="controls">
+                  <div class="control-param">
                     <input type="number" class="focalpoint-input" min="0" max="100" value="" id="focalpoint-x">
-                    <label for="focalpoint-x">% X</label>
+                    <label for="focalpoint-x" class="control-label">% X</label>
                   </div> 
-                  <div class="field">
+                  <div class="control-param">
                     <input type="number" class="focalpoint-input" min="0" max="100" value="" id="focalpoint-y">
-                    <label for="focalpoint-y">% Y</label>
+                    <label for="focalpoint-y" class="control-label">% Y</label>
                   </div> 
-                  <div class="field">
-                    <label for="focalpoint-autosave-off focalpoint-autosave-on" class="radios-label">Auto-save</label>
+                  <div class="control-param">
+                    <label for="focalpoint-autosave-off focalpoint-autosave-on" class="radios-label">Auto-Save</label>
                     <label class="radio-label">
                       <input type="radio" name="focalpoint-autosave" value="off" id="focalpoint-autosave-off" checked>
                       Off
@@ -45,12 +37,16 @@
                       On
                     </label>
                   </div> 
+                  <button type="button" class="control-action" id="reset-focal-point">Reset</button>
+                  <button type="button" class="control-action" id="delete-crop-coordinates">Delete</button>
                 </div>
               </fieldset>
             </div>
           </div>
-          <div class="control-status">
-            <p class="control-status-msg" id="control-status"></p>
+          <div>
+            <div class="control-section">
+              <p class="control-status-msg" id="control-status"></p>
+            </div>
           </div>
         </div>
         <div class="grid-croppers" id="croppers">
