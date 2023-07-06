@@ -1,7 +1,6 @@
 // Electron's render process (web page)
 
 import { CrCroppersUi } from './classes/CrCroppersUi.mjs';
-import { CrControlsUi } from './classes/CrControlsUi.mjs';
 import { CrThumbsUi } from './classes/CrThumbsUi.mjs';
 import { CrUtilsUi } from './classes/CrUtilsUi.mjs';
 
@@ -107,16 +106,12 @@ window.addEventListener('DOMContentLoaded', () => {
       zoomOnWheel: false // Enable to zoom the image by mouse wheeling
     },
     controlIds: {
-      deleteImagePercentXYFromImage: 'delete-crop-coordinates'
+      deleteImagePercentXYFromImage: 'delete-crop-coordinates',
+      focalpointX: 'focalpoint-x',
+      focalpointY: 'focalpoint-y'
     },
     initDelay: 5000,
     updateDelay: (typeof Cypress !== 'undefined') ? 0 : 1000
-  });
-
-  const crControlUiInstance = new CrControlsUi({
-    containerId: 'control-bar',
-    fieldClass: 'control-param',
-    statusId: 'control-status'
   });
 
   const crThumbsUiInstance = new CrThumbsUi({
@@ -130,9 +125,28 @@ window.addEventListener('DOMContentLoaded', () => {
     thumbsId: 'thumbs'
   });
 
+  // elements
+
+  const els = {
+    body: document.body,
+    croppers: document.getElementById('croppers'),
+    focalpointAutoSaveInput: document.getElementsByName('focalpoint-autosave'),
+    focalpointDelete: document.getElementById('delete-crop-coordinates'),
+    focalpointInput: document.querySelectorAll('.focalpoint-input'),
+    focalpointReset: document.getElementById('reset-focal-point'),
+    focalpointX: document.getElementById('focalpoint-x'),
+    focalpointY: document.getElementById('focalpoint-y'),
+    lastCropperImg: document.querySelector('#croppers .img-container:last-child img'),
+    root: document.getElementById('root'),
+    status: document.getElementById('control-status'),
+    thumbs: document.getElementById('thumbs'),
+    thumbPath: document.getElementById(thumbPathId),
+    window: window
+  };
+
   // listen for native and custom events
 
-  document.body.addEventListener('keydown', (event) => {
+  els.body.addEventListener('keydown', (event) => {
     if (!document.querySelectorAll('#thumbs img').length) {
       return;
     }
@@ -148,75 +162,69 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('croppers').addEventListener('createdMasterCropper', () => {
-    crControlUiInstance.clearParamValues();
-  });
-
-  document.getElementById('croppers').addEventListener('imageRenamed', (event) => {
+  els.croppers.addEventListener('imageRenamed', (event) => {
     const { newFileName } = event.detail;
 
     crThumbsUiInstance.changeSelectedImageSrc(newFileName);
   });
 
-  document.getElementById('croppers').addEventListener('paramChange', (event) => {
-    const {
-      parameter,
-      value
-    } = event.detail;
+  els.croppers.addEventListener('paramChange', (event) => {
+    const { parameter, value } = event.detail;
 
-    CrControlsUi.setParamValue(parameter, value);
+    document.getElementById(parameter).value = value;
   });
 
-  document.getElementById('croppers').addEventListener('statusChange', (event) => {
+  els.croppers.addEventListener('statusChange', (event) => {
     const { msg } = event.detail;
 
-    crControlUiInstance.setStatus(msg);
+    els.status.innerHTML = msg;
   });
 
-  document.getElementById('delete-crop-coordinates').addEventListener('click', (event) => {
+  els.focalpointAutoSaveInput.forEach(radio => {
+    radio.addEventListener('change', (event) => {
+      if (event.target.value === 'on') {
+        crCroppersUiInstance.writeImagePercentXYToImage();
+      }
+    });
+  });
+
+  els.focalpointDelete.addEventListener('click', (event) => {
     crCroppersUiInstance.deleteImagePercentXYFromImage(event);
   });
 
-  document.querySelector('#croppers .img-container:last-child img').addEventListener('ready', () => {
+  els.focalpointInput.forEach(input => input.addEventListener('change', (event) => {
+    if (event.isTrusted) {
+      crCroppersUiInstance.displayImagePercentXY({
+        imagePercentX: els.focalpointX.value,
+        imagePercentY: els.focalpointY.value
+      });
+
+      const autosave = [ ...els.focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
+
+      if (autosave === 'on') {
+        crCroppersUiInstance.writeImagePercentXYToImage();
+      }
+    }
+  }));
+
+  els.focalpointReset.addEventListener('click', (event) => {
+    crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
+  });
+
+  els.lastCropperImg.addEventListener('ready', () => {
     // short timeout prevents intermittent (browser) error from CrCroppersUi.calcCanvasOffsets()
     setTimeout(() => {
       crCroppersUiInstance.initImagePercentXY();
     }, 10);
   });
 
-  document.getElementById('focalpoint-x').addEventListener('change', (event) => {
-    if (event.isTrusted) {
-      const imagePercentX = CrControlsUi.getParamValue('focalpoint-x');
-      const imagePercentY = CrControlsUi.getParamValue('focalpoint-y');
-
-      crCroppersUiInstance.displayImagePercentXY({ imagePercentX, imagePercentY });
-    }
-  });
-
-  document.getElementById('focalpoint-y').addEventListener('change', (event) => {
-    if (event.isTrusted) {
-      const imagePercentX = CrControlsUi.getParamValue('focalpoint-x');
-      const imagePercentY = CrControlsUi.getParamValue('focalpoint-y');
-
-      crCroppersUiInstance.displayImagePercentXY({ imagePercentX, imagePercentY });
-    }
-  });
-
-  document.getElementById('reset-focal-point').addEventListener('click', (event) => {
-    crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
-  });
-
-  document.getElementById('root').addEventListener('selectedFolder', (event) => {
+  els.root.addEventListener('selectedFolder', (event) => {
     const { imagesData } = event.detail;
 
     crThumbsUiInstance.generateThumbsHtml(imagesData);
   });
 
-  document.getElementById('save-crop-coordinates').addEventListener('click', () => {
-    crCroppersUiInstance.writeImagePercentXYToImage();
-  });
-
-  document.getElementById('thumbs').addEventListener('click', (event) => {
+  els.thumbs.addEventListener('click', (event) => {
     const target = crThumbsUiInstance.getClickedButton(event);
     const newImageSrc = target.querySelector('img').getAttribute('src');
 
@@ -228,11 +236,11 @@ window.addEventListener('DOMContentLoaded', () => {
     crCroppersUiInstance.changeSourceImage(target);
   });
 
-  document.getElementById(thumbPathId).addEventListener('click', (event) => {
+  els.thumbPath.addEventListener('click', (event) => {
     event.preventDefault();
 
     if (typeof window.electronAPI === 'undefined') {
-      crControlUiInstance.setStatus('Error: Finder links require Electron');
+      els.status.innerHTML = 'Error: Finder links require Electron';
 
       return;
     }
@@ -246,7 +254,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  window.addEventListener('resize', () => {
+  els.window.addEventListener('resize', () => {
     crThumbsUiInstance.scrollToThumb('selected');
   });
 

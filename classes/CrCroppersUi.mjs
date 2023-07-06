@@ -2,7 +2,6 @@
  * @file CrCroppersUi.js
  */
 import dtrtValidate from 'dtrt-type-validate';
-import { CrControlsUi } from './CrControlsUi.mjs';
 import { CrUtilsUi } from './CrUtilsUi.mjs';
 
 export class CrCroppersUi { // eslint-disable-line no-unused-vars
@@ -697,14 +696,12 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @function initCropper
    * @summary Initialise cropper instance
    * @param {HTMLElement} cropperImage - Cropper image
-   * @param {number} cropperIndex - Cropper index
    * @returns { object } cropper - Object containing cropperInstance
    * @memberof CrCroppersUi
    */
-  initCropper(cropperImage, cropperIndex) {
+  initCropper(cropperImage) {
     const {
       Cropper,
-      croppersId,
       imageSrc
     } = this;
 
@@ -725,19 +722,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       cropperInstance,
       isMaster: isCropperMaster
     });
-
-    if (cropperIndex === 0) {
-      CrUtilsUi.emitEvent(croppersId, 'createdMasterCropper', {
-        cropperInstance,
-        cropperOptions
-      });
-    } else {
-      CrUtilsUi.emitEvent(croppersId, 'createdSlaveCropper', {
-        cropperInstance,
-        cropperOptions,
-        cropperIndex
-      });
-    }
 
     return {
       cropperInstance,
@@ -1023,10 +1007,14 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       masterCropper
     } = this;
 
-    const { deleteImagePercentXYFromImage } = controlIds;
+    const {
+      deleteImagePercentXYFromImage,
+      focalpointX,
+      focalpointY
+    } = controlIds;
 
-    const imagePercentY = CrControlsUi.getParamValue('focalpoint-y');
-    const imagePercentX = CrControlsUi.getParamValue('focalpoint-x');
+    const imagePercentX = document.getElementById(focalpointX).value;
+    const imagePercentY = document.getElementById(focalpointY).value;
 
     const fileName = masterCropper.cropperInstance.element.src;
 
