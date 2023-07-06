@@ -15,7 +15,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   constructor(config = {}) {
     // select the relevant arguments from the config object passed in
     const {
-      controlIds,
       Cropper,
       cropperCanvasClass,
       cropperImageClass,
@@ -25,7 +24,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     } = config;
 
     Object.assign(this, {
-      controlIds,
       Cropper,
       cropperCanvasClass,
       cropperImageClass,
@@ -42,19 +40,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /* Getters and Setters */
-
-  /**
-   * controlIds
-   * @type {object}
-   * @memberof CrCroppersUi
-   */
-  get controlIds() {
-    return this._controlIds;
-  }
-
-  set controlIds(controlIds) {
-    this._controlIds = dtrtValidate.validate(controlIds, 'object', 'CrCroppersUi.controlIds');
-  }
 
   /**
    * Cropper
@@ -262,8 +247,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   /**
    * @function calcImageXYFromImagePercentXY
    * @param {object} args - Arguments
-   * @param {number} args.imagePercentX - Image percentage left
-   * @param {number} args.imagePercentY -  Image percentage top
+   * @param {number} args.imagePercentX - Image percentage X
+   * @param {number} args.imagePercentY - Image percentage Y
    * @returns {object} { imageX, imageY }
    * @memberof CrCroppersUi
    * @see {@link cypress/e2e/electron-spec.cy.js}
@@ -478,7 +463,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @summary Show focalpoint in UI
    * @param {object} args - Arguments
    * @param {number} args.imagePercentY - Image percentage top
-   * @param {number} args.imagePercentX - Image percentage left
+   * @param {number} args.imagePercentX - Image percentage X
    * @memberof CrCroppersUi
    */
   displayImagePercentXY({ imagePercentY, imagePercentX }) {
@@ -900,22 +885,15 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    */
   async deleteImagePercentXYFromImage() {
     const {
-      controlIds,
       croppersId,
       masterCropper
     } = this;
 
-    const { deleteImagePercentXYFromImage } = controlIds;
-
     const fileName = masterCropper.cropperInstance.element.src;
-
-    document.getElementById(deleteImagePercentXYFromImage).disabled = true;
 
     const newFileName = await window.electronAPI.deleteImagePercentXYFromImage({
       fileName
     });
-
-    document.getElementById(deleteImagePercentXYFromImage).disabled = false;
 
     masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
 
@@ -998,23 +976,16 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   /**
    * @function writeImagePercentXYToImage
    * @summary Save the values to the image filename
+   * @param {object} args - Arguments
+   * @param {number} args.imagePercentX - Image percentage X
+   * @param {number} args.imagePercentY - Image percentage Y
    * @memberof CrCroppersUi
    */
-  async writeImagePercentXYToImage() {
+  async writeImagePercentXYToImage({ imagePercentX, imagePercentY }) {
     const {
-      controlIds,
       croppersId,
       masterCropper
     } = this;
-
-    const {
-      deleteImagePercentXYFromImage,
-      focalpointX,
-      focalpointY
-    } = controlIds;
-
-    const imagePercentX = document.getElementById(focalpointX).value;
-    const imagePercentY = document.getElementById(focalpointY).value;
 
     const fileName = masterCropper.cropperInstance.element.src;
 
@@ -1026,8 +997,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       return;
     }
 
-    document.getElementById(deleteImagePercentXYFromImage).disabled = true;
-
     const newFileName = await window.electronAPI.saveImagePercentXYToImage({
       fileName,
       imagePercentY,
@@ -1037,8 +1006,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
       newFileName
     });
-
-    document.getElementById(deleteImagePercentXYFromImage).disabled = false;
 
     masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
 

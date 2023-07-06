@@ -105,11 +105,6 @@ window.addEventListener('DOMContentLoaded', () => {
       zoomOnTouch: false, // Enable to zoom the image by dragging touch
       zoomOnWheel: false // Enable to zoom the image by mouse wheeling
     },
-    controlIds: {
-      deleteImagePercentXYFromImage: 'delete-crop-coordinates',
-      focalpointX: 'focalpoint-x',
-      focalpointY: 'focalpoint-y'
-    },
     initDelay: 5000,
     updateDelay: (typeof Cypress !== 'undefined') ? 0 : 1000
   });
@@ -183,7 +178,10 @@ window.addEventListener('DOMContentLoaded', () => {
   els.focalpointAutoSaveInput.forEach(radio => {
     radio.addEventListener('change', (event) => {
       if (event.target.value === 'on') {
-        crCroppersUiInstance.writeImagePercentXYToImage();
+        crCroppersUiInstance.writeImagePercentXYToImage({
+          imagePercentX: els.focalpointX.value,
+          imagePercentY: els.focalpointY.value
+        });
       }
     });
   });
@@ -202,7 +200,10 @@ window.addEventListener('DOMContentLoaded', () => {
       const autosave = [ ...els.focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
 
       if (autosave === 'on') {
-        crCroppersUiInstance.writeImagePercentXYToImage();
+        crCroppersUiInstance.writeImagePercentXYToImage({
+          imagePercentX: els.focalpointX.value,
+          imagePercentY: els.focalpointY.value
+        });
       }
     }
   }));
