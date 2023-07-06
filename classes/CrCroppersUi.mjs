@@ -880,6 +880,57 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function cropImage
+   * @memberof CrCroppersUi
+   */
+  async cropImage() {
+    const {
+      croppersId,
+      slaveCroppers
+    } = this;
+
+    const fileName = slaveCroppers[0].cropperInstance.element.src;
+
+    const crops = [];
+
+    slaveCroppers.forEach(cropper => {
+      const {
+        cropperAspectRatio,
+        cropperExportSuffix
+      } = cropper.cropperInstance.element.dataset;
+
+      const {
+        x,
+        y,
+        width,
+        height
+      } = cropper.cropperInstance.getData();
+
+      crops.push({
+        resizeW: Number(cropperAspectRatio.split(':')[0]),
+        cropX: x,
+        cropY: y,
+        cropW: width,
+        cropH: height,
+        fileNameSuffix: cropperExportSuffix
+      });
+    });
+
+    const fileNameClean = fileName.replace('file://', '').replaceAll('%20', ' ');
+
+    const successMsg = await window.electronAPI.cropImage({
+      fileName: encodeURIComponent(fileNameClean),
+      quality: 75,
+      targetFolder: './_admin',
+      crops
+    });
+
+    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+      msg: successMsg
+    });
+  }
+
+  /**
    * @function deleteImagePercentXYFromImage
    * @memberof CrCroppersUi
    */

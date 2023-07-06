@@ -7,6 +7,7 @@ const path = require('path');
 const { resolve } = require('path');
 const ExifReader = require('exifreader');
 const { dialog, shell } = require('electron');
+const gm = require('gm').subClass({ imageMagick: '7+' });
 
 module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /**
@@ -21,6 +22,67 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /* Instance methods */
 
   /* Static methods */
+
+  /**
+   * @function cropImage
+   * @param {event} event - CrFile:cropImage event captured by ipcMain.handle
+   * @param {object} data - Data
+   * @param {string} data.fileName - Filename
+   * @param {number} data.quality - Quality
+   * @param {string} data.targetFolder - Target folder
+   * @param {Array} data.crops - Crops
+   * @param {number} data.crops.resizeW - the width to resize the image to
+   * @param {number} data.crops.cropW - the width of the cropped area
+   * @param {number} data.crops.cropH - the height of the cropped area
+   * @param {number} data.crops.cropX - the offset left of the cropped area
+   * @param {number} data.crops.cropY - the offset top of the cropped area
+   * @param {string} data.crops.fileNameSuffix - Filename suffix
+   * @returns {string} successMsg
+   * @memberof CrFile
+   * @static
+   */
+  static async cropImage(event, data) {
+    const {
+      fileName,
+      quality,
+      targetFolder,
+      crops
+    } = data;
+
+    const fileNameStr = decodeURIComponent(fileName);
+
+    const pathSeparator = fileNameStr.lastIndexOf('/');
+    const fileNameAndExt = fileNameStr.slice(pathSeparator + 1);
+    const fileSeparator = fileNameAndExt.lastIndexOf('.');
+    const fileNameOnly = fileNameAndExt.slice(0, fileSeparator);
+
+    crops.forEach(crop => {
+      const {
+        resizeW,
+        cropX,
+        cropY,
+        cropW,
+        cropH,
+        fileNameSuffix
+      } = crop;
+
+      gm(fileNameStr)
+        .strip()
+        .autoOrient()
+        .quality(quality)
+        .crop(cropW, cropH, cropX, cropY)
+        .resize(resizeW, null)
+        .write(`${targetFolder}/${fileNameOnly}__${fileNameSuffix}.jpg`, err => {
+          if (!err) {
+            console.log(err);
+          } else {
+            console.log(`Cropped ${fileNameOnly}__${fileNameSuffix}.jpg`);
+          }
+        });
+    });
+
+    return 'Crops generated';
+  }
 
   /**
    * @function deleteImagePercentXYFromImage

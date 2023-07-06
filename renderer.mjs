@@ -126,11 +126,12 @@ window.addEventListener('DOMContentLoaded', () => {
     body: document.body,
     croppers: document.getElementById('croppers'),
     focalpointAutoSaveInput: document.getElementsByName('focalpoint-autosave'),
-    focalpointDelete: document.getElementById('delete-crop-coordinates'),
+    focalpointDelete: document.getElementById('delete-focalpoint'),
     focalpointInput: document.querySelectorAll('.focalpoint-input'),
-    focalpointReset: document.getElementById('reset-focal-point'),
+    focalpointReset: document.getElementById('reset-focalpoint'),
     focalpointX: document.getElementById('focalpoint-x'),
     focalpointY: document.getElementById('focalpoint-y'),
+    imageCrop: document.getElementById('crop-image'),
     lastCropperImg: document.querySelector('#croppers .img-container:last-child img'),
     root: document.getElementById('root'),
     status: document.getElementById('control-status'),
@@ -218,6 +219,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
   els.focalpointReset.addEventListener('click', (event) => {
     crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
+  });
+
+  els.imageCrop.addEventListener('click', () => {
+    crCroppersUiInstance.cropImage();
   });
 
   els.lastCropperImg.addEventListener('ready', () => {
