@@ -114,11 +114,13 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     const regex = /__\[([0-9]+)%,([0-9]+)%\]/g;
     const newFileName = oldFileName.replace(regex, '');
 
-    fs.rename(oldFileName, newFileName, (error) => {
-      if (error) {
-        console.log(error);
-      }
-    });
+    if (newFileName !== oldFileName) {
+      fs.rename(oldFileName, newFileName, (error) => {
+        if (error) {
+          console.log(error);
+        }
+      });
+    }
 
     return newFileName;
   }
@@ -299,11 +301,13 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     const oldFileName = `${folderPath}/${fileNameAndExt}`;
     const newFileName = `${folderPath}/${fileNameOnly}__[${imagePercentX}%,${imagePercentY}%]${extName}`;
 
-    fs.rename(oldFileName, newFileName, (error) => {
-      if (error) {
-        console.log(error);
-      }
-    });
+    if (newFileName !== oldFileName) {
+      fs.rename(oldFileName, newFileName, (error) => {
+        if (error) {
+          console.log(error);
+        }
+      });
+    }
 
     return newFileName;
   }
