@@ -940,7 +940,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   async deleteImagePercentXYFromImage() {
     const {
       croppersId,
-      masterCropper
+      masterCropper,
+      croppers
     } = this;
 
     const fileName = masterCropper.cropperInstance.element.src;
@@ -949,15 +950,22 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       fileName
     });
 
-    masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
+    // timeout prevents broken image
+    setTimeout(() => {
+      const newSrcName = `file://${newFileName.replaceAll(' ', '%20')}`;
 
-    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-      msg: 'Removed focalpoint from filename'
-    });
+      croppers.forEach(cropper => {
+        cropper.cropperInstance.replace(newSrcName, true); // hasSameSize = true
+      });
 
-    CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
-      newFileName
-    });
+      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+        msg: 'Removed focalpoint from filename'
+      });
+
+      CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
+        newFileName
+      });
+    }, 500);
   }
 
   /**
@@ -1038,6 +1046,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   async writeImagePercentXYToImage({ imagePercentX, imagePercentY }) {
     const {
       croppersId,
+      croppers,
       masterCropper
     } = this;
 
@@ -1057,15 +1066,22 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       imagePercentX
     });
 
-    CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
-      newFileName
-    });
+    // timeout prevents broken image
+    setTimeout(() => {
+      CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
+        newFileName
+      });
 
-    masterCropper.cropperInstance.element.src = `file://${newFileName.replaceAll(' ', '%20')}`;
+      const newSrcName = `file://${newFileName.replaceAll(' ', '%20')}`;
 
-    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-      msg: 'Saved focalpoint to filename'
-    });
+      croppers.forEach(cropper => {
+        cropper.cropperInstance.replace(newSrcName, true); // hasSameSize = true
+      });
+
+      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+        msg: 'Saved focalpoint to filename'
+      });
+    }, 500);
   }
 
   /* Static methods */
