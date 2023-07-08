@@ -99,19 +99,14 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   static async deleteImagePercentXYFromImage(event, data) {
     const { fileName } = data;
 
-    let fileNameStr = fileName;
-    fileNameStr = fileNameStr.replace('file://', '');
-    fileNameStr = fileNameStr.replace(/%20/g, ' ');
+    const {
+      fileNameAndExt,
+      folderPath
+    } = CrFile.getFileNameParts(fileName);
 
-    const dirName = path.dirname(fileNameStr);
-    const fileNameAndExt = path.basename(fileNameStr); // foo.ext
-    const extName = path.extname(fileNameStr); // .ext
-    const fileNameOnly = fileNameAndExt.replace(extName, '');
+    const regex = /__\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
 
-    const folderPath = resolve(__dirname, dirName); // same same
-
-    const oldFileName = `${folderPath}/${fileNameOnly}${extName}`;
-    const regex = /__\[([0-9]+)%,([0-9]+)%\]/g;
+    const oldFileName = `${folderPath}/${fileNameAndExt}`;
     const newFileName = oldFileName.replace(regex, '');
 
     if (newFileName !== oldFileName) {
@@ -123,6 +118,32 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     }
 
     return newFileName;
+  }
+
+  /**
+   * @function getFileNameParts
+   * @param {string} fileName - File name
+   * @returns {object} parts
+   * @memberof CrFile
+   * @static
+   */
+  static getFileNameParts(fileName) {
+    let fileNameRaw = fileName;
+    fileNameRaw = fileNameRaw.replace('file://', '');
+    fileNameRaw = fileNameRaw.replace(/%20/g, ' ');
+
+    const dirName = path.dirname(fileNameRaw);
+    const fileNameAndExt = path.basename(fileNameRaw); // foo.ext | foo__[nn%,nn%].ext
+    const extName = path.extname(fileNameRaw); // .ext
+    const fileNameOnly = fileNameAndExt.replace(extName, ''); // foo | foo__[nn%,nn%]
+    const folderPath = resolve(__dirname, dirName);
+
+    return {
+      extName,
+      fileNameAndExt,
+      fileNameOnly,
+      folderPath
+    };
   }
 
   /**
@@ -285,18 +306,16 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       imagePercentX
     } = data;
 
-    let fileNameStr = fileName;
-    fileNameStr = fileNameStr.replace('file://', '');
-    fileNameStr = fileNameStr.replace(/%20/g, ' ');
+    const {
+      extName,
+      fileNameAndExt,
+      fileNameOnly,
+      folderPath
+    } = CrFile.getFileNameParts(fileName);
 
     const regex = /__\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
 
-    const dirName = path.dirname(fileNameStr);
-    const fileNameAndExt = path.basename(fileNameStr); // foo.ext | foo__[nn%,nn%].ext
-    const extName = path.extname(fileNameStr); // .ext
-    const fileNameOnly = fileNameAndExt.replace(extName, '').replace(regex, ''); // foo
-
-    const folderPath = resolve(__dirname, dirName); // same same
+    (fileNameOnly = fileNameOnly.replace(regex, '')); // foo
 
     const oldFileName = `${folderPath}/${fileNameAndExt}`;
     const newFileName = `${folderPath}/${fileNameOnly}__[${imagePercentX}%,${imagePercentY}%]${extName}`;
