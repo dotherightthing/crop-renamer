@@ -881,9 +881,10 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function cropImage
+   * @param {string} targetFolder - Target folder
    * @memberof CrCroppersUi
    */
-  async cropImage() {
+  async cropImage(targetFolder) {
     const {
       croppersId,
       slaveCroppers
@@ -921,7 +922,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     const successMsg = await window.electronAPI.cropImage({
       fileName: encodeURIComponent(fileNameClean),
       quality: 75,
-      targetFolder: './_admin',
+      targetFolder,
       crops
     });
 

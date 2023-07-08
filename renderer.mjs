@@ -67,6 +67,7 @@ window.addEventListener('DOMContentLoaded', () => {
     focalpointX: document.getElementById('focalpoint-x'),
     focalpointY: document.getElementById('focalpoint-y'),
     folderIn: document.getElementById('folder-in'),
+    folderOut: document.getElementById('folder-out'),
     imageCrop: document.getElementById('crop-image'),
     lastCropperImg: document.querySelector('#croppers .img-container:last-child img'),
     root: document.getElementById('root'),
@@ -158,7 +159,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   els.folderIn.addEventListener('click', async () => {
-    const { folderPath, imagesData } = await window.electronAPI.selectFolder();
+    const { folderPath, imagesData } = await window.electronAPI.selectFolderIn();
 
     // if folder select was cancelled
     if ((typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
@@ -168,8 +169,21 @@ window.addEventListener('DOMContentLoaded', () => {
     crThumbsUiInstance.generateThumbsHtml(imagesData);
   });
 
+  els.folderOut.addEventListener('click', async () => {
+    const { folderPath } = await window.electronAPI.selectFolderOut();
+
+    // if folder select was cancelled
+    if (typeof folderPath === 'undefined') {
+      return;
+    }
+
+    els.imageCrop.dataset.targetFolder = folderPath;
+  });
+
   els.imageCrop.addEventListener('click', () => {
-    crCroppersUiInstance.cropImage();
+    const { targetFolder } = els.imageCrop.dataset;
+
+    crCroppersUiInstance.cropImage(targetFolder);
   });
 
   els.lastCropperImg.addEventListener('ready', () => {

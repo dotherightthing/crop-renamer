@@ -66,14 +66,17 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
         fileNameSuffix
       } = crop;
 
+      const currentDir = process.cwd();
+      const targetPath = path.relative(currentDir, targetFolder);
+
       gm(fileNameStr)
         .strip()
         .autoOrient()
         .quality(quality)
         .crop(cropW, cropH, cropX, cropY)
         .resize(resizeW, null)
-        .write(`${targetFolder}/${fileNameOnly}__${fileNameSuffix}.jpg`, err => {
-          if (!err) {
+        .write(`${targetPath}/${fileNameOnly}__${fileNameSuffix}.jpg`, err => {
+          if (err) {
             console.log(err);
           } else {
             console.log(`Cropped ${fileNameOnly}__${fileNameSuffix}.jpg`);
@@ -145,13 +148,12 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /**
    * @function getFolderData
    * @summary Get the path to a folder and the supported images within it
-   * @param {string} folderPath - Full drive path to selected image folder
    * @param {Array} imageFiles - Supported file types contained within the folder
-   * @returns {object} { folderPath, imagesData }
+   * @returns {Array} imagesData
    * @memberof CrFile
    * @static
    */
-  static async getFolderData(folderPath, imageFiles) {
+  static async getFolderData(imageFiles) {
     const imagesData = [];
 
     for (let i = 0; i < imageFiles.length; i += 1) {
@@ -165,10 +167,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       });
     }
 
-    return {
-      folderPath,
-      imagesData
-    };
+    return imagesData;
   }
 
   /**
@@ -187,32 +186,75 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function selectFolder
-   * @param {event} event - CrFile:selectFolder event captured by ipcMain.handle
-   * @returns {object} folderData
+   * @param {object} args - Arguments
+   * @param {string} args.dialogTitle - Dialog title
+   * @param {string} args.dialogButtonLabel - Dialog button label
+   * @param {boolean} args.getImagesData - Return imagesData
+   * @returns {object} { folderPath, imagesData }
    * @memberof CrFile
    * @static
    */
-  static async selectFolder(event) { // eslint-disable-line no-unused-vars
+  static async selectFolder({ dialogTitle, dialogButtonLabel, getImagesData }) {
     const { canceled, filePaths } = await dialog.showOpenDialog({
       defaultPath: '~/',
-      title: 'Select image folder',
-      buttonLabel: 'Load images',
+      title: dialogTitle,
+      buttonLabel: dialogButtonLabel,
       properties: [ 'openDirectory', 'multiSelections' ]
     });
 
-    let folderData = {};
+    let imagesData = [];
 
     if (!canceled && filePaths.length) {
       const folderPath = filePaths[0];
 
-      const files = CrFile.getFiles(folderPath);
+      if (getImagesData) {
+        const files = CrFile.getFiles(folderPath);
+        const imageFiles = files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
 
-      const imageFiles = files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
+        imagesData = await CrFile.getFolderData(imageFiles);
+      }
 
-      (folderData = await CrFile.getFolderData(folderPath, imageFiles)); // promise
+      return {
+        folderPath,
+        imagesData
+      };
     }
 
-    return folderData; // { folderPath, imagesData }
+    return {};
+  }
+
+  /**
+   * @function selectFolderIn
+   * @param {event} event - CrFile:selectFolderIn event captured by ipcMain.handle
+   * @returns { object } { folderPath, imagesData }
+   * @memberof CrFile
+   * @static
+   */
+  static async selectFolderIn(event) { // eslint-disable-line no-unused-vars
+    const { folderPath, imagesData } = await CrFile.selectFolder({
+      dialogTitle: 'Source folder',
+      dialogButtonLabel: 'Select folder',
+      getImagesData: true
+    });
+
+    return { folderPath, imagesData };
+  }
+
+  /**
+   * @function selectFolderOut
+   * @param {event} event - CrFile:selectFolderIn event captured by ipcMain.handle
+   * @returns { object } { folderPath }
+   * @memberof CrFile
+   * @static
+   */
+  static async selectFolderOut(event) { // eslint-disable-line no-unused-vars
+    const { folderPath } = await CrFile.selectFolder({
+      dialogTitle: 'Target folder',
+      dialogButtonLabel: 'Select folder',
+      getImagesData: false
+    });
+
+    return { folderPath };
   }
 
   /**
