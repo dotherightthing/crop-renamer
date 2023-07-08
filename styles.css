@@ -36,6 +36,13 @@
   box-sizing: border-box;
 }
 
+button[disabled],
+input[disabled],
+[data-disabled] {
+  color: var(--color-secondary) !important; /* stylelint-disable-line declaration-no-important */
+  cursor: not-allowed;
+}
+
 [hidden] {
   visibility: hidden;
 }

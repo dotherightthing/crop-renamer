@@ -2,6 +2,7 @@
 
 import { CrCroppersUi } from './classes/CrCroppersUi.mjs';
 import { CrThumbsUi } from './classes/CrThumbsUi.mjs';
+import { CrUtilsUi } from './classes/CrUtilsUi.mjs';
 
 // listeners
 
@@ -178,6 +179,12 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     els.imageCrop.dataset.targetFolder = folderPath;
+
+    CrUtilsUi.getNextSiblings(els.folderIn).forEach(el => {
+      delete el.dataset.disabled;
+      el.removeAttribute('disabled');
+      el.querySelectorAll('button, input').forEach(formEl => formEl.removeAttribute('disabled'));
+    });
   });
 
   els.imageCrop.addEventListener('click', () => {

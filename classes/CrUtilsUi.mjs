@@ -41,6 +41,27 @@ export class CrUtilsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function getNextSiblings
+   * @param {HTMLElement} el - Element to find 'next' (= following) siblings of
+   * @returns {Array} HTMLElements
+   * @see {@link https://stackoverflow.com/questions/842336/is-there-a-way-to-select-sibling-nodes}
+   * @see {@link https://web.archive.org/web/20210529160753/https://j11y.io/jquery/#v=1.11.2&fn=jQuery.sibling}
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for}
+   */
+  static getNextSiblings(el) {
+    var n = el;
+    const ret = [];
+
+    for (; n; n = n.nextElementSibling) {
+      if (n !== el) {
+        ret.push(n);
+      }
+    }
+
+    return ret;
+  }
+
+  /**
    * @function getOffset
    * @summary Get the space between an element and the viewport (this matches the inline CSS translate implemented by cropperjs)
    * @param {HTMLElement} el - Element
