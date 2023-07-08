@@ -103,9 +103,25 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   els.croppers.addEventListener('paramChange', (event) => {
-    const { parameter, value } = event.detail;
+    const {
+      isTransient,
+      parameter,
+      value
+    } = event.detail;
 
-    document.getElementById(parameter).value = value;
+    const el = document.getElementById(parameter);
+
+    const oldValue = el.value;
+
+    if (oldValue !== value) {
+      el.value = value;
+
+      if (!isTransient) {
+        // fire 'change' event so that change is picked up by listener
+        const ev = new Event('change');
+        el.dispatchEvent(ev);
+      }
+    }
   });
 
   els.croppers.addEventListener('statusChange', (event) => {
@@ -125,11 +141,15 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  els.focalpointDelete.addEventListener('click', (event) => {
-    crCroppersUiInstance.deleteImagePercentXYFromImage(event);
+  els.focalpointDelete.addEventListener('click', () => {
+    crCroppersUiInstance.deleteImagePercentXYFromImage();
 
     els.focalpointX.value = 50;
     els.focalpointY.value = 50;
+
+    // fire 'change' event so that change is picked up by listener
+    const ev = new Event('change');
+    els.focalpointY.dispatchEvent(ev); // for both X and Y
 
     crCroppersUiInstance.displayImagePercentXY({
       imagePercentX: els.focalpointX.value,
@@ -137,16 +157,16 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  els.focalpointInput.forEach(input => input.addEventListener('change', (event) => {
-    if (event.isTrusted) {
-      crCroppersUiInstance.displayImagePercentXY({
-        imagePercentX: els.focalpointX.value,
-        imagePercentY: els.focalpointY.value
-      });
+  els.focalpointInput.forEach(input => input.addEventListener('change', () => {
+    // this also fires a param change
+    crCroppersUiInstance.displayImagePercentXY({
+      imagePercentX: els.focalpointX.value,
+      imagePercentY: els.focalpointY.value
+    });
 
-      const autosave = [ ...els.focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
+    const autosave = [ ...els.focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
 
-      if (autosave === 'on') {
+    if (autosave === 'on') {
         crCroppersUiInstance.writeImagePercentXYToImage({
           imagePercentX: els.focalpointX.value,
           imagePercentY: els.focalpointY.value

@@ -388,7 +388,7 @@ img {
 }
 
 .controls input[type='number'] {
-  width: 2.5em; /* 2 dp */
+  width: 3em; /* 1 dp */
 }
 
 .controls input[type='number']::-webkit-inner-spin-button {

@@ -460,7 +460,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function displayImagePercentXY
-   * @summary Show focalpoint in UI
+   * @summary Move cropbox to focalpoint and update display fields
    * @param {object} args - Arguments
    * @param {number} args.imagePercentY - Image percentage top
    * @param {number} args.imagePercentX - Image percentage X
@@ -550,12 +550,14 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
               CrUtilsUi.emitEvent(croppersId, 'paramChange', {
                 parameter: 'focalpoint-x',
-                value: imagePercentX
+                value: imagePercentX,
+                isTransient: !isPageXYRounded
               });
 
               CrUtilsUi.emitEvent(croppersId, 'paramChange', {
                 parameter: 'focalpoint-y',
-                value: imagePercentY
+                value: imagePercentY,
+                isTransient: !isPageXYRounded
               });
 
               CrUtilsUi.emitEvent(croppersId, 'statusChange', {
