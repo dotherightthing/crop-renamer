@@ -104,7 +104,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   els.croppers.addEventListener('paramChange', (event) => {
     const {
-      isTransient,
+      triggerChange,
       parameter,
       value
     } = event.detail;
@@ -116,10 +116,13 @@ window.addEventListener('DOMContentLoaded', () => {
     if (oldValue !== value) {
       el.value = value;
 
-      if (!isTransient) {
-        // fire 'change' event so that change is picked up by listener
-        const ev = new Event('change');
-        el.dispatchEvent(ev);
+      if (triggerChange) {
+        // let fields update before actioning new values
+        setTimeout(() => {
+          // fire 'change' event so that change is picked up by listener
+          const ev = new Event('change');
+          el.dispatchEvent(ev);
+        }, 500);
       }
     }
   });
@@ -134,7 +137,7 @@ window.addEventListener('DOMContentLoaded', () => {
     radio.addEventListener('change', (event) => {
       if (event.target.value === 'on') {
         // value is a string despite input being of type number
-        if ((els.focalpointX.value === '50') && (els.focalpointY.value === '50')) {
+        if ((Number(els.focalpointX.value) === 50) && (Number(els.focalpointY.value) === 50)) {
           crCroppersUiInstance.deleteImagePercentXYFromImage();
         } else {
           crCroppersUiInstance.writeImagePercentXYToImage({
@@ -155,15 +158,10 @@ window.addEventListener('DOMContentLoaded', () => {
     // fire 'change' event so that change is picked up by listener
     const ev = new Event('change');
     els.focalpointY.dispatchEvent(ev); // for both X and Y
-
-    crCroppersUiInstance.displayImagePercentXY({
-      imagePercentX: els.focalpointX.value,
-      imagePercentY: els.focalpointY.value
-    });
   });
 
   els.focalpointInput.forEach(input => input.addEventListener('change', () => {
-    // this also fires a param change
+    // move cropbox
     crCroppersUiInstance.displayImagePercentXY({
       imagePercentX: els.focalpointX.value,
       imagePercentY: els.focalpointY.value
@@ -173,7 +171,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (autosave === 'on') {
       // value is a string despite input being of type number
-      if ((els.focalpointX.value === '50') && (els.focalpointY.value === '50')) {
+      if ((Number(els.focalpointX.value) === 50) && (Number(els.focalpointY.value) === 50)) {
         crCroppersUiInstance.deleteImagePercentXYFromImage();
       } else {
         crCroppersUiInstance.writeImagePercentXYToImage({

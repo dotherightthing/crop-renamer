@@ -460,15 +460,13 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function displayImagePercentXY
-   * @summary Move cropbox to focalpoint and update display fields
+   * @summary Move cropbox to focalpoint
    * @param {object} args - Arguments
    * @param {number} args.imagePercentY - Image percentage top
    * @param {number} args.imagePercentX - Image percentage X
    * @memberof CrCroppersUi
    */
   displayImagePercentXY({ imagePercentY, imagePercentX }) {
-    const { croppersId } = this;
-
     // simulate click event
     this.masterCropperCropBoxWasDragged = false;
 
@@ -481,16 +479,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       pageX,
       pageY
     } = this.calcPageXYFromImageXY({ imageX, imageY });
-
-    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
-      parameter: 'focalpoint-x',
-      value: imagePercentX
-    });
-
-    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
-      parameter: 'focalpoint-y',
-      value: imagePercentY
-    });
 
     this.moveCropperCropBoxToPageXY({ pageX, pageY });
   }
@@ -540,24 +528,24 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
             const { pageX, pageY } = pageXY;
             const isPageXYRounded = i > 0;
 
-            const {
-              imagePercentX,
-              imagePercentY
-            } = this.calcImagePercentXYFromPageXY({ pageX, pageY, round: isPageXYRounded });
-
             setTimeout(() => {
               this.moveCropperCropBoxToPageXY({ pageX, pageY });
+
+              const {
+                imagePercentX,
+                imagePercentY
+              } = this.calcImagePercentXYFromPageXY({ pageX, pageY, round: isPageXYRounded });
 
               CrUtilsUi.emitEvent(croppersId, 'paramChange', {
                 parameter: 'focalpoint-x',
                 value: imagePercentX,
-                isTransient: !isPageXYRounded
+                triggerChange: isPageXYRounded
               });
 
               CrUtilsUi.emitEvent(croppersId, 'paramChange', {
                 parameter: 'focalpoint-y',
                 value: imagePercentY,
-                isTransient: !isPageXYRounded
+                triggerChange: isPageXYRounded
               });
 
               CrUtilsUi.emitEvent(croppersId, 'statusChange', {
@@ -722,22 +710,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @memberof CrCroppersUi
    */
   initImagePercentXY() {
-    const { croppersId } = this;
-
-    const {
-      imagePercentX,
-      imagePercentY
-    } = this.getImagePercentXYFromImage();
-
-    if ((typeof imagePercentX === 'undefined') || (typeof imagePercentY === 'undefined')) {
-      this.reinstateImagePercentXYFromImage();
-
-      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-        msg: 'Focalpoint reset'
-      });
-    } else {
-      this.displayImagePercentXY({ imagePercentX, imagePercentY });
-    }
+    this.reinstateImagePercentXYFromImage();
   }
 
   /**
@@ -889,10 +862,11 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   async cropImage(targetFolder) {
     const {
       croppersId,
+      croppers,
       slaveCroppers
     } = this;
 
-    const fileName = slaveCroppers[0].cropperInstance.element.src;
+    const fileName = croppers[0].cropperInstance.element.src;
 
     const crops = [];
 
@@ -919,10 +893,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       });
     });
 
-    const fileNameClean = fileName.replace('file://', '').replaceAll('%20', ' ');
-
     const successMsg = await window.electronAPI.cropImage({
-      fileName: encodeURIComponent(fileNameClean),
+      fileName,
       quality: 75,
       targetFolder,
       crops
@@ -952,10 +924,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     // timeout prevents broken image
     setTimeout(() => {
-      const newSrcName = `file://${newFileName.replaceAll(' ', '%20')}`;
-
       croppers.forEach(cropper => {
-        cropper.cropperInstance.replace(newSrcName, true); // hasSameSize = true
+        cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
       });
 
       CrUtilsUi.emitEvent(croppersId, 'statusChange', {
@@ -973,16 +943,38 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @memberof CrCroppersUi
    */
   reinstateImagePercentXYFromImage() {
+    const { croppersId } = this;
+
     let imagePercentXY = this.getImagePercentXYFromImage();
+
+    let msg = 'Loaded focalpoint from image';
 
     if (CrUtilsUi.isEmptyObject(imagePercentXY)) {
       imagePercentXY = {
         imagePercentX: 50,
         imagePercentY: 50
       };
+
+      msg = 'Reset focalpoint';
     }
 
-    this.displayImagePercentXY(imagePercentXY);
+    const { imagePercentX, imagePercentY } = imagePercentXY;
+
+    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+      parameter: 'focalpoint-x',
+      value: imagePercentX,
+      triggerChange: false
+    });
+
+    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+      parameter: 'focalpoint-y',
+      value: imagePercentY,
+      triggerChange: false
+    });
+
+    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+      msg
+    });
   }
 
   /**
@@ -1072,10 +1064,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
         newFileName
       });
 
-      const newSrcName = `file://${newFileName.replaceAll(' ', '%20')}`;
-
       croppers.forEach(cropper => {
-        cropper.cropperInstance.replace(newSrcName, true); // hasSameSize = true
+        cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
       });
 
       CrUtilsUi.emitEvent(croppersId, 'statusChange', {
