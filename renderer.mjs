@@ -133,10 +133,15 @@ window.addEventListener('DOMContentLoaded', () => {
   els.focalpointAutoSaveInput.forEach(radio => {
     radio.addEventListener('change', (event) => {
       if (event.target.value === 'on') {
-        crCroppersUiInstance.writeImagePercentXYToImage({
-          imagePercentX: els.focalpointX.value,
-          imagePercentY: els.focalpointY.value
-        });
+        // value is a string despite input being of type number
+        if ((els.focalpointX.value === '50') && (els.focalpointY.value === '50')) {
+          crCroppersUiInstance.deleteImagePercentXYFromImage();
+        } else {
+          crCroppersUiInstance.writeImagePercentXYToImage({
+            imagePercentX: els.focalpointX.value,
+            imagePercentY: els.focalpointY.value
+          });
+        }
       }
     });
   });
@@ -167,6 +172,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const autosave = [ ...els.focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
 
     if (autosave === 'on') {
+      // value is a string despite input being of type number
+      if ((els.focalpointX.value === '50') && (els.focalpointY.value === '50')) {
+        crCroppersUiInstance.deleteImagePercentXYFromImage();
+      } else {
         crCroppersUiInstance.writeImagePercentXYToImage({
           imagePercentX: els.focalpointX.value,
           imagePercentY: els.focalpointY.value
