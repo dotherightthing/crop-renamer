@@ -160,25 +160,29 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   els.folderIn.addEventListener('click', async () => {
-    const { folderPath, imagesData } = await window.electronAPI.selectFolderIn();
+    const { folderName, folderPath, imagesData } = await window.electronAPI.selectFolderIn();
 
     // if folder select was cancelled
     if ((typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
       return;
     }
 
+    els.folderIn.dataset.hint = true;
+    els.folderIn.children[0].innerText = folderName;
+
     crThumbsUiInstance.generateThumbsHtml(imagesData);
   });
 
   els.folderOut.addEventListener('click', async () => {
-    const { folderPath } = await window.electronAPI.selectFolderOut();
+    const { folderName, folderPath } = await window.electronAPI.selectFolderOut();
 
     // if folder select was cancelled
     if (typeof folderPath === 'undefined') {
       return;
     }
 
-    els.imageCrop.dataset.targetFolder = folderPath;
+    els.folderOut.dataset.hint = true;
+    els.folderOut.children[0].innerText = folderName;
 
     CrUtilsUi.getNextSiblings(els.folderIn).forEach(el => {
       delete el.dataset.disabled;

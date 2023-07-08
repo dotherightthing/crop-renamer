@@ -237,7 +237,10 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       getImagesData: true
     });
 
-    return { folderPath, imagesData };
+    const pathSeparator = folderPath.lastIndexOf('/');
+    const folderName = folderPath.slice(pathSeparator + 1);
+
+    return { folderName, folderPath, imagesData };
   }
 
   /**
@@ -254,7 +257,10 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       getImagesData: false
     });
 
-    return { folderPath };
+    const pathSeparator = folderPath.lastIndexOf('/');
+    const folderName = folderPath.slice(pathSeparator + 1);
+
+    return { folderName, folderPath };
   }
 
   /**
