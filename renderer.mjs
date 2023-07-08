@@ -63,7 +63,7 @@ window.addEventListener('DOMContentLoaded', () => {
     croppers: document.getElementById('croppers'),
     focalpointAutoSaveInput: document.getElementsByName('focalpoint-autosave'),
     focalpointDelete: document.getElementById('delete-focalpoint'),
-    focalpointInput: document.querySelectorAll('.focalpoint-input'),
+    focalpointInput: document.querySelectorAll('#focalpoint-x, #focalpoint-y'),
     focalpointReset: document.getElementById('reset-focalpoint'),
     focalpointX: document.getElementById('focalpoint-x'),
     focalpointY: document.getElementById('focalpoint-y'),
