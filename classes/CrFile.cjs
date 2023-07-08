@@ -49,12 +49,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       crops
     } = data;
 
-    const fileNameStr = decodeURIComponent(fileName);
-
-    const pathSeparator = fileNameStr.lastIndexOf('/');
-    const fileNameAndExt = fileNameStr.slice(pathSeparator + 1);
-    const fileSeparator = fileNameAndExt.lastIndexOf('.');
-    const fileNameOnly = fileNameAndExt.slice(0, fileSeparator);
+    const { fileNameOnly, fileNameRaw } = CrFile.getFileNameParts(fileName);
 
     crops.forEach(crop => {
       const {
@@ -69,7 +64,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       const currentDir = process.cwd();
       const targetPath = path.relative(currentDir, targetFolder);
 
-      gm(fileNameStr)
+      gm(fileNameRaw)
         .strip()
         .autoOrient()
         .quality(quality)
@@ -142,7 +137,8 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       extName,
       fileNameAndExt,
       fileNameOnly,
-      folderPath
+      folderPath,
+      fileNameRaw
     };
   }
 

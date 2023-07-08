@@ -208,6 +208,7 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    els.folderOut.dataset.targetFolder = folderPath;
     els.folderOut.dataset.hint = true;
     els.folderOut.children[0].innerText = folderName;
 
@@ -219,7 +220,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   els.imageCrop.addEventListener('click', () => {
-    const { targetFolder } = els.imageCrop.dataset;
+    const { targetFolder } = els.folderOut.dataset;
 
     crCroppersUiInstance.cropImage(targetFolder);
   });
