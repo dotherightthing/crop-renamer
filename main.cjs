@@ -57,14 +57,6 @@ const createWindow = () => {
           label: 'Quit', click: () => { app.quit(); }
         }
       ]
-    },
-    {
-      label: appName,
-      submenu: [
-        {
-          label: 'Load images', click: () => { mainWindow.webContents.executeJavaScript('uiSelectFolder()'); }
-        }
-      ]
     }
   ];
 

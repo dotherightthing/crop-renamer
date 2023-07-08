@@ -2,71 +2,6 @@
 
 import { CrCroppersUi } from './classes/CrCroppersUi.mjs';
 import { CrThumbsUi } from './classes/CrThumbsUi.mjs';
-import { CrUtilsUi } from './classes/CrUtilsUi.mjs';
-
-const appDebugDir = "/Volumes/DanHDD4TB1/Don't Believe The Hype/2022.12.31 - 2023.01.08 - Wellington to Acheron, St James, Rainbow, to Wellington/Day 04 - 2023.01.03 - Aratere Valley to Acheron Campsite";
-
-// globals
-
-// const rotateEl = document.getElementById('rotate');
-
-// functions
-
-// const reinstateCropCenterFromPercentages = () => {};
-
-// const storeCropCenterAsPercentages = (cropBoxCenterX, cropBoxCenterY, imageWidth, imageHeight) => {};
-
-/**
- * @function uiSelectFolder
- */
-async function uiSelectFolder() {
-  // npm run serve
-  if (typeof window.electronAPI === 'undefined') {
-    CrUtilsUi.emitEvent('root', 'selectedFolder', {
-      imagesData: [
-        {
-          src: './cypress/fixtures/landscape.jpeg',
-          dateTimeOriginal: '2023:01:03 04:35:26'
-        },
-        {
-          src: './cypress/fixtures/portrait.jpeg',
-          dateTimeOriginal: '2023:01:03 05:35:26'
-        },
-        {
-          src: './cypress/fixtures/portrait-with-rotation.jpeg',
-          dateTimeOriginal: '2023:01:03 05:35:26'
-        },
-        {
-          src: './cypress/fixtures/panorama.jpeg',
-          dateTimeOriginal: '2023:01:03 09:35:26'
-        },
-        {
-          src: './cypress/fixtures/square.jpg',
-          dateTimeOriginal: '2023:01:03 06:35:26'
-        },
-        {
-          src: './cypress/fixtures/screenshot.PNG',
-          dateTimeOriginal: '2023:01:03 07:35:26'
-        }
-      ]
-    });
-
-    return;
-  }
-
-  const { folderPath, imagesData } = await window.electronAPI.selectFolder({
-    appDebugDir
-  });
-
-  // if folder select was cancelled
-  if ((typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
-    return;
-  }
-
-  CrUtilsUi.emitEvent('root', 'selectedFolder', {
-    imagesData
-  });
-}
 
 // listeners
 
@@ -131,6 +66,7 @@ window.addEventListener('DOMContentLoaded', () => {
     focalpointReset: document.getElementById('reset-focalpoint'),
     focalpointX: document.getElementById('focalpoint-x'),
     focalpointY: document.getElementById('focalpoint-y'),
+    folderIn: document.getElementById('folder-in'),
     imageCrop: document.getElementById('crop-image'),
     lastCropperImg: document.querySelector('#croppers .img-container:last-child img'),
     root: document.getElementById('root'),
@@ -221,6 +157,17 @@ window.addEventListener('DOMContentLoaded', () => {
     crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
   });
 
+  els.folderIn.addEventListener('click', async () => {
+    const { folderPath, imagesData } = await window.electronAPI.selectFolder();
+
+    // if folder select was cancelled
+    if ((typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
+      return;
+    }
+
+    crThumbsUiInstance.generateThumbsHtml(imagesData);
+  });
+
   els.imageCrop.addEventListener('click', () => {
     crCroppersUiInstance.cropImage();
   });
@@ -230,12 +177,6 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       crCroppersUiInstance.initImagePercentXY();
     }, 10);
-  });
-
-  els.root.addEventListener('selectedFolder', (event) => {
-    const { imagesData } = event.detail;
-
-    crThumbsUiInstance.generateThumbsHtml(imagesData);
   });
 
   els.thumbs.addEventListener('click', (event) => {
@@ -272,5 +213,36 @@ window.addEventListener('DOMContentLoaded', () => {
     crThumbsUiInstance.scrollToThumb('selected');
   });
 
-  uiSelectFolder();
+  // init
+
+  if (typeof window.electronAPI === 'undefined') {
+    crThumbsUiInstance.generateThumbsHtml({
+      imagesData: [
+        {
+          src: './cypress/fixtures/landscape.jpeg',
+          dateTimeOriginal: '2023:01:03 04:35:26'
+        },
+        {
+          src: './cypress/fixtures/portrait.jpeg',
+          dateTimeOriginal: '2023:01:03 05:35:26'
+        },
+        {
+          src: './cypress/fixtures/portrait-with-rotation.jpeg',
+          dateTimeOriginal: '2023:01:03 05:35:26'
+        },
+        {
+          src: './cypress/fixtures/panorama.jpeg',
+          dateTimeOriginal: '2023:01:03 09:35:26'
+        },
+        {
+          src: './cypress/fixtures/square.jpg',
+          dateTimeOriginal: '2023:01:03 06:35:26'
+        },
+        {
+          src: './cypress/fixtures/screenshot.PNG',
+          dateTimeOriginal: '2023:01:03 07:35:26'
+        }
+      ]
+    });
+  }
 });

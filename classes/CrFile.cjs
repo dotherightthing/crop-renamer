@@ -188,31 +188,17 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /**
    * @function selectFolder
    * @param {event} event - CrFile:selectFolder event captured by ipcMain.handle
-   * @param {object} data - Data
    * @returns {object} folderData
    * @memberof CrFile
    * @static
    */
-  static async selectFolder(event, data) {
-    const { appDebugDir } = data;
-
-    let canceled;
-    let filePaths;
-
-    if (appDebugDir !== '') {
-      canceled = false;
-      filePaths = [ appDebugDir ];
-    } else {
-      // https://stackoverflow.com/a/59416470
-      (
-        { canceled, filePaths } = await dialog.showOpenDialog({
-          defaultPath: '~/',
-          title: 'Select image folder',
-          buttonLabel: 'Load images',
-          properties: [ 'openDirectory', 'multiSelections' ]
-        })
-      );
-    }
+  static async selectFolder(event) { // eslint-disable-line no-unused-vars
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      defaultPath: '~/',
+      title: 'Select image folder',
+      buttonLabel: 'Load images',
+      properties: [ 'openDirectory', 'multiSelections' ]
+    });
 
     let folderData = {};
 
