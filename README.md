@@ -1,5 +1,7 @@
 # focalpoint-multi-cropper
 
+<img src="screenshot-1.png">
+
 ## Features
 
 * **Preview** - Single window containing multiple instances of [cropperjs](fengyuanchen/cropperjs) - one master cropper and one or more slave croppers with user-defined `width:height` proportions
