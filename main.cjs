@@ -78,6 +78,8 @@ app.whenReady().then(() => {
   ipcMain.handle('CrFile:deleteImagePercentXYFromImage', CrFile.deleteImagePercentXYFromImage);
   ipcMain.handle('CrFile:saveImagePercentXYToImage', CrFile.saveImagePercentXYToImage);
   ipcMain.handle('CrFile:cropImage', CrFile.cropImage);
+  ipcMain.handle('CrFile:storeGet', CrFile.storeGet);
+  ipcMain.handle('CrFile:storeSet', CrFile.storeSet);
 
   createWindow();
 

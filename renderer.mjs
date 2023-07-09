@@ -6,7 +6,7 @@ import { CrUtilsUi } from './classes/CrUtilsUi.mjs';
 
 // listeners
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   // instantiate classes
 
   const thumbPathId = 'thumb-path';
@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', () => {
     thumbsId: 'thumbs'
   });
 
-  // elements
+  // cache DOM elements
 
   const els = {
     body: document.body,
@@ -78,64 +78,108 @@ window.addEventListener('DOMContentLoaded', () => {
     window: window
   };
 
-  // listen for native and custom events
+  // functions
 
-  els.body.addEventListener('keydown', (event) => {
-    if (!document.querySelectorAll('#thumbs img').length) {
-      return;
-    }
-
-    const { keyCode } = event;
-
-    if (keyCode === 37) {
-      event.preventDefault(); // don't operate the native container scrollbar
-      crThumbsUiInstance.scrollToThumb('previous');
-    } else if (keyCode === 39) {
-      event.preventDefault();
-      crThumbsUiInstance.scrollToThumb('next');
-    }
-  });
-
-  els.croppers.addEventListener('imageRenamed', (event) => {
-    const { newFileName } = event.detail;
-
-    crThumbsUiInstance.changeSelectedImageSrc(newFileName);
-  });
-
-  els.croppers.addEventListener('paramChange', (event) => {
-    const {
-      triggerChange,
-      parameter,
-      value
-    } = event.detail;
-
-    const el = document.getElementById(parameter);
-
-    const oldValue = el.value;
-
-    if (oldValue !== value) {
-      el.value = value;
-
-      if (triggerChange) {
-        // let fields update before actioning new values
-        setTimeout(() => {
-          // fire 'change' event so that change is picked up by listener
-          const ev = new Event('change');
-          el.dispatchEvent(ev);
-        }, 500);
+  /**
+   * @function addEventListeners
+   * @summary Listen for native and custom events
+   */
+  const addEventListeners = () => {
+    els.body.addEventListener('keydown', (event) => {
+      if (!document.querySelectorAll('#thumbs img').length) {
+        return;
       }
-    }
-  });
 
-  els.croppers.addEventListener('statusChange', (event) => {
-    const { msg } = event.detail;
+      const { keyCode } = event;
 
-    els.status.innerHTML = (msg !== '') ? `${msg}.` : msg;
-  });
+      if (keyCode === 37) {
+        event.preventDefault(); // don't operate the native container scrollbar
+        crThumbsUiInstance.scrollToThumb('previous');
+      } else if (keyCode === 39) {
+        event.preventDefault();
+        crThumbsUiInstance.scrollToThumb('next');
+      }
+    });
 
-  els.focalpointAutoSaveInput.forEach(radio => {
-    radio.addEventListener('change', (event) => {
-      if (event.target.value === 'on') {
+    els.croppers.addEventListener('imageRenamed', (event) => {
+      const { newFileName } = event.detail;
+
+      crThumbsUiInstance.changeSelectedImageSrc(newFileName);
+    });
+
+    els.croppers.addEventListener('paramChange', (event) => {
+      const {
+        triggerChange,
+        parameter,
+        value
+      } = event.detail;
+
+      const el = document.getElementById(parameter);
+
+      const oldValue = el.value;
+
+      if (oldValue !== value) {
+        el.value = value;
+
+        if (triggerChange) {
+          // let fields update before actioning new values
+          setTimeout(() => {
+            // fire 'change' event so that change is picked up by listener
+            const ev = new Event('change');
+            el.dispatchEvent(ev);
+          }, 500);
+        }
+      }
+    });
+
+    els.croppers.addEventListener('statusChange', (event) => {
+      const { msg } = event.detail;
+
+      els.status.innerHTML = (msg !== '') ? `${msg}.` : msg;
+    });
+
+    els.focalpointAutoSaveInput.forEach(radio => {
+      radio.addEventListener('change', (event) => {
+        window.electronAPI.storeSet({
+          key: 'focalpointAutoSave',
+          value: event.target.value === 'on'
+        });
+
+        if (event.target.value === 'on') {
+          // value is a string despite input being of type number
+          if ((Number(els.focalpointX.value) === 50) && (Number(els.focalpointY.value) === 50)) {
+            crCroppersUiInstance.deleteImagePercentXYFromImage();
+          } else {
+            crCroppersUiInstance.writeImagePercentXYToImage({
+              imagePercentX: els.focalpointX.value,
+              imagePercentY: els.focalpointY.value
+            });
+          }
+        }
+      });
+    });
+
+    els.focalpointDelete.addEventListener('click', () => {
+      crCroppersUiInstance.deleteImagePercentXYFromImage();
+
+      els.focalpointX.value = 50;
+      els.focalpointY.value = 50;
+
+      // fire 'change' event so that change is picked up by listener
+      const ev = new Event('change');
+      els.focalpointY.dispatchEvent(ev); // for both X and Y
+    });
+
+    els.focalpointInput.forEach(input => input.addEventListener('change', () => {
+      // move cropbox
+      crCroppersUiInstance.displayImagePercentXY({
+        imagePercentX: els.focalpointX.value,
+        imagePercentY: els.focalpointY.value
+      });
+
+      const autosave = [ ...els.focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
+
+      if (autosave === 'on') {
         // value is a string despite input being of type number
         if ((Number(els.focalpointX.value) === 50) && (Number(els.focalpointY.value) === 50)) {
           crCroppersUiInstance.deleteImagePercentXYFromImage();
@@ -146,51 +190,112 @@ window.addEventListener('DOMContentLoaded', () => {
           });
         }
       }
-    });
-  });
+    }));
 
-  els.focalpointDelete.addEventListener('click', () => {
-    crCroppersUiInstance.deleteImagePercentXYFromImage();
-
-    els.focalpointX.value = 50;
-    els.focalpointY.value = 50;
-
-    // fire 'change' event so that change is picked up by listener
-    const ev = new Event('change');
-    els.focalpointY.dispatchEvent(ev); // for both X and Y
-  });
-
-  els.focalpointInput.forEach(input => input.addEventListener('change', () => {
-    // move cropbox
-    crCroppersUiInstance.displayImagePercentXY({
-      imagePercentX: els.focalpointX.value,
-      imagePercentY: els.focalpointY.value
+    els.focalpointReset.addEventListener('click', (event) => {
+      crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
     });
 
-    const autosave = [ ...els.focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
+    els.folderIn.addEventListener('click', async () => {
+      const { folderName, folderPath, imagesData } = await window.electronAPI.selectFolderIn();
 
-    if (autosave === 'on') {
-      // value is a string despite input being of type number
-      if ((Number(els.focalpointX.value) === 50) && (Number(els.focalpointY.value) === 50)) {
-        crCroppersUiInstance.deleteImagePercentXYFromImage();
-      } else {
-        crCroppersUiInstance.writeImagePercentXYToImage({
-          imagePercentX: els.focalpointX.value,
-          imagePercentY: els.focalpointY.value
+      setFolderIn({ folderName, folderPath, imagesData });
+    });
+
+    els.folderOut.addEventListener('click', async () => {
+      const { folderName, folderPath } = await window.electronAPI.selectFolderOut();
+
+      setFolderOut({ folderName, folderPath });
+    });
+
+    els.imageCrop.addEventListener('click', () => {
+      const { targetFolder } = els.folderOut.dataset;
+
+      crCroppersUiInstance.cropImage(targetFolder);
+    });
+
+    els.lastCropperImg.addEventListener('ready', () => {
+      // short timeout prevents intermittent (browser) error from CrCroppersUi.calcCanvasOffsets()
+      setTimeout(() => {
+        crCroppersUiInstance.initImagePercentXY();
+      }, 10);
+    });
+
+    els.thumbs.addEventListener('click', (event) => {
+      const target = crThumbsUiInstance.getClickedButton(event);
+      const newImageSrc = target.querySelector('img').getAttribute('src');
+
+      crThumbsUiInstance.applySelectedClass(target);
+      crThumbsUiInstance.scrollToThumb('selected');
+      crThumbsUiInstance.displayPath(newImageSrc);
+
+      // calls crCroppersUiInstance.init
+      crCroppersUiInstance.changeSourceImage(target);
+    });
+
+    els.thumbPath.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      if (typeof window.electronAPI === 'undefined') {
+        els.status.innerHTML = 'Error: Finder links require Electron';
+
+        return;
+      }
+
+      const href = event.target.getAttribute('href');
+
+      if (href) {
+        window.electronAPI.openInFinder({
+          href
         });
       }
-    }
-  }));
+    });
 
-  els.focalpointReset.addEventListener('click', (event) => {
-    crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
-  });
+    els.window.addEventListener('resize', () => {
+      crThumbsUiInstance.scrollToThumb('selected');
+    });
+  };
 
-  els.folderIn.addEventListener('click', async () => {
-    const { folderName, folderPath, imagesData } = await window.electronAPI.selectFolderIn();
+  /**
+   * @function restoreSettings
+   * @summary Restore previous stored settings if they exist
+   */
+  const restoreSettings = async () => {
+    const storedFolderIn = await window.electronAPI.selectFolderIn(true);
+    const storedFolderOut = await window.electronAPI.selectFolderOut(true);
+    const storedFocalpointAutoSave = await window.electronAPI.storeGet({
+      key: 'focalpointAutoSave'
+    });
 
+    setAutoSave(storedFocalpointAutoSave);
+    setFolderIn(storedFolderIn);
+    setFolderOut(storedFolderOut);
+  };
+
+  /**
+   * @function setAutoSave
+   * @summary Turn auto save on or off
+   * @param {boolean} enabled - On
+   */
+  const setAutoSave = (enabled) => {
+    const autoSaveSetting = enabled ? 'on' : 'off';
+
+    els.focalpointAutoSaveInput.forEach(radio => {
+      radio.checked = (radio.value === autoSaveSetting);
+    });
+  };
+
+  /**
+   * @function setFolderIn
+   * @summary Set the source folder
+   * @param {object} args - Arguments
+   * @param {string} args.folderName - Folder name
+   * @param {string} args.folderPath - Folder path
+   * @param {Array} args.imagesData - Images data
+   */
+  const setFolderIn = ({ folderName, folderPath, imagesData }) => {
     // if folder select was cancelled
-    if ((typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
+    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
       return;
     }
 
@@ -198,13 +303,18 @@ window.addEventListener('DOMContentLoaded', () => {
     els.folderIn.children[0].innerText = folderName;
 
     crThumbsUiInstance.generateThumbsHtml(imagesData);
-  });
+  };
 
-  els.folderOut.addEventListener('click', async () => {
-    const { folderName, folderPath } = await window.electronAPI.selectFolderOut();
-
+  /**
+   * @function setFolderOut
+   * @summary Set the target folder
+   * @param {object} args - Arguments
+   * @param {string} args.folderName - Folder name
+   * @param {string} args.folderPath - Folder path
+   */
+  const setFolderOut = ({ folderName, folderPath }) => {
     // if folder select was cancelled
-    if (typeof folderPath === 'undefined') {
+    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
       return;
     }
 
@@ -217,58 +327,34 @@ window.addEventListener('DOMContentLoaded', () => {
       el.removeAttribute('disabled');
       el.querySelectorAll('button, input').forEach(formEl => formEl.removeAttribute('disabled'));
     });
-  });
+  };
 
-  els.imageCrop.addEventListener('click', () => {
-    const { targetFolder } = els.folderOut.dataset;
+  /**
+   * @function storeGet
+   * @summary Retrieve a stored setting
+   * @param {string} key - Key
+   * @returns {*} value - Value
+   */
+  const storeGet = async (key) => {
+    const value = await window.electronAPI.storeGet({ key });
 
-    crCroppersUiInstance.cropImage(targetFolder);
-  });
+    return value;
+  };
 
-  els.lastCropperImg.addEventListener('ready', () => {
-    // short timeout prevents intermittent (browser) error from CrCroppersUi.calcCanvasOffsets()
-    setTimeout(() => {
-      crCroppersUiInstance.initImagePercentXY();
-    }, 10);
-  });
+  /**
+   * @function storeSet
+   * @summary Store a setting
+   * @param {string} key - Key
+   * @param {*} value - Value
+   */
+  const storeSet = async (key, value) => {
+    await window.electronAPI.storeSetting({ key, value });
+  };
 
-  els.thumbs.addEventListener('click', (event) => {
-    const target = crThumbsUiInstance.getClickedButton(event);
-    const newImageSrc = target.querySelector('img').getAttribute('src');
-
-    crThumbsUiInstance.applySelectedClass(target);
-    crThumbsUiInstance.scrollToThumb('selected');
-    crThumbsUiInstance.displayPath(newImageSrc);
-
-    // calls crCroppersUiInstance.init
-    crCroppersUiInstance.changeSourceImage(target);
-  });
-
-  els.thumbPath.addEventListener('click', (event) => {
-    event.preventDefault();
-
-    if (typeof window.electronAPI === 'undefined') {
-      els.status.innerHTML = 'Error: Finder links require Electron';
-
-      return;
-    }
-
-    const href = event.target.getAttribute('href');
-
-    if (href) {
-      window.electronAPI.openInFinder({
-        href
-      });
-    }
-  });
-
-  els.window.addEventListener('resize', () => {
-    crThumbsUiInstance.scrollToThumb('selected');
-  });
-
-  // init
-
-  if (typeof window.electronAPI === 'undefined') {
+  /**
+   * @function useTestData
+   */
+  const useTestData = () => {
     crThumbsUiInstance.generateThumbsHtml({
       imagesData: [
         {
@@ -297,5 +383,15 @@ window.addEventListener('DOMContentLoaded', () => {
         }
       ]
     });
+  };
+
+  // function calls
+
+  addEventListeners();
+
+  await restoreSettings();
+
+  if (typeof window.electronAPI === 'undefined') {
+    useTestData();
   }
 });
