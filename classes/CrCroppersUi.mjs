@@ -963,13 +963,13 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     CrUtilsUi.emitEvent(croppersId, 'paramChange', {
       parameter: 'focalpoint-x',
       value: imagePercentX,
-      triggerChange: false
+      triggerChange: true
     });
 
     CrUtilsUi.emitEvent(croppersId, 'paramChange', {
       parameter: 'focalpoint-y',
       value: imagePercentY,
-      triggerChange: false
+      triggerChange: true
     });
 
     CrUtilsUi.emitEvent(croppersId, 'statusChange', {
