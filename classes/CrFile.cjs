@@ -229,13 +229,13 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @param {string} args.dialogButtonLabel - Dialog button label
    * @param {string} args.restore - Restore previously stored return
    * @param {string} args.storeKey - Store return value with this key
-   * @param {boolean} args.getImagesData - Return imagesData
+   * @param {boolean} args.retrieveImagesData - Return imagesData
    * @returns {object} { folderPath, imagesData }
    * @memberof CrFile
    * @static
    */
   static async selectFolder({
-    dialogTitle, dialogButtonLabel, getImagesData, restore, storeKey
+    dialogTitle, dialogButtonLabel, retrieveImagesData, restore, storeKey
   }) {
     if (restore) {
       const data = await CrFile.storeGet(null, {
@@ -251,10 +251,12 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
         const imageFiles = CrFile.getImageFiles(data.folderPath);
 
-        // imagesData retrieved separately to accommodate file renaming in the interim
-        data.imagesData = await CrFile.getImagesData(imageFiles);
+        const dataCopy = { ...data }; // #30
 
-        return data;
+        // imagesData retrieved separately to accommodate file renaming in the interim
+        dataCopy.imagesData = await CrFile.getImagesData(imageFiles);
+
+        return dataCopy;
       }
 
       return {};
@@ -271,7 +273,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       const folderPath = filePaths[0];
       let imagesData = [];
 
-      if (getImagesData) {
+      if (retrieveImagesData) {
         const imageFiles = CrFile.getImageFiles(folderPath);
 
         imagesData = await CrFile.getImagesData(imageFiles);
@@ -312,7 +314,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     const { folderName, folderPath, imagesData } = await CrFile.selectFolder({
       dialogTitle: 'Source folder',
       dialogButtonLabel: 'Select folder',
-      getImagesData: true,
+      retrieveImagesData: true,
       restore,
       storeKey: 'folderIn'
     });
@@ -336,7 +338,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     const { folderName, folderPath } = await CrFile.selectFolder({
       dialogTitle: 'Target folder',
       dialogButtonLabel: 'Select folder',
-      getImagesData: false,
+      retrieveImagesData: false,
       restore,
       storeKey: 'folderOut'
     });
