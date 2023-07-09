@@ -27,6 +27,7 @@
     "cropperjs": "^1.5.13",
     "dtrt-string-utils": "github:dotherightthing/dtrt-string-utils",
     "dtrt-type-validate": "github:dotherightthing/dtrt-type-validate",
+    "electron": "^25.2.0",
     "electron-context-menu": "^3.6.1",
     "exifreader": "^4.12.0",
     "gm": "^1.25.0",
@@ -35,7 +36,6 @@
   },
   "devDependencies": {
     "cypress": "^12.14.0",
-    "electron": "^24.1.2",
     "eslint": "^8.39.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-cypress": "^2.13.3",
