@@ -7,6 +7,8 @@ const {
   Menu
 } = require('electron');
 
+const { net, protocol } = require('electron');
+
 const CrFile = require('./classes/CrFile.cjs');
 
 const path = require('path');
@@ -15,6 +17,14 @@ const contextMenu = require('electron-context-menu');
 // TODO store last path, maybe a .restore file?
 const appName = 'Image cropper';
 const appDimensions = [ 1280, 1024 ];
+
+protocol.registerSchemesAsPrivileged([ {
+  scheme: 'file',
+  privileges: {
+    standard: true,
+    secure: true
+  }
+} ]);
 
 const createWindow = () => {
   const [ width, height ] = appDimensions;
@@ -65,12 +75,20 @@ const createWindow = () => {
   // give dev tools drawer time to open
   // so that cropper is centered in remaining space
   setTimeout(() => {
-    mainWindow.loadFile('index.html');
+    mainWindow.loadURL('file:///Users/dan/Websites/crop-renamer/index.html');
   }, 100);
 };
 
 // Open a window if none are open (macOS)
 app.whenReady().then(() => {
+  // suport cookies with file:// protocol
+
+  protocol.handle('file', (request) => {
+    console.log('file://' + request.url.substring(7));
+
+    return net.fetch('file://' + request.url.substring(7));
+  });
+
   // ipcMain module for inter-process communication (IPC) with render process
 
   ipcMain.handle('CrFile:openInFinder', CrFile.openInFinder);
@@ -79,6 +97,7 @@ app.whenReady().then(() => {
   ipcMain.handle('CrFile:deleteImagePercentXYFromImage', CrFile.deleteImagePercentXYFromImage);
   ipcMain.handle('CrFile:saveImagePercentXYToImage', CrFile.saveImagePercentXYToImage);
   ipcMain.handle('CrFile:cropImage', CrFile.cropImage);
+  ipcMain.handle('CrFile:getCookies', CrFile.getCookies);
 
   createWindow();
 

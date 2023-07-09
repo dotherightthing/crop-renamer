@@ -8,6 +8,7 @@ const { resolve } = require('path');
 const ExifReader = require('exifreader');
 const { dialog, shell } = require('electron');
 const gm = require('gm').subClass({ imageMagick: '7+' });
+const { session } = require('electron');
 
 module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /**
@@ -206,6 +207,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /**
    * @function selectFolder
    * @param {object} args - Arguments
+   * @param {string} args.cookieName - Cookie name
    * @param {string} args.dialogTitle - Dialog title
    * @param {string} args.dialogButtonLabel - Dialog button label
    * @param {boolean} args.getImagesData - Return imagesData
@@ -213,7 +215,9 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @memberof CrFile
    * @static
    */
-  static async selectFolder({ dialogTitle, dialogButtonLabel, getImagesData }) {
+  static async selectFolder({
+    cookieName, dialogTitle, dialogButtonLabel, getImagesData
+  }) {
     const { canceled, filePaths } = await dialog.showOpenDialog({
       defaultPath: '~/',
       title: dialogTitle,
@@ -233,6 +237,19 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
         imagesData = await CrFile.getFolderData(imageFiles);
       }
 
+      const cookie = {
+        url: 'file:///Users/dan/Websites/crop-renamer/index.html',
+        name: 'test', // cookieName,
+        value: 'test' // folderPath
+      };
+
+      session.defaultSession.cookies.set(cookie)
+        .then(() => {
+          console.log('cookie set');
+        }, (error) => {
+          console.log('cookie error', error); // [Error: Cannot set cookie for current scheme]
+        });
+
       return {
         folderPath,
         imagesData
@@ -240,6 +257,15 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     }
 
     return {};
+  }
+
+  static async getCookies() {
+    session.defaultSession.cookies.get({})
+      .then((cookies) => {
+        return `cookies = ${cookies}`;
+      }).catch((error) => {
+        return `cookies error = ${error}`;
+      });
   }
 
   /**
@@ -251,6 +277,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    */
   static async selectFolderIn(event) { // eslint-disable-line no-unused-vars
     const { folderPath, imagesData } = await CrFile.selectFolder({
+      cookieName: 'folderInPath',
       dialogTitle: 'Source folder',
       dialogButtonLabel: 'Select folder',
       getImagesData: true
@@ -271,6 +298,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    */
   static async selectFolderOut(event) { // eslint-disable-line no-unused-vars
     const { folderPath } = await CrFile.selectFolder({
+      cookieName: 'folderOutPath',
       dialogTitle: 'Target folder',
       dialogButtonLabel: 'Select folder',
       getImagesData: false

@@ -73,6 +73,7 @@ window.addEventListener('DOMContentLoaded', () => {
     lastCropperImg: document.querySelector('#croppers .img-container:last-child img'),
     root: document.getElementById('root'),
     status: document.getElementById('control-status'),
+    testCookies: document.getElementById('test-cookies'),
     thumbs: document.getElementById('thumbs'),
     thumbPath: document.getElementById(thumbPathId),
     window: window
@@ -184,6 +185,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   els.focalpointReset.addEventListener('click', (event) => {
     crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
+  });
+
+  els.testCookies.addEventListener('click', async () => {
+    const cookies = await window.electronAPI.getCookies();
+
+    alert(cookies);
   });
 
   els.folderIn.addEventListener('click', async () => {
