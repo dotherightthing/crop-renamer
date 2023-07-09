@@ -4,14 +4,14 @@
 
 ## Features
 
-* **Preview** - Single window containing multiple instances of [cropperjs](fengyuanchen/cropperjs) - one master cropper and one or more slave croppers with user-defined `width:height` proportions
-* **Load** - Leverage Electron to allow for loading of folders of images
+* **Preview** - Single window containing multiple instances of [cropperjs](https://github.com/fengyuanchen/cropperjs) - one master cropper and one or more slave croppers with user-defined `width:height` proportions
+* **Load** - Leverage [Electron](https://www.electronjs.org/) to allow for loading of folders of images
 * **Set focalpoint** - Click the master cropper image or use the number inputs to set a focalpoint, slave croppers' crop boxes will automatically follow
 * **Rounding** - Initial focalpoint uses unrounded values, after a visual pause these are rounded to integers for easier storage
 * **Storage** - Toggle on auto-save to write a non-default focalpoint to the image filename as a resolution-independent percentage of its width and height (integers), e.g. `foo__[40%,37%].jpg`
 * **Reset** - Remove user changes and reapply the focalpoint stored in the image filename, or the defaults
 * **Delete** - Delete the focalpoint and remove non-default focalpoint from the image filename
-* **Crop** - Use [gm](aheckmann/gm) to generate crops from the slave croppers' crop boxes
+* **Crop** - Use [gm](https://github.com/aheckmann/gm) to generate crops from the slave croppers' crop boxes
 * **Restore** - Settings are restored when reopening the Electron app
 
 ## Usage
