@@ -12,7 +12,6 @@ const CrFile = require('./classes/CrFile.cjs');
 const path = require('path');
 const contextMenu = require('electron-context-menu');
 
-// TODO store last path, maybe a .restore file?
 const appName = 'Image cropper';
 const appDimensions = [ 1280, 1024 ];
 
