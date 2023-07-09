@@ -242,18 +242,22 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
         key: storeKey
       });
 
-      const { folderName, folderPath } = data;
+      if (typeof data !== 'undefined') {
+        const { folderName, folderPath } = data;
 
-      if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
-        return {};
+        if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
+          return {};
+        }
+
+        const imageFiles = CrFile.getImageFiles(data.folderPath);
+
+        // imagesData retrieved separately to accommodate file renaming in the interim
+        data.imagesData = await CrFile.getImagesData(imageFiles);
+
+        return data;
       }
 
-      const imageFiles = CrFile.getImageFiles(data.folderPath);
-
-      // imagesData retrieved separately to accommodate file renaming in the interim
-      data.imagesData = await CrFile.getImagesData(imageFiles);
-
-      return data;
+      return {};
     }
 
     const { canceled, filePaths } = await dialog.showOpenDialog({
