@@ -12,7 +12,7 @@ const CrFile = require('./classes/CrFile.cjs');
 const path = require('path');
 const contextMenu = require('electron-context-menu');
 
-const appName = 'Image cropper';
+const appName = 'Focalpoint Multi-Cropper';
 const appDimensions = [ 1280, 1024 ];
 
 const createWindow = () => {
