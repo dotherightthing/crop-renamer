@@ -348,7 +348,7 @@ window.addEventListener('DOMContentLoaded', async () => {
    * @param {*} value - Value
    */
   const storeSet = async (key, value) => {
-    await window.electronAPI.storeSetting({ key, value });
+    await window.electronAPI.storeSet({ key, value });
   };
 
   /**
