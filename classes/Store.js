@@ -13,7 +13,7 @@ class Store {
   constructor(opts) {
     // Renderer process has to get `app` module via `remote`, whereas the main process can get it directly
     // app.getPath('userData') will return a string of the user's app data directory path.
-    const userDataPath = (electron.app || electron.remote.app).getPath('userData'); // Users/dan/Library/Application\ Support/crop-renamer
+    const userDataPath = (electron.app || electron.remote.app).getPath('userData'); // Users/dan/Library/Application\ Support/focalpoint-multi-cropper
 
     // We'll use the `configName` property to set the file name and path.join to bring it all together as a string
     this.path = path.join(userDataPath, opts.configName + '.json');

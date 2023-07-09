@@ -1,5 +1,5 @@
 {
-  "name": "crop-renamer",
+  "name": "focalpoint-multi-cropper",
   "version": "1.0.0",
   "description": "Helper tool to rename images for batch cropping by ImageMagick.",
   "main": "main.cjs",
@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dotherightthing/crop-renamer.git"
+    "url": "git+https://github.com/dotherightthing/focalpoint-multi-cropper.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dotherightthing/crop-renamer/issues"
+    "url": "https://github.com/dotherightthing/focalpoint-multi-cropper/issues"
   },
-  "homepage": "https://github.com/dotherightthing/crop-renamer#readme",
+  "homepage": "https://github.com/dotherightthing/focalpoint-multi-cropper#readme",
   "dependencies": {
     "cropperjs": "^1.5.13",
     "dtrt-string-utils": "github:dotherightthing/dtrt-string-utils",

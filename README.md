@@ -1,34 +1,63 @@
-# crop-renamer
+# focalpoint-multi-cropper
 
-Focal Point crop tool - rename images for batch cropping by ImageMagick.
+## Features
 
-## Desired usage
+* **Preview** - Single window containing multiple instances of [cropperjs](fengyuanchen/cropperjs) - one master cropper and one or more slave croppers with user-defined `width:height` proportions
+* **Load** - Leverage Electron to allow for loading of folders of images
+* **Set focalpoint** - Click the master cropper image or use the number inputs to set a focalpoint, slave croppers' crop boxes will automatically follow
+* **Rounding** - Initial focalpoint uses unrounded values, after a visual pause these are rounded to integers for easier storage
+* **Storage** - Toggle on auto-save to write a non-default focalpoint to the image filename as a resolution-independent percentage of its width and height (integers), e.g. `foo__[40%,37%].jpg`
+* **Reset** - Remove user changes and reapply the focalpoint stored in the image filename, or the defaults
+* **Delete** - Delete the focalpoint and remove non-default focalpoint from the image filename
+* **Crop** - Use [gm](aheckmann/gm) to generate crops from the slave croppers' crop boxes
+* **Restore** - Settings are restored when reopening the Electron app
 
-1. Select a folder on your harddrive
-2. List grid of thumbnails
-3. Click a thumbnail to open cropping interface in browser
-4. Enlargement of image appears with a 3x3 grid overlaid
-5. Select the appropriate grid region (by clicking on the focal point)
-6. A preview of the desired size updates to show the image with the crop area applied
-7. Deselecting image adds a focal square overlay to the corresponding thumbnail
-8. Repeat with next/any image
-9. Click 'Save Crops' to rename the cropped originals to include the directional crop region, e.g. `my-photo-[TL]`
-10. Run separate ImageMagick import script to crop images based on directional crop information in file names
+## Usage
 
-## Existing tools
+### Install
 
-Excluding anything that requires a subscription fee or complex serverside setup.
+```js
+npm install
+```
 
-* <https://markerjs.com/docs/cropro/getting-started> - doesn't appear to offer preset size crops (only ratios)
-* <https://github.com/fengyuanchen/cropperjs> - `cropBoxResizable` option
-   * <https://github.com/danfickle/bulk-image-cropper> - no overview of crop position for multiple images (one at a time)
-   * <https://w3codegenerator.com/code-snippets/javascript/how-to-crop-multiple-images-with-cropper-js>
-* <https://pqina.nl/blog/rename-a-file-with-javascript/>
-* <https://codepen.io/saleemnaufa/pen/gVewZw>
+### Run (Electron App)
 
-## Considerations
+```js
+npm run start
+```
 
-### Crops
+### Run (Web App)
+
+```js
+npm run serve
+open http://127.0.0.1:8000
+```
+
+### Lint
+
+```js
+npm run lint
+```
+
+### Test
+
+Cypress does not have full support for Electron, so tests are run in-browser and test only non-Electron functionality.
+
+```js
+npm run test
+```
+
+## Research
+
+### Background
+
+I needed a tool to art-direct thousands of images for my bicycle touring blog.
+
+Previously I've used WordPress with Imgix. I am moving to non-subscription based systems as I no longer have the income to support these.
+
+I will use this app to generate image URLs for the next version of my blog which runs on Vuepress.
+
+My Vuepress app uses the following image sizes:
 
 ```js
 imagesSizes: {
@@ -52,13 +81,17 @@ imagesSizes: {
 },
 ```
 
-### Approaches
+### Alternatives
 
-* Store XY crop offset rather than gravity, but would need multiple offsets for different crops
-* Crop around a crop point - requires knowing the width of the image so can move the crop box as necessary to avoid cropping off-canvas
-https://stackoverflow.com/questions/60995032/crop-and-resize-image-around-a-custom-focus-point (can also rotate which is the other feature I might need)
+Excluding anything that requires a subscription fee or complex serverside setup.
 
----
+* <https://markerjs.com/docs/cropro/getting-started> - doesn't appear to offer preset size crops (only ratios)
+* <https://github.com/fengyuanchen/cropperjs> - `cropBoxResizable` option
+* <https://github.com/danfickle/bulk-image-cropper> - no overview of crop position for multiple images (one at a time)
+* <https://w3codegenerator.com/code-snippets/javascript/how-to-crop-multiple-images-with-cropper-js>
+* <https://pqina.nl/blog/rename-a-file-with-javascript/>
+* <https://codepen.io/saleemnaufa/pen/gVewZw>
+* <https://stackoverflow.com/questions/60995032/crop-and-resize-image-around-a-custom-focus-point> - crop around a crop point
 
 ### Electron
 
@@ -66,7 +99,7 @@ Images need to be loaded into the cropping tool. As this is best done locally to
 
 The combination of `input[type="file"]` and JavaScript's [FileReader object](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) only provides access to a single file.
 
-The cropper needs access to a folder of files.
+To provide a visual overview, the cropper needs access to a folder of files.
 
 A web browser is sandboxed for security reasons. Electron can run a web browser whilst also providing access to the operating system.
 
