@@ -599,34 +599,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function getMasterCropper
-   * @summary Get the object for the master cropper (which contains the cropperInstance)
-   * @returns {object} { cropperInstance, isMaster }
-   * @memberof CrCroppersUi
-   */
-  getMasterCropper() {
-    const { croppers } = this;
-
-    const masterCroppers = croppers.filter(cropper => cropper.isMaster);
-
-    return masterCroppers[0];
-  }
-
-  /**
-   * @function getSlaveCroppers
-   * @summary Get an array of slave croppers (containing objects which include the cropperInstance)
-   * @returns {Array} slaveCroppers
-   * @memberof CrCroppersUi
-   */
-  getSlaveCroppers() {
-    const { croppers } = this;
-
-    const slaveCroppers = croppers.filter(cropper => typeof cropper.isMaster === 'undefined');
-
-    return slaveCroppers;
-  }
-
-  /**
    * @function init
    * @summary Initialise cropper instances (master and slaves)
    * @memberof CrCroppersUi
@@ -659,8 +631,8 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       return;
     }
 
-    this.masterCropper = this.getMasterCropper();
-    this.slaveCroppers = this.getSlaveCroppers();
+    this.masterCropper = this.croppers.filter(cropper => cropper.role === 'master')[0];
+    this.slaveCroppers = this.croppers.filter(cropper => cropper.role === 'slave');
 
     // if (typeof document.createElement('cropper').style.transition === 'undefined') {
     //   rotateEl.prop('disabled', true);
@@ -754,7 +726,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     this.masterCropperCropBoxWasDragged = false;
 
-    const slaveCroppers = this.getSlaveCroppers(); // arr
+    const slaveCroppers = croppers.filter(cropper => cropper.role === 'slave');
 
     const {
       top: masterCropperCanvasOffsetTop
