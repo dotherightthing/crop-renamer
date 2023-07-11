@@ -4,14 +4,14 @@
 
 ## Features
 
-* **Preview** - Single window containing multiple instances of [cropperjs](https://github.com/fengyuanchen/cropperjs) - one master cropper and one or more slave croppers with user-defined `width:height` proportions
+* **Preview** - Single window containing multiple instances of [cropperjs](https://github.com/fengyuanchen/cropperjs) - one master cropper and one or more slave croppers with user-defined `exportWidth` and `exportHeight` proportions
 * **Load** - Leverage [Electron](https://www.electronjs.org/) to allow for loading of folders of images
 * **Set focalpoint** - Click the master cropper image or use the number inputs to set a focalpoint, slave croppers' crop boxes will automatically follow
 * **Rounding** - Initial focalpoint uses unrounded values, after a visual pause these are rounded to integers for easier storage
 * **Storage** - Toggle on auto-save to write a non-default focalpoint to the image filename as a resolution-independent percentage of its width and height (integers), e.g. `foo__[40%,37%].jpg`
 * **Reset** - Remove user changes and reapply the focalpoint stored in the image filename, or the defaults
 * **Delete** - Delete the focalpoint and remove non-default focalpoint from the image filename
-* **Crop** - Use [gm](https://github.com/aheckmann/gm) to generate crops from the slave croppers' crop boxes
+* **Resize & Crop** - Use [gm](https://github.com/aheckmann/gm) to `resizeAndCrop` from the slave croppers' crop boxes, and `resize` from the hidden non-cropper inclusions
 * **Restore** - Settings are restored when reopening the Electron app
 
 ## Usage
@@ -47,6 +47,13 @@ Cypress does not have full support for Electron, so tests are run in-browser and
 
 ```js
 npm run test
+```
+
+### Debug
+
+```js
+// inspect the current state of crCroppersUi
+document.getElementById('croppers').crCroppersUi
 ```
 
 ## Research

@@ -145,9 +145,13 @@ img {
   width: 100%;
 }
 
-.cropper-banner {
+.cropper-banner-bg {
   grid-area: slave3;
   width: 100%;
+}
+
+.cropper-hide {
+  display: none; /* .cropper-hidden is used by cropperjs */
 }
 
 .editor {
@@ -159,7 +163,7 @@ img {
   background-color: var(--color-bg-image);
 }
 
-.grid-croppers > .img-container > img {
+.grid-croppers > .img-container > .cropper-image {
   visibility: hidden; /* allows presumed dimension calculations without FOUC */
   max-width: 100%;
 }

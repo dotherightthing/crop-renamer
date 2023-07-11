@@ -38,6 +38,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @param {string} data.targetFolder - Target folder
    * @param {Array} data.crops - Crops
    * @param {number} data.crops.resizeW - the width to resize the image to
+   * @param {number} data.crops.resizeH - the width to resize the image to
    * @param {number} data.crops.cropW - the width of the cropped area
    * @param {number} data.crops.cropH - the height of the cropped area
    * @param {number} data.crops.cropX - the offset left of the cropped area
@@ -60,6 +61,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     crops.forEach(crop => {
       const {
         resizeW,
+        resizeH,
         cropX,
         cropY,
         cropW,
@@ -70,12 +72,22 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       const currentDir = process.cwd();
       const targetPath = path.relative(currentDir, targetFolder);
 
+      // resizing based on a known width but unknown (null) height (and vice versa)
+      //
+      // might be better to add explicit data- options so this magic is not hidden from users
+      // this logic needs fixing when i am more awake so that
+      // 1. width is the default axis to resize on, unless it is null
+      const _resizeW = (resizeW !== null) ? resizeW : null;
+      const _resizeH = (resizeH !== null) ? resizeH : null;
+
+      // if (typeof cropX !== 'undefined')
+
       gm(fileNameRaw)
         .strip()
         .autoOrient()
-        .quality(quality)
+        .quality(quality) // TODO possibly remove this line for PNG
         .crop(cropW, cropH, cropX, cropY)
-        .resize(resizeW, null)
+        .resize(_resizeW, null) // TODO make this possible to have width null
         .write(`${targetPath}/${fileNameOnly}__${fileNameSuffix}.jpg`, err => {
           if (err) {
             console.log(err);
@@ -86,6 +98,58 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     });
 
     return 'Crops generated';
+  }
+
+  /**
+   * @function resizeImage
+   * @param {event} event - CrFile:resizeImage event captured by ipcMain.handle
+   * @param {object} data - Data
+   * @param {string} data.fileName - Filename
+   * @param {number} data.quality - Quality
+   * @param {string} data.targetFolder - Target folder
+   * @param {Array} data.crops - Crops
+   * @param {number} data.crops.resizeW - the width to resize the image to
+   * @param {number} data.crops.resizeH - the height to resize the image to
+   * @param {string} data.crops.fileNameSuffix - Filename suffix
+   * @returns {string} successMsg
+   * @memberof CrFile
+   * @static
+   */
+  static async resizeImage(event, data) {
+    const {
+      fileName,
+      quality,
+      targetFolder,
+      resizes
+    } = data;
+
+    const { fileNameOnly, fileNameRaw } = CrFile.getFileNameParts(fileName);
+
+    resizes.forEach(resize => {
+      const {
+        resizeW,
+        resizeH,
+        fileNameSuffix
+      } = resize;
+
+      const currentDir = process.cwd();
+      const targetPath = path.relative(currentDir, targetFolder);
+
+      gm(fileNameRaw)
+        .strip()
+        .autoOrient()
+        .quality(quality) // TODO possibly remove this line for PNG
+        .resize(resizeW, resizeH)
+        .write(`${targetPath}/${fileNameOnly}__${fileNameSuffix}.jpg`, err => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(`Resized ${fileNameOnly}__${fileNameSuffix}.jpg`);
+          }
+        });
+    });
+
+    return 'Sizes generated';
   }
 
   /**
@@ -249,14 +313,18 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
           return {};
         }
 
-        const imageFiles = CrFile.getImageFiles(data.folderPath);
+        if (retrieveImagesData) {
+          const imageFiles = CrFile.getImageFiles(data.folderPath);
 
-        const dataCopy = { ...data }; // #30
+          const dataCopy = { ...data }; // #30
 
-        // imagesData retrieved separately to accommodate file renaming in the interim
-        dataCopy.imagesData = await CrFile.getImagesData(imageFiles);
+          // imagesData retrieved separately to accommodate file renaming in the interim
+          dataCopy.imagesData = await CrFile.getImagesData(imageFiles);
 
-        return dataCopy;
+          return dataCopy;
+        }
+
+        return data; // !retrieveImagesData
       }
 
       return {};

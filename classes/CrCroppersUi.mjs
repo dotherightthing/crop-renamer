@@ -36,6 +36,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     document.getElementById(croppersId).crCroppersUi = this;
 
     this.croppers = [];
+    this.resizers = [];
     this.masterCropperCropBoxWasDragged = false;
   }
 
@@ -78,6 +79,19 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
   set cropperImageClass(cropperImageClass) {
     this._cropperImageClass = dtrtValidate.validate(cropperImageClass, 'string', 'CrCroppersUi.cropperImageClass');
+  }
+
+  /**
+   * croppers
+   * @type {Array}
+   * @memberof CrCroppersUi
+   */
+  get croppers() {
+    return this._croppers;
+  }
+
+  set croppers(croppers) {
+    this._croppers = dtrtValidate.validate(croppers, 'Array', 'CrCroppersUi.croppers');
   }
 
   /**
@@ -145,6 +159,19 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
   set masterCropperCropBoxWasDragged(masterCropperCropBoxWasDragged) {
     this._masterCropperCropBoxWasDragged = dtrtValidate.validate(masterCropperCropBoxWasDragged, 'boolean', 'CrCroppersUi.masterCropperCropBoxWasDragged');
+  }
+
+  /**
+   * resizers
+   * @type {Array}
+   * @memberof CrCroppersUi
+   */
+  get resizers() {
+    return this._resizers;
+  }
+
+  set resizers(resizers) {
+    this._resizers = dtrtValidate.validate(resizers, 'Array', 'CrCroppersUi.resizers');
   }
 
   /**
@@ -485,12 +512,14 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function getCropperOptions
-   * @param {string} cropperAspectRatio - Cropper Aspect Ratio
-   * @param {string} isCropperMaster - Is Cropper Master?
+   * @param {string} exportWidth - Export width
+   * @param {string} exportHeight - Export height
+   * @param {string} role - master | slave
+   * @param {string} action - resizeAndCrop (with preview) | resize
    * @returns {object} options
    * @memberof CrCroppersUi
    */
-  getCropperOptions(cropperAspectRatio, isCropperMaster) {
+  getCropperOptions(exportWidth, exportHeight, role, action) {
     const {
       croppersId,
       croppersOptions
@@ -498,8 +527,9 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     const options = { ...croppersOptions };
 
-    if (isCropperMaster) {
+    if (role === 'master') {
       Object.assign(options, {
+        aspectRatio: 1,
         autoCropArea: 0.2, // size of circular cropbox (20%)
         cropBoxMovable: true,
         guides: false,
@@ -557,9 +587,11 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       });
     }
 
-    const [ a, b ] = cropperAspectRatio.split(':');
-
-    Object.assign(options, { aspectRatio: a / b });
+    if (action === 'resizeAndCrop') {
+      if ((exportWidth !== null) && (exportHeight !== null)) {
+        Object.assign(options, { aspectRatio: exportWidth / exportHeight });
+      }
+    }
 
     return options;
   }
@@ -605,6 +637,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    */
   init() {
     const {
+      cropperImageClass,
       croppersId,
       imageSrc
     } = this;
@@ -616,11 +649,23 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     // these are the images used by the 4 croppers
     // they start off with no src
     // when an image appears, what you see is the cropper - not the img
-    const cropperImages = document.querySelectorAll(`#${croppersId} .cropper-image`);
-    this.croppers = [];
+    const cropperImages = document.querySelectorAll(`#${croppersId} .${cropperImageClass}`);
 
     cropperImages.forEach((cropperImage, cropperIndex) => {
-      this.initCropper(cropperImage, cropperIndex);
+      const {
+        cropperAction: action,
+        cropperRole: role
+      } = cropperImage.dataset;
+
+      if ((role === 'master') || ((role === 'slave') && (action === 'resizeAndCrop'))) {
+        const cropper = this.initCropper(cropperImage, cropperIndex);
+
+        this.croppers.push(cropper);
+      } else if ((role === 'slave') && (action === 'resize')) {
+        const resizer = this.initResizer(cropperImage);
+
+        this.resizers.push(resizer);
+      }
     });
 
     if (!this.croppers.length) {
@@ -653,27 +698,77 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     } = this;
 
     const {
-      cropperAspectRatio,
-      cropperLabel,
-      isCropperMaster
+      cropperAction: action,
+      cropperExportWidth, // undefined for role="master"
+      cropperExportHeight, // undefined for role="master"
+      cropperExportSuffix: exportSuffix,
+      cropperLabel: label,
+      cropperRole: role
     } = cropperImage.dataset;
 
-    this.injectHeading(cropperImage, cropperLabel);
+    // resizing based on a known width but unknown (null) height (and vice versa)
+    const exportWidth = ((cropperExportWidth === 'null') || (typeof cropperExportWidth === 'undefined')) ? null : Number(cropperExportWidth);
+    const exportHeight = ((cropperExportHeight === 'null') || (typeof cropperExportHeight === 'undefined')) ? null : Number(cropperExportHeight);
+
+    this.injectHeading(cropperImage, label, exportWidth, exportHeight);
 
     cropperImage.setAttribute('src', imageSrc);
 
-    const cropperOptions = this.getCropperOptions(cropperAspectRatio, isCropperMaster);
+    const cropperOptions = this.getCropperOptions(exportWidth, exportHeight, role, action);
     const cropperInstance = new Cropper(cropperImage, cropperOptions);
 
-    this.croppers.push({
+    const cropper = {
       cropperInstance,
-      isMaster: isCropperMaster
-    });
-
-    return {
-      cropperInstance,
-      isMaster: isCropperMaster
+      action,
+      exportWidth,
+      exportHeight,
+      exportSuffix,
+      label,
+      role
     };
+
+    return cropper;
+  }
+
+  /**
+   * @function initResizer
+   * @summary Initialise resizer instance
+   * @param {HTMLElement} resizerImage - Resizer image
+   * @returns { object } resizer
+   * @memberof CrCroppersUi
+   */
+  initResizer(resizerImage) {
+    const {
+      imageSrc
+    } = this;
+
+    const {
+      cropperAction: action,
+      cropperExportWidth,
+      cropperExportHeight,
+      cropperExportSuffix: exportSuffix,
+      cropperLabel: label,
+      cropperRole: role
+    } = resizerImage.dataset;
+
+    // resizing based on a known width but unknown (null) height (and vice versa)
+    const exportWidth = (cropperExportWidth === 'null') ? null : Number(cropperExportWidth);
+    const exportHeight = (cropperExportHeight === 'null') ? null : Number(cropperExportHeight);
+
+    this.injectHeading(resizerImage, label, exportWidth, exportHeight);
+
+    resizerImage.setAttribute('src', imageSrc);
+
+    const resizer = {
+      action,
+      exportWidth,
+      exportHeight,
+      exportSuffix,
+      label,
+      role
+    };
+
+    return resizer;
   }
 
   /**
@@ -688,17 +783,24 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   /**
    * @function injectHeading
    * @param {HTMLElement} cropperImage - Cropper image
-   * @param {string} cropperLabel - Cropper label
+   * @param {string} label - Cropper label
+   * @param {number|null} exportWidth - Export width
+   * @param {number|null} exportHeight - Export height
    * @returns {HTMLElement} heading element
    * @memberof CrCroppersUi
    */
-  injectHeading(cropperImage, cropperLabel) {
+  injectHeading(cropperImage, label, exportWidth, exportHeight) {
     const parent = cropperImage.parentNode;
+    let labelText = label;
 
     let heading = parent.querySelector('h2');
 
+    if ((exportWidth !== null) && (exportHeight !== null)) {
+      labelText = `${label} (${exportWidth} x ${exportHeight})`;
+    }
+
     if (!heading) {
-      const headingText = document.createTextNode(cropperLabel);
+      const headingText = document.createTextNode(labelText);
 
       heading = document.createElement('h2');
       heading.appendChild(headingText);
@@ -719,6 +821,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    */
   moveCropperCropBoxToPageXY({ pageX, pageY }) {
     const {
+      croppers,
       masterCropper
     } = this;
 
@@ -835,45 +938,75 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     const {
       croppersId,
       croppers,
+      resizers,
       slaveCroppers
     } = this;
 
     const fileName = croppers[0].cropperInstance.element.src;
 
+    // CROP AND RESIZE
+
     const crops = [];
 
     slaveCroppers.forEach(cropper => {
       const {
-        cropperAspectRatio,
-        cropperExportSuffix
-      } = cropper.cropperInstance.element.dataset;
+        exportWidth: resizeW,
+        exportHeight: resizeH,
+        exportSuffix: fileNameSuffix
+      } = cropper;
 
       const {
-        x,
-        y,
-        width,
-        height
+        x: cropX,
+        y: cropY,
+        width: cropW,
+        height: cropH
       } = cropper.cropperInstance.getData();
 
       crops.push({
-        resizeW: Number(cropperAspectRatio.split(':')[0]),
-        cropX: x,
-        cropY: y,
-        cropW: width,
-        cropH: height,
-        fileNameSuffix: cropperExportSuffix
+        resizeW,
+        resizeH,
+        cropX,
+        cropY,
+        cropW,
+        cropH,
+        fileNameSuffix
       });
     });
 
-    const successMsg = await window.electronAPI.cropImage({
+    // RESIZE ONLY
+
+    const resizes = [];
+
+    resizers.forEach(resizer => {
+      const {
+        exportWidth: resizeW,
+        exportHeight: resizeH,
+        exportSuffix: fileNameSuffix
+      } = resizer;
+
+      resizes.push({
+        resizeW,
+        resizeH,
+        fileNameSuffix
+      });
+    });
+
+    const cropsSuccessMsg = await window.electronAPI.resizeAndCropImage({
       fileName,
       quality: 75,
       targetFolder,
       crops
     });
 
+    const resizesSuccessMsg = await window.electronAPI.resizeImage({
+      fileName,
+      quality: 75,
+      targetFolder,
+      resizes
+    });
+
     CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-      msg: successMsg
+      msg: `${cropsSuccessMsg} ${resizesSuccessMsg}`
     });
   }
 

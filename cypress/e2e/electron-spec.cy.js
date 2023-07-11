@@ -14,12 +14,12 @@ describe('template spec', () => {
     cy.get('#croppers').as('croppers');
 
     cy.get('.cropper-master .cropper-image').as('cropperMasterImg');
-    cy.get('.cropper-banner .cropper-image').as('cropperBannerImg');
+    cy.get('.cropper-banner-bg .cropper-image').as('cropperBannerImg');
     cy.get('.cropper-collapsed .cropper-image').as('cropperCollapsedImg');
     cy.get('.cropper-thumbnail .cropper-image').as('cropperThumbnailImg');
 
     cy.get('.cropper-master .cropper-canvas').as('cropperMasterCanvas'); // first
-    cy.get('.cropper-banner .cropper-canvas').as('cropperBannerCanvas');
+    cy.get('.cropper-banner-bg .cropper-canvas').as('cropperBannerCanvas');
     cy.get('.cropper-collapsed .cropper-canvas').as('cropperCollapsedCanvas');
     cy.get('.cropper-thumbnail .cropper-canvas').as('cropperThumbnailCanvas');
 

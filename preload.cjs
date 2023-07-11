@@ -22,6 +22,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   selectFolderOut: (data) => ipcRenderer.invoke('CrFile:selectFolderOut', data),
   deleteImagePercentXYFromImage: (data) => ipcRenderer.invoke('CrFile:deleteImagePercentXYFromImage', data),
   saveImagePercentXYToImage: (data) => ipcRenderer.invoke('CrFile:saveImagePercentXYToImage', data),
+  resizeImage: (data) => ipcRenderer.invoke('CrFile:resizeImage', data),
   resizeAndCropImage: (data) => ipcRenderer.invoke('CrFile:resizeAndCropImage', data),
   storeGet: (data) => ipcRenderer.invoke('CrFile:storeGet', data),
   storeSet: (data) => ipcRenderer.invoke('CrFile:storeSet', data)
