@@ -211,7 +211,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     els.imageCrop.addEventListener('click', () => {
       const { targetFolder } = els.folderOut.dataset;
 
-      crCroppersUiInstance.cropImage(targetFolder);
+      crCroppersUiInstance.resizeAndCropImage(targetFolder);
     });
 
     els.lastCropperImg.addEventListener('ready', () => {

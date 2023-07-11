@@ -855,11 +855,11 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function cropImage
+   * @function resizeAndCropImage
    * @param {string} targetFolder - Target folder
    * @memberof CrCroppersUi
    */
-  async cropImage(targetFolder) {
+  async resizeAndCropImage(targetFolder) {
     const {
       croppersId,
       croppers,

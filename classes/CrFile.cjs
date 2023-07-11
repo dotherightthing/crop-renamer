@@ -30,8 +30,8 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /* Static methods */
 
   /**
-   * @function cropImage
-   * @param {event} event - CrFile:cropImage event captured by ipcMain.handle
+   * @function resizeAndCropImage
+   * @param {event} event - CrFile:resizeAndCropImage event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.fileName - Filename
    * @param {number} data.quality - Quality
@@ -47,7 +47,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @memberof CrFile
    * @static
    */
-  static async cropImage(event, data) {
+  static async resizeAndCropImage(event, data) {
     const {
       fileName,
       quality,
