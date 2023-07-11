@@ -644,7 +644,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     // these are the images used by the 4 croppers
     // they start off with no src
     // when an image appears, what you see is the cropper - not the img
-    const cropperImages = document.querySelectorAll(`#${croppersId} img`);
+    const cropperImages = document.querySelectorAll(`#${croppersId} .cropper-image`);
     this.croppers = [];
 
     cropperImages.forEach((cropperImage, cropperIndex) => {
@@ -1009,7 +1009,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    */
   validateCroppersImage() {
     const { croppersId } = this;
-    const cropperImages = document.querySelectorAll(`#${croppersId} img`);
+    const cropperImages = document.querySelectorAll(`#${croppersId} .cropper-image`);
     let isValid = true;
 
     if (!cropperImages.length) {
