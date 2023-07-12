@@ -417,6 +417,7 @@ img {
   background-color: inherit;
   color: var(--color-input);
   font-size: 1em;
+  overflow: hidden; /* small viewports */
 }
 
 .radios-label {
