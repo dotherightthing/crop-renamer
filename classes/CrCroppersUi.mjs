@@ -1157,26 +1157,30 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       return;
     }
 
+    const oldFileName = fileName.replace('file://', '').replaceAll('%20', ' ');
+
     const newFileName = await window.electronAPI.saveImagePercentXYToImage({
       fileName,
       imagePercentY,
       imagePercentX
     });
 
-    // timeout prevents broken image
-    setTimeout(() => {
-      CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
-        newFileName
-      });
+    if (newFileName !== oldFileName) {
+      // timeout prevents broken image
+      setTimeout(() => {
+        CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
+          newFileName
+        });
 
-      croppers.forEach(cropper => {
-        cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
-      });
+        croppers.forEach(cropper => {
+          cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
+        });
 
-      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-        msg: 'Saved focalpoint to filename'
-      });
-    }, 500);
+        CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+          msg: 'Saved focalpoint to filename'
+        });
+      }, 500);
+    }
   }
 
   /* Static methods */
