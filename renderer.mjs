@@ -330,28 +330,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   };
 
   /**
-   * @function storeGet
-   * @summary Retrieve a stored setting
-   * @param {string} key - Key
-   * @returns {*} value - Value
-   */
-  const storeGet = async (key) => {
-    const value = await window.electronAPI.storeGet({ key });
-
-    return value;
-  };
-
-  /**
-   * @function storeSet
-   * @summary Store a setting
-   * @param {string} key - Key
-   * @param {*} value - Value
-   */
-  const storeSet = async (key, value) => {
-    await window.electronAPI.storeSet({ key, value });
-  };
-
-  /**
    * @function useTestData
    */
   const useTestData = () => {

@@ -61,7 +61,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     crops.forEach(crop => {
       const {
         resizeW,
-        resizeH,
+        // resizeH,
         cropX,
         cropY,
         cropW,
@@ -78,7 +78,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       // this logic needs fixing when i am more awake so that
       // 1. width is the default axis to resize on, unless it is null
       const _resizeW = (resizeW !== null) ? resizeW : null;
-      const _resizeH = (resizeH !== null) ? resizeH : null;
+      // const _resizeH = (resizeH !== null) ? resizeH : null;
 
       // if (typeof cropX !== 'undefined')
 
