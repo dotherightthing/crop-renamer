@@ -599,21 +599,15 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   /**
    * @function getImagePercentXYFromImage
    * @summary Get the values stored in the filename
+   * @param {string} src - Image src
    * @returns {object} imagePercentXY
    * @memberof CrCroppersUi
    */
-  getImagePercentXYFromImage() {
-    const {
-      croppersId,
-      masterCropper
-    } = this;
-
+  getImagePercentXYFromImage(src) {
     let imagePercentXY = {};
 
-    const masterCropperImageSrc = masterCropper.cropperInstance.element.src;
-
     const regexp = /\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
-    const matches = masterCropperImageSrc.matchAll(regexp);
+    const matches = src.matchAll(regexp);
     const matchesArr = [ ...matches ];
 
     if (matchesArr.length) {
@@ -621,10 +615,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
         imagePercentX: matchesArr[0][1],
         imagePercentY: matchesArr[0][2]
       };
-
-      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
-        msg: 'Read focalpoint from filename'
-      });
     }
 
     return imagePercentXY;
@@ -1048,10 +1038,14 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    * @memberof CrCroppersUi
    */
   reinstateImagePercentXYFromImage() {
-    const { croppersId } = this;
+    const {
+      croppersId,
+      masterCropper
+    } = this;
 
-    let imagePercentXY = this.getImagePercentXYFromImage();
+    const { src } = masterCropper.cropperInstance.element;
 
+    let imagePercentXY = this.getImagePercentXYFromImage(src);
     let msg = 'Loaded focalpoint from image';
 
     if (CrUtilsUi.isEmptyObject(imagePercentXY)) {

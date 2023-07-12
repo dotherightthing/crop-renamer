@@ -18,6 +18,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       thumbButtonClass,
       thumbClass,
       thumbImgClass,
+      thumbImgWrapperClass,
       thumbMetaClass,
       thumbPathId,
       thumbsCountId,
@@ -29,6 +30,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       thumbButtonClass,
       thumbClass,
       thumbImgClass,
+      thumbImgWrapperClass,
       thumbMetaClass,
       thumbPathId,
       thumbsCountId,
@@ -91,6 +93,19 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * thumbImgWrapperClass
+   * @type {string}
+   * @memberof CrCroppersUi
+   */
+  get thumbImgWrapperClass() {
+    return this._thumbImgWrapperClass;
+  }
+
+  set thumbImgWrapperClass(thumbImgWrapperClass) {
+    this._thumbImgWrapperClass = dtrtValidate.validate(thumbImgWrapperClass, 'string', 'CrThumbsUi.thumbImgWrapperClass');
+  }
+
+  /**
    * thumbMetaClass
    * @type {string}
    * @memberof CrCroppersUi
@@ -147,17 +162,33 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function changeSelectedImageSrc
-   * @param {string} newFileName - New file name
+   * @param {string} src - New src
    */
-  changeSelectedImageSrc(newFileName) {
+  changeSelectedImageSrc(src) {
     const { selectedClass } = this;
 
     // timeout prevents broken thumbnail
     setTimeout(() => {
-      document.querySelector(`.${selectedClass} img`).src = newFileName;
+      document.querySelector(`.${selectedClass} img`).src = src;
     }, 500);
 
-    this.displayPath(newFileName);
+    this.displayPath(src);
+  }
+
+  /**
+   * @function setCssImagePercentXY
+   * @param {HTMLElement} element - DOM Element
+   * @param {number} imagePercentX - Image percent X
+   * @param {number} imagePercentY - Image percent Y
+   */
+  setCssImagePercentXY(element, imagePercentX, imagePercentY) {
+    if (typeof imagePercentX !== 'undefined') {
+      element.style.setProperty('--image-percent-x', `${imagePercentX}%`);
+    }
+
+    if (typeof imagePercentY !== 'undefined') {
+      element.style.setProperty('--image-percent-y', `${imagePercentY}%`);
+    }
   }
 
   /**
@@ -209,6 +240,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       thumbButtonClass,
       thumbClass,
       thumbImgClass,
+      thumbImgWrapperClass,
       thumbMetaClass,
       thumbsId
     } = this;
@@ -220,7 +252,9 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
 
       html += `<li class="${thumbClass}">
     <button type="button" class="${thumbButtonClass}">
-      <img src="${src}" class="${thumbImgClass}">
+      <div class="${thumbImgWrapperClass}">
+        <img src="${src}" class="${thumbImgClass}">
+      </div>
       <p class="meta ${thumbMetaClass}">${dateTimeOriginal}</p>  
     </button>
   </li>`;

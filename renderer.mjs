@@ -9,6 +9,8 @@ import { CrUtilsUi } from './classes/CrUtilsUi.mjs';
 window.addEventListener('DOMContentLoaded', async () => {
   // instantiate classes
 
+  const thumbClass = 'thumb';
+  const thumbImgClass = 'thumb-img';
   const thumbPathId = 'thumb-path';
 
   const crCroppersUiInstance = new CrCroppersUi({
@@ -48,8 +50,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   const crThumbsUiInstance = new CrThumbsUi({
     selectedClass: 'btn-selected',
     thumbButtonClass: 'btn-thumb',
-    thumbClass: 'thumb',
-    thumbImgClass: 'thumb-img',
+    thumbClass,
+    thumbImgClass,
+    thumbImgWrapperClass: 'thumb-img-wrapper',
     thumbMetaClass: 'thumb-meta',
     thumbPathId,
     thumbsCountId: 'thumb-count-num',
@@ -102,9 +105,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
 
     els.croppers.addEventListener('imageRenamed', (event) => {
-      const { newFileName } = event.detail;
+      const { newFileName: src } = event.detail;
+      const { selectedClass } = crThumbsUiInstance;
+      const { imagePercentX, imagePercentY } = crCroppersUiInstance.getImagePercentXYFromImage(src);
+      const selectedThumb = document.querySelector(`.${selectedClass}`).parentElement;
 
-      crThumbsUiInstance.changeSelectedImageSrc(newFileName);
+      crThumbsUiInstance.changeSelectedImageSrc(src);
+      crThumbsUiInstance.setCssImagePercentXY(selectedThumb, imagePercentX, imagePercentY);
     });
 
     els.croppers.addEventListener('paramChange', (event) => {
@@ -303,6 +310,18 @@ window.addEventListener('DOMContentLoaded', async () => {
     els.folderIn.children[0].innerText = folderName;
 
     crThumbsUiInstance.generateThumbsHtml(imagesData);
+
+    const thumbs = document.querySelectorAll(`.${thumbClass}`);
+    const thumbImages = document.querySelectorAll(`.${thumbImgClass}`);
+
+    setTimeout(() => {
+      thumbs.forEach((thumb, index) => {
+        const { src } = thumbImages[index];
+        const { imagePercentX, imagePercentY } = crCroppersUiInstance.getImagePercentXYFromImage(src);
+
+        crThumbsUiInstance.setCssImagePercentXY(thumb, imagePercentX, imagePercentY);
+      });
+    }, 500);
   };
 
   /**
