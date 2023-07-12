@@ -313,23 +313,14 @@ img {
   height: 100%;
 }
 
-.control-legend,
 .control-status-msg {
   display: grid;
+  min-height: 1.8rem;
   align-content: center;
   color: var(--color-input);
   font-size: 1em;
-}
-
-.control-status-msg {
-  min-height: 1.8rem;
   font-style: italic;
   margin: 0;
-}
-
-.control-legend {
-  height: 100%;
-  text-transform: uppercase;
 }
 
 .controls {
@@ -350,17 +341,12 @@ img {
   padding-right: var(--gutter-half);
 }
 
-.control-legend,
-.control-param,
-.control-action {
-  margin-right: var(--gutter);
-}
-
 .control-param,
 .control-action {
   padding: var(--gutter-half) var(--gutter);
   border: 1px solid var(--color-border-secondary);
   border-radius: .2em;
+  margin-right: var(--gutter);
 }
 
 .control-action[data-hint] {
