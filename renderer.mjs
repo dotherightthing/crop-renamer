@@ -108,10 +108,25 @@ window.addEventListener('DOMContentLoaded', async () => {
       const { newFileName: src } = event.detail;
       const { selectedClass } = crThumbsUiInstance;
       const { imagePercentX, imagePercentY } = crCroppersUiInstance.getImagePercentXYFromImage(src);
-      const selectedThumb = document.querySelector(`.${selectedClass}`).parentElement;
+      const thumb = document.querySelector(`.${selectedClass}`).parentElement;
+      const thumbImage = document.querySelector(`.${selectedClass} .${thumbImgClass}`);
+      const thumbs = document.querySelectorAll(`.${thumbClass}`);
+      const thumbIndex = 0;
+
+      thumbs.forEach((_thumb, index) => {
+        if (_thumb.classList.contains(selectedClass)) {
+          thumbIndex = index;
+        }
+      });
 
       crThumbsUiInstance.changeSelectedImageSrc(src);
-      crThumbsUiInstance.setCssImagePercentXY(selectedThumb, imagePercentX, imagePercentY);
+      crThumbsUiInstance.setCssImagePercentXY({
+        thumbElement: thumb,
+        thumbImgElement: thumbImage,
+        thumbIndex,
+        imagePercentX,
+        imagePercentY
+      });
     });
 
     els.croppers.addEventListener('paramChange', (event) => {
@@ -316,10 +331,17 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     setTimeout(() => {
       thumbs.forEach((thumb, index) => {
-        const { src } = thumbImages[index];
+        const thumbImage = thumbImages[index];
+        const { src } = thumbImage;
         const { imagePercentX, imagePercentY } = crCroppersUiInstance.getImagePercentXYFromImage(src);
 
-        crThumbsUiInstance.setCssImagePercentXY(thumb, imagePercentX, imagePercentY);
+        crThumbsUiInstance.setCssImagePercentXY({
+          thumbElement: thumb,
+          thumbImgElement: thumbImage,
+          thumbIndex: index + 1,
+          imagePercentX,
+          imagePercentY
+        });
       });
     }, 500);
   };

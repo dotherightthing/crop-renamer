@@ -177,18 +177,23 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function setCssImagePercentXY
-   * @param {HTMLElement} element - DOM Element
-   * @param {number} imagePercentX - Image percent X
-   * @param {number} imagePercentY - Image percent Y
+   * @param {object} args - Arguments
+   * @param {HTMLElement} args.thumbElement - DOM Element
+   * @param {HTMLElement} args.thumbImgElement - DOM Element
+   * @param {number} args.thumbIndex - Thumb index
+   * @param {number} args.imagePercentX - Image percent X
+   * @param {number} args.imagePercentY - Image percent Y
    */
-  setCssImagePercentXY(element, imagePercentX, imagePercentY) {
-    if (typeof imagePercentX !== 'undefined') {
-      element.style.setProperty('--image-percent-x', `${imagePercentX}%`);
-    }
+  setCssImagePercentXY({
+    thumbElement, thumbImgElement, thumbIndex, imagePercentX, imagePercentY
+  }) {
+    const x = (typeof imagePercentX !== 'undefined') ? imagePercentX : 50;
+    const y = (typeof imagePercentY !== 'undefined') ? imagePercentY : 50;
 
-    if (typeof imagePercentY !== 'undefined') {
-      element.style.setProperty('--image-percent-y', `${imagePercentY}%`);
-    }
+    thumbElement.style.setProperty('--image-percent-x', `${x}%`);
+    thumbElement.style.setProperty('--image-percent-y', `${y}%`);
+
+    thumbImgElement.setAttribute('alt', `Thumbnail ${thumbIndex} with focalpoint at ${y}% top and ${x}% left. `);
   }
 
   /**
