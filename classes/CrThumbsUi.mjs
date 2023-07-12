@@ -190,8 +190,14 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     const x = (typeof imagePercentX !== 'undefined') ? imagePercentX : 50;
     const y = (typeof imagePercentY !== 'undefined') ? imagePercentY : 50;
 
-    thumbElement.style.setProperty('--image-percent-x', `${x}%`);
-    thumbElement.style.setProperty('--image-percent-y', `${y}%`);
+    // suppressing default output shows the default overlay colour
+    if (x !== 50) {
+      thumbElement.style.setProperty('--image-percent-x', `${x}%`);
+    }
+
+    if (y !== 50) {
+      thumbElement.style.setProperty('--image-percent-y', `${y}%`);
+    }
 
     thumbImgElement.setAttribute('alt', `Thumbnail ${thumbIndex} with focalpoint at ${y}% top and ${x}% left. `);
   }
