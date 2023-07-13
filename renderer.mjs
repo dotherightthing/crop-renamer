@@ -9,6 +9,7 @@ import { CrUtilsUi } from './classes/CrUtilsUi.mjs';
 window.addEventListener('DOMContentLoaded', async () => {
   // instantiate classes
 
+  const controlHintClass = 'control-hint';
   const thumbClass = 'thumb';
   const thumbImgClass = 'thumb-img';
   const thumbPathId = 'thumb-path';
@@ -322,7 +323,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     els.folderIn.dataset.hint = true;
-    els.folderIn.children[0].innerText = folderName;
+    els.folderIn.querySelector(`.${controlHintClass}`).innerText = folderName;
 
     crThumbsUiInstance.generateThumbsHtml(imagesData);
 
@@ -361,7 +362,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     els.folderOut.dataset.targetFolder = folderPath;
     els.folderOut.dataset.hint = true;
-    els.folderOut.children[0].innerText = folderName;
+    els.folderOut.querySelector(`.${controlHintClass}`).innerText = folderName;
 
     CrUtilsUi.getNextSiblings(els.folderIn).forEach(el => {
       delete el.dataset.disabled;

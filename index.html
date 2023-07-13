@@ -15,11 +15,11 @@
             <legend hidden>Controls</legend>
             <div class="controls">
               <button type="button" class="control-action" id="folder-in">
-                Source folder
+                <span class="label">Source folder</span>
                 <span class="control-hint"></span>
               </button>
               <button type="button" class="control-action" id="folder-out">
-                Target folder
+                <span class="label">Target folder</span>
                 <span class="control-hint"></span>
               </button>
               <div class="control-param" data-disabled>
@@ -41,9 +41,15 @@
                   On
                 </label>
               </div> 
-              <button type="button" class="control-action" id="reset-focalpoint" disabled>Reset</button>
-              <button type="button" class="control-action" id="delete-focalpoint" disabled>Delete</button>
-              <button type="button" class="control-action" id="crop-image" disabled>Resize &amp; Crop</button>
+              <button type="button" class="control-action" id="reset-focalpoint" disabled>
+                <span class="label">Reset</span>
+              </button>
+              <button type="button" class="control-action" id="delete-focalpoint" disabled>
+                <span class="label">Delete</span>
+              </button>
+              <button type="button" class="control-action" id="crop-image" disabled>
+                <span class="label">Resize &amp; Crop</span>
+              </button>
             </div>
           </fieldset>
           <p class="control-status-msg" id="control-status"></p>

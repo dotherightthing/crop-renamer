@@ -382,6 +382,32 @@ img {
   text-align: left;
 }
 
+.control-action:focus,
+.control-param:focus-within {
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 1px var(--color-focus);
+}
+
+.control-action:focus,
+.control-param:focus-within :focus {
+  outline: none;
+}
+
+.control-action:focus .label,
+.control-param:focus-within .radios-label,
+.control-param label:focus-within,
+.control-param input:focus + label {
+  color: var(--color-focus);
+}
+
+.control-param input:focus + label[for] {
+  opacity: 1;
+}
+
+.control-param input::selection {
+  background-color: transparent;
+}
+
 .control-hint {
   display: block;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -418,6 +444,10 @@ img {
   color: var(--color-input);
   font-size: 1em;
   overflow: hidden; /* small viewports */
+}
+
+.control-action .label {
+  display: block;
 }
 
 .radios-label {
