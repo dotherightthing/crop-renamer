@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/dotherightthing/focalpoint-multi-cropper#readme",
   "dependencies": {
+    "accessible-components": "github:dotherightthing/accessible-components",
     "cropperjs": "^1.5.13",
     "dtrt-string-utils": "github:dotherightthing/dtrt-string-utils",
     "dtrt-type-validate": "github:dotherightthing/dtrt-type-validate",

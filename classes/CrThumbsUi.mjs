@@ -249,7 +249,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   generateThumbsHtml(imagesData) {
     const {
       thumbButtonClass,
-      thumbClass,
       thumbImgClass,
       thumbImgWrapperClass,
       thumbMetaClass,
@@ -261,14 +260,15 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     imagesData.forEach((loadedThumb, i) => {
       const { src, dateTimeOriginal } = loadedThumb;
 
-      html += `<li class="${thumbClass}">
-    <button type="button" class="${thumbButtonClass}">
-      <div class="${thumbImgWrapperClass}">
-        <img src="${src}" class="${thumbImgClass}">
+      //  aria-selected="true"
+      html += `<button role="tab" class="tabbed-carousel__tab thumb" aria-controls="croppers" id="tab-${i + 1}" tabindex="0" class="${thumbButtonClass}">
+      <div class="thumb-liner">
+        <div class="${thumbImgWrapperClass}">
+          <img src="${src}" class="${thumbImgClass}">
+        </div>
+        <p class="meta ${thumbMetaClass}">${dateTimeOriginal}</p>
       </div>
-      <p class="meta ${thumbMetaClass}">${dateTimeOriginal}</p>  
-    </button>
-  </li>`;
+    </button>`;
 
       if (i === imagesData.length - 1) {
         document.getElementById(thumbsId).innerHTML = html;
@@ -366,13 +366,11 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     }
 
     if (thumbsButtonNextIndex > -1) {
+      thumbsButtons[thumbsButtonNextIndex].focus();
+
       if (position !== 'selected') {
         thumbsButtons[thumbsButtonNextIndex].click();
       }
-
-      thumbsButtons[thumbsButtonNextIndex].scrollIntoView({
-        behavior: 'auto'
-      });
     }
   }
 

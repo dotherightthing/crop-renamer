@@ -9,6 +9,20 @@
   </head>
   <body>
     <div class="layout">
+      <div class="thumbs" aria-labelledby="thumbs-heading">
+        <h2 hidden id="thumbs-heading">Image thumbnails</h2>
+        <div class="tabbed-carousel thumbs-wrapper" data-selection-follows-focus="true" data-initial-selection="1">
+          <div role="tablist" class="tabbed-carousel__tablist thumbs-liner" aria-label="Choose photo to edit" id="thumbs">
+            <!-- loaded by Load images -->
+          </div>
+        </div>
+        <div class="meta thumbs-summary-meta">
+          <p class="thumb-path" id="thumb-path">No folder selected</p>
+          <p class="thumb-count">
+            <span id="thumb-count-num">0</span> images
+          </p>
+        </div>
+      </div>
       <div class="editor">
         <div class="control-bar">
           <fieldset class="control-fieldset">
@@ -54,7 +68,7 @@
           </fieldset>
           <p class="control-status-msg" id="control-status"></p>
         </div>
-        <div class="grid-croppers" id="croppers">
+        <div class="tabbed-carousel__tabpanel grid-croppers" role="tabpanel" id="croppers" aria-labelledby="test-1-tab-1" tabindex="0">
           <div class="img-container cropper-master">
             <!-- image used with interactive cropbox -->
             <img
@@ -130,18 +144,6 @@
               data-cropper-role="slave"
             >
           </div>
-        </div>
-      </div>
-      <div class="thumbs" aria-labelledby="thumbs-heading">
-        <h2 hidden id="thumbs-heading">Image thumbnails</h2>
-        <ol class="thumbs-list" id="thumbs">
-          <!-- loaded by Load images -->
-        </ol>
-        <div class="meta thumbs-summary-meta">
-          <p class="thumb-path" id="thumb-path">No folder selected</p>
-          <p class="thumb-count">
-            <span id="thumb-count-num">0</span> images
-          </p>
         </div>
       </div>
     </div>

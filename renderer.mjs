@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // instantiate classes
 
   const controlHintClass = 'control-hint';
+  const thumbButtonClass = 'thumb-liner';
   const thumbClass = 'thumb';
   const thumbImgClass = 'thumb-img';
   const thumbPathId = 'thumb-path';
@@ -50,7 +51,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   const crThumbsUiInstance = new CrThumbsUi({
     selectedClass: 'btn-selected',
-    thumbButtonClass: 'btn-thumb',
+    thumbButtonClass,
     thumbClass,
     thumbImgClass,
     thumbImgWrapperClass: 'thumb-img-wrapper',
@@ -78,6 +79,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     root: document.getElementById('root'),
     status: document.getElementById('control-status'),
     thumbs: document.getElementById('thumbs'),
+    thumbButtons: document.querySelectorAll(`.${thumbButtonClass}`),
     thumbPath: document.getElementById(thumbPathId),
     window: window
   };
@@ -111,10 +113,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       const { imagePercentX, imagePercentY } = crCroppersUiInstance.getImagePercentXYFromImage(src);
       const thumb = document.querySelector(`.${selectedClass}`).parentElement;
       const thumbImage = document.querySelector(`.${selectedClass} .${thumbImgClass}`);
-      const thumbs = document.querySelectorAll(`.${thumbClass}`);
+      const thumbButtons = document.querySelectorAll(`.${thumbButtonClass}`);
       const thumbIndex = 0;
 
-      thumbs.forEach((_thumb, index) => {
+      thumbButtons.forEach((_thumb, index) => {
         if (_thumb.classList.contains(selectedClass)) {
           thumbIndex = index;
         }
@@ -256,6 +258,16 @@ window.addEventListener('DOMContentLoaded', async () => {
       crCroppersUiInstance.changeSourceImage(target);
     });
 
+    els.thumbButtons.forEach(thumbButton => {
+      thumbButton.addEventListener('focus', (event) => {
+        event.preventDefault();
+
+        thumbButton.scrollIntoView({
+          behavior: 'auto'
+        });
+      });
+    });
+
     els.thumbPath.addEventListener('click', (event) => {
       event.preventDefault();
 
@@ -327,11 +339,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     crThumbsUiInstance.generateThumbsHtml(imagesData);
 
-    const thumbs = document.querySelectorAll(`.${thumbClass}`);
+    const thumbButtons = document.querySelectorAll(`.${thumbButtonClass}`);
     const thumbImages = document.querySelectorAll(`.${thumbImgClass}`);
 
     setTimeout(() => {
-      thumbs.forEach((thumb, index) => {
+      thumbButtons.forEach((thumb, index) => {
         const thumbImage = thumbImages[index];
         const { src } = thumbImage;
         const { imagePercentX, imagePercentY } = crCroppersUiInstance.getImagePercentXYFromImage(src);
