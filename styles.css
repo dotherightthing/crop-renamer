@@ -31,7 +31,8 @@
   --opacity-modal-overlay: .5;
   --opacity-thumb-brightness: .8;
   --cropper-master-height: calc(70vh - var(--height-control-bar-outer));
-  --cropper-slave-height: calc((70vh - var(--height-control-bar-outer) - var(--gutter)) / 2);
+  --cropper-resizers-height: 1rem;
+  --cropper-slave-height: calc((70vh - var(--height-control-bar-outer) - var(--cropper-resizers-height) - var(--gutter)) / 2);
 }
 
 *,
@@ -85,28 +86,49 @@ img {
   display: grid;
   grid-template-areas:
     'master slave3 slave3'
-    'master slave1 slave2';
-  grid-template-rows: var(--cropper-slave-height) var(--cropper-slave-height);
+    'master slave1 slave2'
+    'master resizers resizers';
+  grid-template-rows: var(--cropper-slave-height) var(--cropper-slave-height) var(--cropper-resizers-height);
   grid-template-columns: 1fr 20% 20%;
   row-gap: var(--gutter);
   column-gap: var(--gutter);
 }
 
-.img-container {
-  position: relative;
+.cropper-resizers {
+  grid-area: resizers;
 }
 
-.img-container > h2 {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
+.cropper-resizers-list {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cropper-label {
   background-color: rgba(0, 0, 0, .7);
   color: var(--color-primary);
   font-family: sans-serif;
   font-size: var(--text-tiny);
   padding: var(--gutter-half);
   margin: var(--gutter-half);
+}
+
+.img-container {
+  position: relative;
+}
+
+.img-container > .cropper-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.cropper-resizers .cropper-label {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .cropper-master {
@@ -120,7 +142,7 @@ img {
   text-align: center;
 }
 
-.cropper-master > h2 {
+.img-container.cropper-master > h2 {
   right: auto;
   left: 0;
 }

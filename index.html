@@ -77,19 +77,6 @@
               data-cropper-role="slave"
             >
           </div>
-          <div class="img-container cropper-hide">
-            <!-- image will be resized to 320 x whatever -->
-            <img
-              alt=""
-              class="cropper-image"
-              data-cropper-action="resize"
-              data-cropper-export-width="320"
-              data-cropper-export-height="null"
-              data-cropper-export-suffix="stack-banner"
-              data-cropper-label="Stack Banner"
-              data-cropper-role="slave"
-            >
-          </div>
           <div class="img-container cropper-collapsed">
             <!-- image will be resized to 865 x whatever, then cropped to 865 x 368 -->
             <img
@@ -103,20 +90,7 @@
               data-cropper-role="slave"
             >
           </div>
-          <div class="img-container cropper-hide">
-            <!-- image will be resized to 865 x whatever -->
-            <img
-              alt=""
-              class="cropper-image"
-              data-cropper-action="resize"
-              data-cropper-export-width="865"
-              data-cropper-export-height="null"
-              data-cropper-export-suffix="gallery-expanded"
-              data-cropper-label="Gallery Expanded"
-              data-cropper-role="slave"
-            >
-          </div>
-          <div class="img-container" cropper-thumbnail>
+          <div class="img-container img-container-last" cropper-thumbnail>
             <!-- image will be resized to 320 x whatever, then cropped to 320 x 320 -->
             <!-- TODO: stack-tour-bg is 600x600 but could share this? -->
             <img
@@ -130,6 +104,39 @@
               data-cropper-role="slave"
             >
           </div>
+          <div class="cropper-resizers">
+            <ol class="cropper-resizers-list">
+              <li>
+                <div class="img-container">
+                  <!-- image will be resized to 320 x whatever -->
+                  <img
+                    alt=""
+                    class="cropper-image cropper-hide"
+                    data-cropper-action="resize"
+                    data-cropper-export-width="320"
+                    data-cropper-export-height="null"
+                    data-cropper-export-suffix="stack-banner"
+                    data-cropper-label="Stack Banner"
+                    data-cropper-role="slave"
+                  >
+                </div>
+              </li>
+              <li>
+                <div class="img-container">
+                  <!-- image will be resized to 865 x whatever -->
+                  <img
+                    alt=""
+                    class="cropper-image cropper-hide"
+                    data-cropper-action="resize"
+                    data-cropper-export-width="865"
+                    data-cropper-export-height="null"
+                    data-cropper-export-suffix="gallery-expanded"
+                    data-cropper-label="Gallery Expanded"
+                    data-cropper-role="slave"
+                  >
+                </div>
+              </li>
+            </ol>
         </div>
       </div>
       <div class="thumbs" aria-labelledby="thumbs-heading">

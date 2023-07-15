@@ -781,19 +781,20 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
    */
   injectHeading(cropperImage, label, exportWidth, exportHeight) {
     const parent = cropperImage.parentNode;
-    let labelText = label;
+    let labelExtra = '';
 
     let heading = parent.querySelector('h2');
 
     if ((exportWidth !== null) && (exportHeight !== null)) {
-      labelText = `${label} (${exportWidth} x ${exportHeight})`;
+      labelExtra = ` (${exportWidth} x ${exportHeight})`;
     }
 
     if (!heading) {
-      const headingText = document.createTextNode(labelText);
+      const headingText = document.createTextNode(`Crop: "${label}"${labelExtra}`);
 
       heading = document.createElement('h2');
       heading.appendChild(headingText);
+      heading.classList.add('cropper-label');
       parent.insertBefore(heading, cropperImage);
     }
 

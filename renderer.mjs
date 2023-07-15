@@ -74,7 +74,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     folderIn: document.getElementById('folder-in'),
     folderOut: document.getElementById('folder-out'),
     imageCrop: document.getElementById('crop-image'),
-    lastCropperImg: document.querySelector('#croppers .img-container:last-child img'),
+    lastCropperImg: document.querySelector('#croppers .img-container-last img'),
     root: document.getElementById('root'),
     status: document.getElementById('control-status'),
     thumbs: document.getElementById('thumbs'),
