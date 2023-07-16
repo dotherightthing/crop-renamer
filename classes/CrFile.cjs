@@ -331,10 +331,15 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     }
 
     const { canceled, filePaths } = await dialog.showOpenDialog({
-      defaultPath: '~/',
-      title: dialogTitle,
       buttonLabel: dialogButtonLabel,
-      properties: [ 'openDirectory', 'multiSelections' ]
+      defaultPath: '~/',
+      message: dialogTitle,
+      properties: [
+        'createDirectory',
+        'openDirectory',
+        'showHiddenFiles'
+      ],
+      title: dialogTitle
     });
 
     if (!canceled && filePaths.length) {
