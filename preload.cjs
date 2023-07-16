@@ -17,9 +17,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // function in renderer.js or frontend class calls window.electronAPI.methodName, with or without a data object
   // backend responds and returns data to calling function
 
+  copyToClipboard: (data) => ipcRenderer.invoke('CrFile:copyToClipboard', data),
+  getRelativePath: (data) => ipcRenderer.invoke('CrFile:getRelativePath', data),
   openInFinder: (data) => ipcRenderer.invoke('CrFile:openInFinder', data),
-  selectFolderIn: (data) => ipcRenderer.invoke('CrFile:selectFolderIn', data),
-  selectFolderOut: (data) => ipcRenderer.invoke('CrFile:selectFolderOut', data),
+  selectFolder: (data) => ipcRenderer.invoke('CrFile:selectFolder', data),
   deleteImagePercentXYFromImage: (data) => ipcRenderer.invoke('CrFile:deleteImagePercentXYFromImage', data),
   saveImagePercentXYToImage: (data) => ipcRenderer.invoke('CrFile:saveImagePercentXYToImage', data),
   resizeImage: (data) => ipcRenderer.invoke('CrFile:resizeImage', data),

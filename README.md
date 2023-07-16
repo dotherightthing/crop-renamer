@@ -12,7 +12,9 @@
 * **Reset** - Remove user changes and reapply the focalpoint stored in the image filename, or the defaults
 * **Delete** - Delete the focalpoint and remove non-default focalpoint from the image filename
 * **Resize & Crop** - Use [gm](https://github.com/aheckmann/gm) to `resizeAndCrop` from the slave croppers' crop boxes, and `resize` from the hidden non-cropper inclusions
-* **Restore** - Settings are restored when reopening the Electron app
+* **Locate** - Easily open the source and target image folders to keep track of where files are
+* **Embed** - Copy paths including a relative link suitable for pasting into a Markdown document or webpage
+* **Restore** - Menu settings are restored when reopening the Electron app
 
 ## Usage
 

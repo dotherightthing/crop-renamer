@@ -72,9 +72,10 @@ const createWindow = () => {
 app.whenReady().then(() => {
   // ipcMain module for inter-process communication (IPC) with render process
 
+  ipcMain.handle('CrFile:copyToClipboard', CrFile.copyToClipboard);
+  ipcMain.handle('CrFile:getRelativePath', CrFile.getRelativePath);
   ipcMain.handle('CrFile:openInFinder', CrFile.openInFinder);
-  ipcMain.handle('CrFile:selectFolderIn', CrFile.selectFolderIn);
-  ipcMain.handle('CrFile:selectFolderOut', CrFile.selectFolderOut);
+  ipcMain.handle('CrFile:selectFolder', CrFile.selectFolder);
   ipcMain.handle('CrFile:deleteImagePercentXYFromImage', CrFile.deleteImagePercentXYFromImage);
   ipcMain.handle('CrFile:saveImagePercentXYToImage', CrFile.saveImagePercentXYToImage);
   ipcMain.handle('CrFile:resizeImage', CrFile.resizeImage);

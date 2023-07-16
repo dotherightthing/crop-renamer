@@ -363,7 +363,6 @@ describe('template spec', () => {
       it.skip('changeSelectedImageSrc', () => {});
       it.skip('containsThumbs', () => {});
       it.skip('displayCount', () => {});
-      it.skip('displayPath', () => {});
       it.skip('generateThumbsHtml', () => {});
       it.skip('getClickedButton', () => {});
       it.skip('getSelectedIndex', () => {});

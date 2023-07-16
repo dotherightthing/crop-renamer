@@ -4,9 +4,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const process = require('process');
 const { resolve } = require('path');
 const ExifReader = require('exifreader');
-const { dialog, shell } = require('electron');
+const { clipboard, dialog, shell } = require('electron');
 const gm = require('gm').subClass({ imageMagick: '7+' });
 const Store = require('./store.js');
 
@@ -28,6 +29,20 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /* Instance methods */
 
   /* Static methods */
+
+  /**
+   * @function copyToClipboard
+   * @param {event} event - CrFile:copyToClipboard event captured by ipcMain.handle
+   * @param {object} data - Data
+   * @param {string} data.text - Text
+   * @memberof CrFile
+   * @static
+   */
+  static copyToClipboard(event, data) {
+    const { text } = data;
+
+    clipboard.writeText(text);
+  }
 
   /**
    * @function resizeAndCropImage
@@ -101,6 +116,36 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function getRelativePath
+   * @param {event} event - CrFile:getRelativePath event captured by ipcMain.handle
+   * @summary Get the relative path from From to To based on the selected Base directory
+   * @param {object} data - Data
+   * @param {string} data.base - Website path
+   * @param {string} data.from - From path
+   * @param {string} data.to - To path
+   * @returns {string} relativePath
+   * @memberof CrFile
+   * @static
+   */
+  static getRelativePath(event, data) {
+    const {
+      base,
+      from,
+      to
+    } = data;
+
+    const appFolder = process.cwd();
+
+    process.chdir(base);
+
+    const relativePath = path.relative(from, to);
+
+    process.chdir(appFolder);
+
+    return relativePath;
+  }
+
+  /**
    * @function resizeImage
    * @param {event} event - CrFile:resizeImage event captured by ipcMain.handle
    * @param {object} data - Data
@@ -123,7 +168,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       resizes
     } = data;
 
-    const { fileNameOnly, fileNameRaw } = CrFile.getFileNameParts(fileName);
+    const { extName, fileNameOnly, fileNameRaw } = CrFile.getFileNameParts(fileName);
 
     resizes.forEach(resize => {
       const {
@@ -134,17 +179,18 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
       const currentDir = process.cwd();
       const targetPath = path.relative(currentDir, targetFolder);
+      const suffix = (fileNameSuffix !== '') ? `__${fileNameSuffix}` : '';
 
       gm(fileNameRaw)
         .strip()
         .autoOrient()
         .quality(quality) // TODO possibly remove this line for PNG
         .resize(resizeW, resizeH)
-        .write(`${targetPath}/${fileNameOnly}__${fileNameSuffix}.jpg`, err => {
+        .write(`${targetPath}/${fileNameOnly}${suffix}${extName}`, err => {
           if (err) {
             console.log(err);
           } else {
-            console.log(`Resized ${fileNameOnly}__${fileNameSuffix}.jpg`);
+            console.log(`Resized ${fileNameOnly}${suffix}${extName}`);
           }
         });
     });
@@ -287,7 +333,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function selectFolder
+   * @function selectFolderDialog
    * @param {object} args - Arguments
    * @param {string} args.dialogTitle - Dialog title
    * @param {string} args.dialogButtonLabel - Dialog button label
@@ -298,7 +344,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @memberof CrFile
    * @static
    */
-  static async selectFolder({
+  static async selectFolderDialog({
     dialogTitle, dialogButtonLabel, retrieveImagesData, restore, storeKey
   }) {
     if (restore) {
@@ -376,44 +422,49 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function selectFolderIn
-   * @param {event} event - CrFile:selectFolderIn event captured by ipcMain.handle
-   * @param {boolean} restore - Restore setting if it was previously stored
-   * @returns { object } { folderPath, imagesData }
+   * @function selectFolder
+   * @param {event} event - CrFile:selectFolder event captured by ipcMain.handle
+   * @param {object} data - Data
+   * @param {string} data.dialogTitle - Title for the dialog
+   * @param {boolean} data.retrieveImagesData - Get information about images in the folder
+   * @param {boolean} data.restore - Restore setting if it was previously stored
+   * @param {string} data.storeKey - Key under which to persist the folder path in the JSON file
+   * @returns { object } { folderName, folderPath, imagesData }
    * @memberof CrFile
    * @static
    */
-  static async selectFolderIn(event, restore = false) { // eslint-disable-line no-unused-vars
-    const { folderName, folderPath, imagesData } = await CrFile.selectFolder({
-      dialogTitle: 'Source folder',
-      dialogButtonLabel: 'Select folder',
-      retrieveImagesData: true,
+  static async selectFolder(event, data) { // eslint-disable-line no-unused-vars
+    const {
+      dialogTitle,
+      retrieveImagesData,
       restore,
-      storeKey: 'folderIn'
-    });
+      storeKey
+    } = data;
 
-    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
-      return {};
+    // if getImagesData
+    if (retrieveImagesData) {
+      const { folderName, folderPath, imagesData } = await CrFile.selectFolderDialog({
+        dialogTitle,
+        dialogButtonLabel: 'Select folder',
+        retrieveImagesData,
+        restore,
+        storeKey
+      });
+
+      if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
+        return {};
+      }
+
+      return { folderName, folderPath, imagesData };
     }
 
-    return { folderName, folderPath, imagesData };
-  }
-
-  /**
-   * @function selectFolderOut
-   * @param {event} event - CrFile:selectFolderIn event captured by ipcMain.handle
-   * @param {boolean} restore - Restore setting if it was previously stored
-   * @returns { object } { folderPath }
-   * @memberof CrFile
-   * @static
-   */
-  static async selectFolderOut(event, restore = false) { // eslint-disable-line no-unused-vars
-    const { folderName, folderPath } = await CrFile.selectFolder({
-      dialogTitle: 'Target folder',
+    // if !getImagesData
+    const { folderName, folderPath } = await CrFile.selectFolderDialog({
+      dialogTitle,
       dialogButtonLabel: 'Select folder',
-      retrieveImagesData: false,
+      retrieveImagesData,
       restore,
-      storeKey: 'folderOut'
+      storeKey
     });
 
     if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {

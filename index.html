@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <div class="layout">
+    <div class="grid-page">
       <div class="editor">
         <div class="control-bar">
           <fieldset class="control-fieldset">
@@ -18,8 +18,16 @@
                 <span class="label">Source folder</span>
                 <span class="control-hint"></span>
               </button>
+              <button type="button" class="control-action" id="folder-website">
+                <span class="label">Website folder</span>
+                <span class="control-hint"></span>
+              </button>
+              <button type="button" class="control-action" id="folder-webpage">
+                <span class="label">Webpage folder</span>
+                <span class="control-hint"></span>
+              </button>
               <button type="button" class="control-action" id="folder-out">
-                <span class="label">Target folder</span>
+                <span class="label">Web image folder</span>
                 <span class="control-hint"></span>
               </button>
               <div class="control-param" data-disabled>
@@ -54,7 +62,7 @@
           </fieldset>
           <p class="control-status-msg" id="control-status"></p>
         </div>
-        <div class="grid-croppers" id="croppers">
+        <div class="croppers grid-croppers" id="croppers">
           <div class="img-container cropper-master">
             <!-- image used with interactive cropbox -->
             <img
@@ -74,6 +82,19 @@
               data-cropper-export-height="748"
               data-cropper-export-suffix="stack-banner-bg"
               data-cropper-label="Stack Banner bg"
+              data-cropper-role="slave"
+            >
+          </div>
+          <div class="img-container cropper-hide">
+            <!-- image will be resized to 320 x whatever - no suffix = just the filename -->
+            <img
+              alt=""
+              class="cropper-image"
+              data-cropper-action="resize"
+              data-cropper-export-width="320"
+              data-cropper-export-height="null"
+              data-cropper-export-suffix=""
+              data-cropper-label="Stack Banner"
               data-cropper-role="slave"
             >
           </div>
@@ -137,11 +158,28 @@
         <ol class="thumbs-list" id="thumbs">
           <!-- loaded by Load images -->
         </ol>
-        <div class="meta thumbs-summary-meta">
-          <p class="thumb-path" id="thumb-path">No folder selected</p>
+        <div class="meta thumbs-console grid-thumbs-console">
           <p class="thumb-count">
             <span id="thumb-count-num">0</span> images
           </p>
+          <div class="thumb-paths">
+            <h2 hidden>Paths</h2>
+            <button type="button" class="control-action control-copy" id="copy-path-in">
+              <span class="control-hint">Copy source path</span>
+            </button>
+            <p class="control-action">
+              <a class="control-hint control-link" id="link-path-in" href="#">Open source path</a>
+            </p>
+            <button type="button" class="control-action control-copy" id="copy-path-out">
+              <span class="control-hint">Copy target path</span>
+            </button>
+            <p class="control-action">
+              <a class="control-hint control-link" id="link-path-out" href="#">Open target path</a>
+            </p>
+            <button type="button" class="control-action control-copy" id="copy-path-web-embed">
+              <span class="control-hint">Copy embed path</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

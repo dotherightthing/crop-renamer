@@ -20,7 +20,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       thumbImgClass,
       thumbImgWrapperClass,
       thumbMetaClass,
-      thumbPathId,
       thumbsCountId,
       thumbsId
     } = config;
@@ -32,7 +31,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       thumbImgClass,
       thumbImgWrapperClass,
       thumbMetaClass,
-      thumbPathId,
       thumbsCountId,
       thumbsId
     });
@@ -119,19 +117,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * thumbPathId
-   * @type {string}
-   * @memberof CrCroppersUi
-   */
-  get thumbPathId() {
-    return this._thumbPathId;
-  }
-
-  set thumbPathId(thumbPathId) {
-    this._thumbPathId = dtrtValidate.validate(thumbPathId, 'string', 'CrThumbsUi.thumbPathId');
-  }
-
-  /**
    * thumbsCountId
    * @type {string}
    * @memberof CrCroppersUi
@@ -171,8 +156,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     setTimeout(() => {
       document.querySelector(`.${selectedClass} img`).src = src;
     }, 500);
-
-    this.displayPath(src);
   }
 
   /**
@@ -225,19 +208,6 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     const { thumbsCountId } = this;
 
     document.getElementById(thumbsCountId).textContent = count;
-  }
-
-  /**
-   * @function displayPath
-   * @param {string} path - Path
-   * @memberof CrThumbsUi
-   */
-  displayPath(path) {
-    const { thumbPathId } = this;
-
-    const html = `<a href="${path}">${path}</a>`;
-
-    document.getElementById(thumbPathId).innerHTML = html;
   }
 
   /**
