@@ -201,13 +201,31 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function displayCount
-   * @param {number} count - Count
+   * @param {object} args - Arguments
+   * @param {number} args.thumbTotal - Thumb total
+   * @param {number} args.thumbIndex - Thumb index
    * @memberof CrThumbsUi
    */
-  displayCount(count) {
+  displayCount({ thumbTotal, thumbIndex }) {
     const { thumbsCountId } = this;
+    const el = document.getElementById(thumbsCountId);
 
-    document.getElementById(thumbsCountId).textContent = count;
+    let str = '';
+
+    // store for later access
+    if (typeof thumbTotal !== 'undefined') {
+      el.dataset.thumbTotal = thumbTotal;
+    }
+
+    if (typeof el.dataset.thumbTotal !== 'undefined') {
+      const _thumbTotal = el.dataset.thumbTotal;
+
+      if (typeof thumbIndex !== 'undefined') {
+        str = `#${thumbIndex} / ${_thumbTotal}`;
+      }
+    }
+
+    el.innerHTML = str;
   }
 
   /**
@@ -236,7 +254,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       <div class="${thumbImgWrapperClass}">
         <img src="${src}" class="${thumbImgClass}">
       </div>
-      <p class="meta ${thumbMetaClass}">${dateTimeOriginal}</p>  
+      <p class="${thumbMetaClass}">${dateTimeOriginal}</p>  
     </button>
   </li>`;
 
@@ -246,7 +264,9 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
       }
     });
 
-    this.displayCount(imagesData.length);
+    this.displayCount({
+      thumbTotal: imagesData.length
+    });
   }
 
   /**
@@ -256,18 +276,30 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @memberof CrThumbsUi
    */
   getClickedButton(event) {
-    const e = event || window.event;
-    let target = e.target || e.srcElement;
+    const {
+      thumbButtonClass,
+      thumbsId,
+      thumbImgClass
+    } = this;
 
-    if (!document.querySelectorAll('#thumbs img').length) {
+    const e = event || window.event;
+    let clickedButton = e.target || e.srcElement;
+
+    if (!document.querySelectorAll(`#${thumbsId} .${thumbImgClass}`).length) {
       return null;
     }
 
-    while (target.tagName.toLowerCase() !== 'button') {
-      target = target.parentNode;
+    while (clickedButton.tagName.toLowerCase() !== 'button') {
+      clickedButton = clickedButton.parentNode;
     }
 
-    return target;
+    const buttons = document.querySelectorAll(`.${thumbButtonClass}`);
+    const clickedButtonIndex = Array.from(buttons).indexOf(clickedButton) + 1;
+
+    return {
+      clickedButton,
+      clickedButtonIndex
+    };
   }
 
   /**

@@ -1,0 +1,97 @@
+/* .l-center-v */
+
+.l-center-v {
+  display: grid;
+  align-content: center;
+}
+
+/* .l-croppers */
+
+.l-croppers {
+  display: grid;
+  grid-template-areas:
+    'master slave3 slave3'
+    'master slave1 slave2';
+  grid-template-rows: var(--height-cropper-slave) var(--height-cropper-slave);
+  grid-template-columns: 1fr 20% 20%;
+  row-gap: var(--gutter);
+  column-gap: var(--gutter);
+}
+
+.l-croppers > .cropper-collapsed {
+  grid-area: slave1;
+  width: 100%;
+}
+
+.l-croppers > .cropper-thumbnail {
+  grid-area: slave2;
+  width: 100%;
+}
+
+.l-croppers > .cropper-banner-bg {
+  grid-area: slave3;
+  width: 100%;
+}
+
+/* .l-horz-list */
+
+.l-horz-list {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: var(--gutter);
+}
+
+.l-horz-list > * {
+  margin: 0;
+}
+
+.l-horz-list > .l-horz-list-header {
+  margin-right: var(--gutter-half);
+}
+
+.l-horz-list-reverse {
+  flex-direction: row-reverse;
+}
+
+/* .l-image-meta */
+
+.l-image-meta {
+  display: flex;
+  align-items: stretch;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-items: right;
+}
+
+.l-image-meta > :first-child {
+  margin-right: auto; /* align left */
+}
+
+/* .l-image-meta > :last-child {
+  text-align: right;
+} */
+
+/* .l-page */
+
+.l-page {
+  display: grid;
+  grid-template-rows: 70vh 30vh;
+  height: 100vh;
+}
+
+/* prevent flash of white content when navigating thumbnails */
+.l-page,
+.l-page > * {
+  overflow: hidden;
+}
+
+/* .l-radio-label */
+
+.l-radio-label {
+  display: grid;
+  margin-right: var(--gutter);
+  grid-template-columns: 1em auto;
+  gap: 0.5em;
+}

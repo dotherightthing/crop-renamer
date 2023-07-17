@@ -54,7 +54,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     thumbImgClass,
     thumbImgWrapperClass: 'thumb-img-wrapper',
     thumbMetaClass: 'thumb-meta',
-    thumbsCountId: 'thumb-count-num',
+    thumbsCountId: 'thumb-count',
     thumbsId: 'thumbs'
   });
 
@@ -85,6 +85,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     root: document.getElementById('root'),
     status: document.getElementById('control-status'),
     thumbs: document.getElementById('thumbs'),
+    thumbFileName: document.getElementById('thumb-filename'),
     window: window
   };
 
@@ -296,16 +297,27 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
 
     els.thumbs.addEventListener('click', (event) => {
-      const target = crThumbsUiInstance.getClickedButton(event);
-      const newImageSrc = target.querySelector('img').getAttribute('src');
+      const {
+        clickedButton,
+        clickedButtonIndex
+      } = crThumbsUiInstance.getClickedButton(event);
 
-      crThumbsUiInstance.applySelectedClass(target);
+      const newImageSrc = clickedButton.querySelector('img').getAttribute('src');
+
+      crThumbsUiInstance.applySelectedClass(clickedButton);
+
       crThumbsUiInstance.scrollToThumb('selected');
+
+      setTimeout(() => {
+        crThumbsUiInstance.displayCount({
+          thumbIndex: clickedButtonIndex
+        });
+      }, 500);
 
       setPaths(newImageSrc);
 
       // calls crCroppersUiInstance.init
-      crCroppersUiInstance.changeSourceImage(target);
+      crCroppersUiInstance.changeSourceImage(clickedButton);
     });
 
     els.copyPaths.forEach(el => {
@@ -364,6 +376,18 @@ window.addEventListener('DOMContentLoaded', async () => {
   };
 
   /**
+   * @function getFileNameFromPath
+   * @param {string} path - File path
+   * @returns {string} fileName
+   */
+  const getFileNameFromPath = (path) => {
+    const pathSeparator = path.lastIndexOf('/');
+    const fileName = path.slice(pathSeparator + 1);
+
+    return fileName;
+  };
+
+  /**
    * @function getPathOut
    * @summary Set the target path in the footer
    * @returns {string} pathOut
@@ -373,8 +397,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const { targetFolder } = els.folderOut.dataset;
     const { src: cropperSrc } = croppers[0].cropperInstance.element;
 
-    const pathSeparator = cropperSrc.lastIndexOf('/');
-    const fileName = cropperSrc.slice(pathSeparator + 1);
+    const fileName = getFileNameFromPath(cropperSrc);
     const pathOut = `${targetFolder}/${fileName}`;
 
     return pathOut;
@@ -566,9 +589,13 @@ window.addEventListener('DOMContentLoaded', async () => {
    * @param {string} src - Image src
    */
   const setPaths = (src) => {
+    const fileName = getFileNameFromPath(src);
+
     els.copyPathIn.setAttribute('title', src);
     els.linkPathIn.setAttribute('href', src);
     els.linkPathIn.setAttribute('title', src);
+
+    els.thumbFileName.textContent = fileName;
 
     setTimeout(async () => {
       const pathOut = getPathOut();

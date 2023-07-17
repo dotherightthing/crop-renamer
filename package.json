@@ -5,7 +5,7 @@
   "main": "main.cjs",
   "scripts": {
     "lint": "npm run lint:css && npm run lint:js",
-    "lint:css": "stylelint ./*.css",
+    "lint:css": "stylelint ./css/*.css",
     "lint:js": "npx eslint ./*.*js && npx eslint ./classes/*.*js",
     "prepare": "husky install",
     "serve": "http-server ./ --port 8000 --silent",
