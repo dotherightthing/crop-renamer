@@ -476,7 +476,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     els.folderIn.dataset.hint = true;
-    els.folderIn.querySelector(`.${controlHintClass}`).innerText = folderName;
+    els.folderIn.querySelector(`.${controlHintClass}`).textContent = folderName;
 
     crThumbsUiInstance.generateThumbsHtml(imagesData);
 
@@ -515,7 +515,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     els.folderOut.dataset.targetFolder = folderPath;
     els.folderOut.dataset.hint = true;
-    els.folderOut.querySelector(`.${controlHintClass}`).innerText = folderName;
+    els.folderOut.querySelector(`.${controlHintClass}`).textContent = folderName;
 
     CrUtilsUi.getNextSiblings(els.folderIn).forEach(el => {
       delete el.dataset.disabled;
@@ -539,7 +539,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     els.folderWebpage.dataset.targetFolder = folderPath;
     els.folderWebpage.dataset.hint = true;
-    els.folderWebpage.querySelector(`.${controlHintClass}`).innerText = folderName;
+    els.folderWebpage.querySelector(`.${controlHintClass}`).textContent = folderName;
   };
 
   /**
@@ -557,7 +557,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     els.folderWebsite.dataset.targetFolder = folderPath;
     els.folderWebsite.dataset.hint = true;
-    els.folderWebsite.querySelector(`.${controlHintClass}`).innerText = folderName;
+    els.folderWebsite.querySelector(`.${controlHintClass}`).textContent = folderName;
   };
 
   /**
