@@ -186,6 +186,12 @@ window.addEventListener('DOMContentLoaded', async () => {
               imagePercentY: els.focalpointY.value
             });
           }
+
+          els.focalpointReset.setAttribute('disabled', '');
+          els.focalpointReset.dataset.disabled = 'true';
+        } else {
+          els.focalpointReset.removeAttribute('disabled');
+          delete els.focalpointReset.dataset.disabled;
         }
       });
     });
@@ -220,6 +226,11 @@ window.addEventListener('DOMContentLoaded', async () => {
             imagePercentY: els.focalpointY.value
           });
         }
+        els.focalpointReset.setAttribute('disabled', '');
+        els.focalpointReset.dataset.disabled = 'true';
+      } else {
+        els.focalpointReset.removeAttribute('disabled');
+        delete els.focalpointReset.dataset.disabled;
       }
     }));
 
