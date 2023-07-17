@@ -83,7 +83,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     linkPathIn: document.getElementById('link-path-in'),
     linkPathOut: document.getElementById('link-path-out'),
     root: document.getElementById('root'),
-    status: document.getElementById('control-status'),
+    status: document.getElementById('console'),
     thumbs: document.getElementById('thumbs'),
     thumbFileName: document.getElementById('thumb-filename'),
     window: window

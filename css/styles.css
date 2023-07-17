@@ -122,7 +122,7 @@ img {
 .thumbs {
   counter-reset: thumb-counter;
   background-color: var(--color-bg-primary);
-  padding-bottom: var(--height-image-meta); /* space for position:fixed element */
+  padding-bottom: calc(var(--height-image-meta) + var(--height-cropper-console) - var(--gutter)); /* space for position:fixed elements */
   border: var(--gutter) solid var(--color-bg-primary);
   scroll-behavior: auto;
   overflow-x: auto;
@@ -212,15 +212,17 @@ img {
 .image-meta {
   position: fixed;
   right: 0;
-  bottom: 0;
+  bottom: var(--height-cropper-console);
   left: 0;
   z-index: 2; /* overlap focalpoint circles */
+  height: var(--height-image-meta);
   background-color: var(--color-bg-tertiary);
   color: var(--color-secondary);
   font-size: var(--text-regular);
   padding: var(--gutter);
   border: var(--gutter) solid var(--color-bg-primary);
   margin: 0;
+  overflow: hidden; /* height */
 }
 
 .l-horz-list > .thumb-count:not(:empty) {
@@ -250,7 +252,7 @@ img {
   margin-left: 0;
 }
 
-/* .control-action, .control-param, .control-status-msg */
+/* .control-action, .control-param */
 
 .control-bar {
   display: flex;
@@ -275,13 +277,6 @@ img {
 .control-fieldset > legend {
   float: left;
   height: 100%;
-}
-
-.control-status-msg {
-  color: var(--color-input);
-  font-size: 1em;
-  font-style: italic;
-  margin: 0 0 0 auto; /* align right */
 }
 
 .controls {

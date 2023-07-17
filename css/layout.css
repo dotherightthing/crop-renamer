@@ -5,6 +5,19 @@
   align-content: center;
 }
 
+/* .l-cropper-console */
+
+.l-cropper-console {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.l-cropper-console > * {
+  margin: 0;
+}
+
 /* .l-croppers */
 
 .l-croppers {

@@ -1,0 +1,27 @@
+/* .cropper-console */
+
+.cropper-console {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2; /* overlap focalpoint circles */
+  background-color: var(--color-bg-secondary);
+  color: var(--color-tertiary);
+  font-family: monospace;
+  font-size: var(--text-small);
+  padding: var(--gutter-half) calc(var(--gutter) * 2) var(--gutter) ;
+  border-top: 1px solid var(--color-border-shadow);
+  margin: 0 var(--gutter);
+}
+
+.cropper-console > .cropper-console-output::before {
+  content: "> ";
+  opacity: .75;
+}
+
+.cropper-console-heading {
+  opacity: .75;
+  font-size: inherit;
+  font-weight: normal;
+}
