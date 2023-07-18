@@ -922,6 +922,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
   /**
    * @function resizeAndCropImage
    * @param {string} targetFolder - Target folder
+   * @returns {string} baseExportPath
    * @memberof CrCroppersUi
    */
   async resizeAndCropImage(targetFolder) {
@@ -981,23 +982,27 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       });
     });
 
-    const cropsSuccessMsg = await window.electronAPI.resizeAndCropImage({
+    const baseExportPathA = await window.electronAPI.resizeAndCropImage({
       fileName,
       quality: 75,
       targetFolder,
       crops
     });
 
-    const resizesSuccessMsg = await window.electronAPI.resizeImage({
+    const baseExportPathB = await window.electronAPI.resizeImage({
       fileName,
       quality: 75,
       targetFolder,
       resizes
     });
 
+    const baseExportPath = (baseExportPathA !== '') ? baseExportPathA : baseExportPathB;
+
     CrUi.emitEvent(croppersId, 'statusChange', {
-      msg: `${cropsSuccessMsg} ${resizesSuccessMsg}`
+      msg: 'Generated crops and sizes'
     });
+
+    return baseExportPath;
   }
 
   /**

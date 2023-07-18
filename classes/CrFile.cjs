@@ -3,6 +3,7 @@
  */
 
 const fs = require('fs');
+const { promises: Fs } = require('fs');
 const path = require('path');
 const process = require('process');
 const { resolve } = require('path');
@@ -59,7 +60,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @param {number} data.crops.cropX - the offset left of the cropped area
    * @param {number} data.crops.cropY - the offset top of the cropped area
    * @param {string} data.crops.fileNameSuffix - Filename suffix
-   * @returns {string} successMsg
+   * @returns {string} baseExportPath
    * @memberof CrFile
    * @static
    */
@@ -71,9 +72,11 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       crops
     } = data;
 
-    const { fileNameOnly, fileNameRaw } = CrFile.getFileNameParts(fileName);
+    const { extName, fileNameOnly, fileNameRaw } = CrFile.getFileNameParts(fileName);
 
-    crops.forEach(crop => {
+    let baseExportPath = '';
+
+    crops.forEach((crop, index) => {
       const {
         resizeW,
         // resizeH,
@@ -86,6 +89,10 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
       const currentDir = process.cwd();
       const targetPath = path.relative(currentDir, targetFolder);
+
+      if (index === 0) {
+        baseExportPath = `${targetPath}/${fileNameOnly}.${extName}`;
+      }
 
       // resizing based on a known width but unknown (null) height (and vice versa)
       //
@@ -103,16 +110,16 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
         .quality(quality) // TODO possibly remove this line for PNG
         .crop(cropW, cropH, cropX, cropY)
         .resize(_resizeW, null) // TODO make this possible to have width null
-        .write(`${targetPath}/${fileNameOnly}__${fileNameSuffix}.jpg`, err => {
+        .write(`${targetPath}/${fileNameOnly}__${fileNameSuffix}.${extName}`, err => {
           if (err) {
             console.log(err);
           } else {
-            console.log(`Cropped ${fileNameOnly}__${fileNameSuffix}.jpg`);
+            console.log(`Cropped ${fileNameOnly}__${fileNameSuffix}.${extName}`);
           }
         });
     });
 
-    return 'Crops generated';
+    return baseExportPath;
   }
 
   /**
@@ -156,7 +163,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @param {number} data.crops.resizeW - the width to resize the image to
    * @param {number} data.crops.resizeH - the height to resize the image to
    * @param {string} data.crops.fileNameSuffix - Filename suffix
-   * @returns {string} successMsg
+   * @returns {string} baseExportPath
    * @memberof CrFile
    * @static
    */
@@ -170,7 +177,9 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
     const { extName, fileNameOnly, fileNameRaw } = CrFile.getFileNameParts(fileName);
 
-    resizes.forEach(resize => {
+    let baseExportPath = '';
+
+    resizes.forEach((resize, index) => {
       const {
         resizeW,
         resizeH,
@@ -180,6 +189,10 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       const currentDir = process.cwd();
       const targetPath = path.relative(currentDir, targetFolder);
       const suffix = (fileNameSuffix !== '') ? `__${fileNameSuffix}` : '';
+
+      if (index === 0) {
+        baseExportPath = `${targetPath}/${fileNameOnly}.${extName}`;
+      }
 
       gm(fileNameRaw)
         .strip()
@@ -195,7 +208,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
         });
     });
 
-    return 'Sizes generated';
+    return baseExportPath;
   }
 
   /**
@@ -229,6 +242,29 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     }
 
     return newFileName;
+  }
+
+  /**
+   * @function pathExists
+   * @param {event} event - CrFile:fileExists event captured by ipcMain.handle
+   * @param {object} data - Data
+   * @param {string} data.path - Path
+   * @returns {boolean} exists
+   * @memberof CrFile
+   * @static
+   * @see {@link https://futurestud.io/tutorials/node-js-check-if-a-file-exists}
+   */
+  static async pathExists(event, data) {
+    const {
+      path: filePath
+    } = data;
+
+    try {
+      await Fs.access(filePath);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   /**

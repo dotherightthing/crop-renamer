@@ -75,6 +75,7 @@ app.whenReady().then(() => {
   ipcMain.handle('CrFile:copyToClipboard', CrFile.copyToClipboard);
   ipcMain.handle('CrFile:getRelativePath', CrFile.getRelativePath);
   ipcMain.handle('CrFile:openInFinder', CrFile.openInFinder);
+  ipcMain.handle('CrFile:pathExists', CrFile.pathExists);
   ipcMain.handle('CrFile:selectFolder', CrFile.selectFolder);
   ipcMain.handle('CrFile:deleteImagePercentXYFromImage', CrFile.deleteImagePercentXYFromImage);
   ipcMain.handle('CrFile:saveImagePercentXYToImage', CrFile.saveImagePercentXYToImage);

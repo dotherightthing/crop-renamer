@@ -4,7 +4,8 @@
   box-sizing: border-box;
 }
 
-[disabled] {
+[disabled],
+[data-disabled] {
   opacity: .7;
   cursor: not-allowed;
 }

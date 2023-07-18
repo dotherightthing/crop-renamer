@@ -64,9 +64,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     elements: {
       console: document.getElementById('console'),
       copyPaths: document.querySelectorAll('.control-copy'),
-      copyPathIn: document.getElementById('copy-path-in'),
-      copyPathOut: document.getElementById('copy-path-out'),
-      copyPathWebEmbed: document.getElementById('copy-path-web-embed'),
+      copyPathInButton: document.getElementById('copy-path-in'),
+      copyPathOutButton: document.getElementById('copy-path-out'),
+      copyPathWebEmbedButton: document.getElementById('copy-path-web-embed'),
       croppersContainer: document.getElementById('croppers'),
       exportCropsAndSizesButton: document.getElementById('crop-image'),
       focalpointAutoSaveInput: document.getElementsByName('focalpoint-autosave'),

@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   copyToClipboard: (data) => ipcRenderer.invoke('CrFile:copyToClipboard', data),
   getRelativePath: (data) => ipcRenderer.invoke('CrFile:getRelativePath', data),
   openInFinder: (data) => ipcRenderer.invoke('CrFile:openInFinder', data),
+  pathExists: (data) => ipcRenderer.invoke('CrFile:pathExists', data),
   selectFolder: (data) => ipcRenderer.invoke('CrFile:selectFolder', data),
   deleteImagePercentXYFromImage: (data) => ipcRenderer.invoke('CrFile:deleteImagePercentXYFromImage', data),
   saveImagePercentXYToImage: (data) => ipcRenderer.invoke('CrFile:saveImagePercentXYToImage', data),

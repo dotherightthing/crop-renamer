@@ -310,7 +310,11 @@ export class CrUi { // eslint-disable-line no-unused-vars
       const { dataset } = folderOutButton;
       const { targetFolder } = dataset;
 
-      crCroppersUiInstance.resizeAndCropImage(targetFolder);
+      const baseExportPath = crCroppersUiInstance.resizeAndCropImage(targetFolder);
+
+      setTimeout(() => {
+        this.setPaths(baseExportPath, false);
+      }, 5000); // TODO #24
     });
 
     lastCropperImg.addEventListener('ready', () => {
@@ -696,17 +700,18 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @function setPaths
    * @summary Update attributes in the path links and buttons
    * @param {string} src - Image src
+   * @param {boolean} checkPathExists - Check whether the baseExport path exists
    * @memberof CrUi
    */
-  setPaths(src) {
+  setPaths(src, checkPathExists = true) {
     const {
       elements
     } = this;
 
     const {
-      copyPathIn,
-      copyPathOut,
-      copyPathWebEmbed,
+      copyPathInButton,
+      copyPathOutButton,
+      copyPathWebEmbedButton,
       pathInLink,
       pathOutLink,
       thumbFileName
@@ -714,7 +719,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
 
     const fileName = CrUi.getFileNameFromPath(src);
 
-    copyPathIn.setAttribute('title', src);
+    copyPathInButton.setAttribute('title', src);
     pathInLink.setAttribute('href', src);
     pathInLink.setAttribute('title', src);
 
@@ -722,13 +727,34 @@ export class CrUi { // eslint-disable-line no-unused-vars
 
     setTimeout(async () => {
       const pathOut = this.getPathOut();
-      const pathWebEmbed = await this.getPathWebEmbed();
 
-      copyPathOut.setAttribute('title', pathOut);
-      copyPathWebEmbed.setAttribute('title', pathWebEmbed);
+      const pathOutExists = checkPathExists ? await window.electronAPI.pathExists({
+        path: pathOut
+      }) : true;
 
-      pathOutLink.setAttribute('href', pathOut);
-      pathOutLink.setAttribute('title', pathOut);
+      if (pathOutExists) {
+        const pathWebEmbed = await this.getPathWebEmbed();
+
+        copyPathOutButton.removeAttribute('disabled');
+        copyPathOutButton.setAttribute('title', pathOut);
+
+        copyPathWebEmbedButton.removeAttribute('disabled');
+        copyPathWebEmbedButton.setAttribute('title', pathWebEmbed);
+
+        delete pathOutLink.parentElement.dataset.disabled;
+        pathOutLink.setAttribute('href', pathOut);
+        pathOutLink.setAttribute('title', pathOut);
+      } else {
+        copyPathOutButton.setAttribute('disabled', '');
+        copyPathOutButton.removeAttribute('title');
+
+        copyPathWebEmbedButton.setAttribute('disabled', '');
+        copyPathWebEmbedButton.removeAttribute('title');
+
+        pathOutLink.parentElement.dataset.disabled = true;
+        pathOutLink.removeAttribute('href');
+        pathOutLink.removeAttribute('title');
+      }
     }, 500);
   }
 
