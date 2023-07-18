@@ -41,7 +41,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * selectedClass
    * @type {string}
-   * @memberof CrCroppersUi
+   * @memberof CrThumbsUi
    */
   get selectedClass() {
     return this._selectedClass;
@@ -54,7 +54,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * thumbButtonClass
    * @type {string}
-   * @memberof CrCroppersUi
+   * @memberof CrThumbsUi
    */
   get thumbButtonClass() {
     return this._thumbButtonClass;
@@ -67,7 +67,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * thumbClass
    * @type {string}
-   * @memberof CrCroppersUi
+   * @memberof CrThumbsUi
    */
   get thumbClass() {
     return this._thumbClass;
@@ -80,7 +80,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * thumbImgClass
    * @type {string}
-   * @memberof CrCroppersUi
+   * @memberof CrThumbsUi
    */
   get thumbImgClass() {
     return this._thumbImgClass;
@@ -93,7 +93,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * thumbImgWrapperClass
    * @type {string}
-   * @memberof CrCroppersUi
+   * @memberof CrThumbsUi
    */
   get thumbImgWrapperClass() {
     return this._thumbImgWrapperClass;
@@ -106,7 +106,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * thumbMetaClass
    * @type {string}
-   * @memberof CrCroppersUi
+   * @memberof CrThumbsUi
    */
   get thumbMetaClass() {
     return this._thumbMetaClass;
@@ -119,7 +119,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * thumbsCountId
    * @type {string}
-   * @memberof CrCroppersUi
+   * @memberof CrThumbsUi
    */
   get thumbsCountId() {
     return this._thumbsCountId;
