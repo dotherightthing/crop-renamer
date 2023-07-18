@@ -30,10 +30,10 @@
   --color-border-shadow: rgba(0, 0, 0, 1);
   --focalpoint-default: var(--color-secondary);
   --focalpoint-custom: var(--color-checked-on);
-  --height-control-bar-inner: 3.5rem;
-  --height-control-bar-outer: calc(var(--height-control-bar-inner) + var(--gutter-half) + var(--gutter-half));
-  --height-cropper-master: calc(70vh - var(--height-control-bar-outer));
-  --height-cropper-slave: calc((70vh - var(--height-control-bar-outer) - var(--gutter)) / 2);
+  --height-controls-inner: 5rem;
+  --height-controls-outer: calc(var(--height-controls-inner) + var(--gutter-half) + var(--gutter-half));
+  --height-cropper-master: calc(70vh - var(--height-controls-outer));
+  --height-cropper-slave: calc((70vh - var(--height-controls-outer) - var(--gutter)) / 2);
   --height-cropper-console: 1.3rem;
   --height-image-meta: 4rem;
   --image-percent-x: 50%;

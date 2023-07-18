@@ -4,9 +4,7 @@
   box-sizing: border-box;
 }
 
-button[disabled],
-input[disabled],
-[data-disabled] {
+[disabled] {
   opacity: .7;
   cursor: not-allowed;
 }
@@ -24,6 +22,12 @@ body {
 
 body {
   font-family: sans-serif;
+  margin: 0;
+}
+
+fieldset {
+  padding: 0;
+  border: 0;
   margin: 0;
 }
 
@@ -101,7 +105,7 @@ img {
 
 .editor {
   position: relative; /* AP */
-  background-color: var(--color-bg-tertiary);
+  background-color: var(--color-bg-secondary);
 }
 
 .croppers > .img-container {
@@ -254,46 +258,24 @@ img {
 
 /* .control-action, .control-param */
 
-.control-bar {
-  display: flex;
-  height: var(--height-control-bar-inner);
-  align-items: center;
-  flex-direction: row;
-  flex-wrap: nowrap;
-
-  color: var(--color-primary);
-  padding: var(--gutter);
-  border: 0;
-  overflow: hidden;
-}
-
-.control-fieldset {
-  height: 100%;
-  padding: 0;
-  border: 0;
-  margin: 0;
-}
-
-.control-fieldset > legend {
-  float: left;
-  height: 100%;
-}
-
 .controls {
-  height: 100%;
-  align-items: stretch;
+  height: var(--height-controls-inner);
+  color: var(--color-primary);
   font-size: 1rem;
   font-weight: 300;
+  padding: var(--gutter);
 }
 
-.controls,
+.controls .h-small {
+  display: block;
+  color: var(--color-secondary);
+  margin-bottom: var(--gutter);
+}
+
 .control-param {
   display: flex;
-  flex-wrap: nowrap;
-}
-
-.control-param {
   align-items: center;
+  flex-wrap: nowrap;
   padding-right: var(--gutter-half);
 }
 
@@ -302,7 +284,6 @@ img {
   padding: var(--gutter-half) var(--gutter);
   border: 1px solid var(--color-border-secondary);
   border-radius: .2em;
-  margin-right: var(--gutter);
 }
 
 .l-horz-list > .control-action {

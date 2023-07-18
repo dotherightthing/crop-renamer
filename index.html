@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html id="root">
+<html>
   <head>
     <meta charset="UTF-8" />
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
@@ -13,53 +13,73 @@
   <body>
     <div class="l-page">
       <div class="editor">
-        <div class="control-bar">
-          <fieldset class="control-fieldset">
-            <legend hidden>Controls</legend>
-            <div class="controls">
-              <button type="button" class="control-action" id="folder-in">
-                <span class="label">Source folder</span>
-                <span class="control-hint"></span>
-              </button>
-              <button type="button" class="control-action" id="folder-website">
-                <span class="label">Website folder</span>
-                <span class="control-hint"></span>
-              </button>
-              <button type="button" class="control-action" id="folder-webpage">
-                <span class="label">Webpage folder</span>
-                <span class="control-hint"></span>
-              </button>
-              <button type="button" class="control-action" id="folder-out">
-                <span class="label">Target folder</span>
-                <span class="control-hint"></span>
-              </button>
-              <div class="control-param" data-disabled>
-                <input type="number" min="0" max="100" value="" id="focalpoint-x" disabled>
-                <label for="focalpoint-x" class="control-label">% X</label>
-              </div> 
-              <div class="control-param" data-disabled>
-                <input type="number" min="0" max="100" value="" id="focalpoint-y" disabled>
-                <label for="focalpoint-y" class="control-label">% Y</label>
-              </div> 
-              <div class="control-param" data-disabled>
-                <label for="focalpoint-autosave-off focalpoint-autosave-on" class="radios-label">Auto-Save</label>
-                <label class="l-radio-label">
-                  <input type="radio" name="focalpoint-autosave" value="off" id="focalpoint-autosave-off" checked disabled>
-                  Off
-                </label>
-                <label class="l-radio-label">
-                  <input type="radio" name="focalpoint-autosave" value="on" id="focalpoint-autosave-on" disabled>
-                  On
-                </label>
-              </div> 
-              <button type="button" class="control-action" id="reset-focalpoint" disabled>
-                <span class="label">Reset</span>
-              </button>
-              <button type="button" class="control-action" id="delete-focalpoint" disabled>
-                <span class="label">Delete</span>
-              </button>
-            </div>
-          </fieldset>
+        <div class="controls l-controls" id="controls">
+          <div class="l-horz-list l-horz-list-center">
+            <fieldset disabled data-dependent="folder-out">
+              <legend>
+                <span class="h-small uc l-horz-list-header">Image focalpoint</span>
+              </legend>
+              <div class="l-horz-list">
+                <div class="control-param">
+                  <input type="number" min="0" max="100" value="" id="focalpoint-x">
+                  <label for="focalpoint-x" class="control-label">% X</label>
+                </div> 
+                <div class="control-param">
+                  <input type="number" min="0" max="100" value="" id="focalpoint-y">
+                  <label for="focalpoint-y" class="control-label">% Y</label>
+                </div> 
+                <div class="control-param">
+                  <label for="focalpoint-autosave-off focalpoint-autosave-on" class="radios-label">Auto-Save</label>
+                  <label class="l-radio-label">
+                    <input type="radio" name="focalpoint-autosave" value="off" id="focalpoint-autosave-off" checked>
+                    Off
+                  </label>
+                  <label class="l-radio-label">
+                    <input type="radio" name="focalpoint-autosave" value="on" id="focalpoint-autosave-on">
+                    On
+                  </label>
+                </div> 
+                <button type="button" class="control-action" id="reset-focalpoint">
+                  <span class="label">Reset</span>
+                </button>
+                <button type="button" class="control-action" id="delete-focalpoint">
+                  <span class="label">Delete</span>
+                </button>
+              </div>
+            </fieldset>
+          </div>
+          <div class="l-horz-list">
+            <fieldset>
+              <legend>
+                <span class="h-small uc l-horz-list-header">Source folder</span>
+              </legend>
+              <div class="l-horz-list">
+                <button type="button" class="control-action" id="folder-in">
+                  <span class="label">Source folder</span>
+                  <span class="control-hint"></span>
+                </button>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>
+                <span class="h-small uc l-horz-list-header">Target folders</span>
+              </legend>
+              <div class="l-horz-list">
+                <button type="button" class="control-action" id="folder-website">
+                  <span class="label">Website folder</span>
+                  <span class="control-hint"></span>
+                </button>
+                <button type="button" class="control-action" id="folder-webpage">
+                  <span class="label">Webpage folder</span>
+                  <span class="control-hint"></span>
+                </button>
+                <button type="button" class="control-action" id="folder-out">
+                  <span class="label">Export folder</span>
+                  <span class="control-hint"></span>
+                </button>
+              </div>
+            </fieldset>
+          </div>
         </div>
         <div class="croppers l-croppers" id="croppers">
           <div class="img-container cropper-master">
@@ -163,27 +183,27 @@
             <p class="thumb-count h-medium" id="thumb-count"></p>
           </div>
           <div class="image-meta-group l-horz-list">
-            <h2 class="h-small uc l-horz-list-header">Source</h2>
+            <h2 class="h-small uc l-horz-list-header">Source image</h2>
             <p class="control-action">
-              <a class="control-hint control-link" id="link-path-in" href="#">Open source path</a>
+              <a class="control-hint control-link" id="link-path-in" href="#">Show source in folder</a>
             </p>
             <button type="button" class="control-action control-copy" id="copy-path-in">
               <span class="control-hint">Copy source path</span>
             </button>
           </div>
           <div class="image-meta-group l-horz-list">
-            <h2 class="h-small uc l-horz-list-header">Target</h2>
+            <h2 class="h-small uc l-horz-list-header">Target images</h2>
             <button type="button" class="control-action" id="crop-image">
-              <span class="control-hint">Export suffixed images</span>
+              <span class="control-hint">Export crops/sizes</span>
             </button>
             <p class="control-action">
-              <a class="control-hint control-link" id="link-path-out" href="#">Open unsuffixed export</a>
+              <a class="control-hint control-link" id="link-path-out" href="#">Show base export in folder</a>
             </p>
             <button type="button" class="control-action control-copy" id="copy-path-out">
-              <span class="control-hint">Copy unsuffixed export path</span>
+              <span class="control-hint">Copy base export path</span>
             </button>
             <button type="button" class="control-action control-copy" id="copy-path-web-embed">
-              <span class="control-hint">Copy unsuffixed export embed path</span>
+              <span class="control-hint">Copy base embed path</span>
             </button>
           </div>
         </div>

@@ -2,7 +2,7 @@
  * @file CrCroppersUi.js
  */
 import dtrtValidate from 'dtrt-type-validate';
-import { CrUtilsUi } from './CrUtilsUi.mjs';
+import { CrUi } from './CrUi.mjs';
 
 export class CrCroppersUi { // eslint-disable-line no-unused-vars
   /**
@@ -227,7 +227,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       throw new Error('Cropper canvas not found - cropper was not injected');
     }
 
-    const { top } = CrUtilsUi.getOffset(cropperCanvasEl);
+    const { top } = CrUi.getOffset(cropperCanvasEl);
     const { left } = masterCropper.cropperInstance.getCanvasData();
 
     return { top, left };
@@ -566,19 +566,19 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
                 imagePercentY
               } = this.calcImagePercentXYFromPageXY({ pageX, pageY, round: isPageXYRounded });
 
-              CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+              CrUi.emitEvent(croppersId, 'paramChange', {
                 parameter: 'focalpoint-x',
                 value: imagePercentX,
                 triggerChange: isPageXYRounded
               });
 
-              CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+              CrUi.emitEvent(croppersId, 'paramChange', {
                 parameter: 'focalpoint-y',
                 value: imagePercentY,
                 triggerChange: isPageXYRounded
               });
 
-              CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+              CrUi.emitEvent(croppersId, 'statusChange', {
                 msg: isPageXYRounded ? '' : 'Rounding percentages for storage...'
               });
             }, isPageXYRounded ? updateDelay : 0);
@@ -659,7 +659,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     });
 
     if (!this.croppers.length) {
-      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+      CrUi.emitEvent(croppersId, 'statusChange', {
         msg: 'Croppers could not be initialised'
       });
 
@@ -995,7 +995,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       resizes
     });
 
-    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+    CrUi.emitEvent(croppersId, 'statusChange', {
       msg: `${cropsSuccessMsg} ${resizesSuccessMsg}`
     });
   }
@@ -1023,11 +1023,11 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
         cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
       });
 
-      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+      CrUi.emitEvent(croppersId, 'statusChange', {
         msg: 'Removed focalpoint from filename'
       });
 
-      CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
+      CrUi.emitEvent(croppersId, 'imageRenamed', {
         newFileName
       });
     }, 500);
@@ -1048,7 +1048,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     let imagePercentXY = this.getImagePercentXYFromImage(src);
     let msg = 'Loaded focalpoint from image';
 
-    if (CrUtilsUi.isEmptyObject(imagePercentXY)) {
+    if (CrUi.isEmptyObject(imagePercentXY)) {
       imagePercentXY = {
         imagePercentX: 50,
         imagePercentY: 50
@@ -1059,19 +1059,19 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     const { imagePercentX, imagePercentY } = imagePercentXY;
 
-    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+    CrUi.emitEvent(croppersId, 'paramChange', {
       parameter: 'focalpoint-x',
       value: imagePercentX,
       triggerChange: true
     });
 
-    CrUtilsUi.emitEvent(croppersId, 'paramChange', {
+    CrUi.emitEvent(croppersId, 'paramChange', {
       parameter: 'focalpoint-y',
       value: imagePercentY,
       triggerChange: true
     });
 
-    CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+    CrUi.emitEvent(croppersId, 'statusChange', {
       msg
     });
   }
@@ -1144,7 +1144,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     const fileName = masterCropper.cropperInstance.element.src;
 
     if (isNaN(imagePercentX) || isNaN(imagePercentY)) { // eslint-disable-line no-restricted-globals
-      CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+      CrUi.emitEvent(croppersId, 'statusChange', {
         msg: 'Write failed - focalpoint percentages not available. Please click image to set a focalpoint.'
       });
 
@@ -1162,7 +1162,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     if (newFileName !== oldFileName) {
       // timeout prevents broken image
       setTimeout(() => {
-        CrUtilsUi.emitEvent(croppersId, 'imageRenamed', {
+        CrUi.emitEvent(croppersId, 'imageRenamed', {
           newFileName
         });
 
@@ -1170,7 +1170,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
           cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
         });
 
-        CrUtilsUi.emitEvent(croppersId, 'statusChange', {
+        CrUi.emitEvent(croppersId, 'statusChange', {
           msg: 'Saved focalpoint to filename'
         });
       }, 500);

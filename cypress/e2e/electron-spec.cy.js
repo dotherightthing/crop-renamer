@@ -375,7 +375,7 @@ describe('template spec', () => {
       it.skip('getPreviousIndex', () => {});
     });
 
-    describe('CrUtilsUi', () => {
+    describe('CrUi', () => {
       /* Instance methods */
 
       /* Static methods */
