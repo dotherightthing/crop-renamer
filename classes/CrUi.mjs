@@ -275,7 +275,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
 
     folderOutButton.addEventListener('click', async () => {
       const { folderName, folderPath } = await window.electronAPI.selectFolder({
-        dialogTitle: 'Target folder',
+        dialogTitle: 'Export folder',
         retrieveImagesData: false,
         restore: false,
         storeKey: 'folderOut'
@@ -485,7 +485,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
     });
 
     const storedFolderOut = await window.electronAPI.selectFolder({
-      dialogTitle: 'Target folder',
+      dialogTitle: 'Export folder',
       retrieveImagesData: false,
       restore: true,
       storeKey: 'folderOut'

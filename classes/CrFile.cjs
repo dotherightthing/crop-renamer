@@ -399,40 +399,46 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @static
    */
   static async selectFolderDialog({
-    dialogTitle, dialogButtonLabel, retrieveImagesData, restore, storeKey
+    dialogTitle,
+    dialogButtonLabel,
+    retrieveImagesData,
+    restore,
+    storeKey
   }) {
+    let folderPath;
+
+    const data = await CrFile.storeGet(null, {
+      key: storeKey
+    });
+
+    if (typeof data !== 'undefined') {
+      ({
+        folderPath = '~/' // default
+      } = data);
+    }
+
     if (restore) {
-      const data = await CrFile.storeGet(null, {
-        key: storeKey
-      });
-
-      if (typeof data !== 'undefined') {
-        const { folderName, folderPath } = data;
-
-        if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
-          return {};
-        }
-
-        if (retrieveImagesData) {
-          const imageFiles = CrFile.getImageFiles(data.folderPath);
-
-          const dataCopy = { ...data }; // #30
-
-          // imagesData retrieved separately to accommodate file renaming in the interim
-          dataCopy.imagesData = await CrFile.getImagesData(imageFiles);
-
-          return dataCopy;
-        }
-
-        return data; // !retrieveImagesData
+      if (typeof data === 'undefined') {
+        return {};
       }
 
-      return {};
+      if (retrieveImagesData) {
+        const imageFiles = CrFile.getImageFiles(data.folderPath);
+
+        const dataCopy = { ...data }; // #30
+
+        // imagesData retrieved separately to accommodate file renaming in the interim
+        dataCopy.imagesData = await CrFile.getImagesData(imageFiles);
+
+        return dataCopy;
+      }
+
+      return data; // !retrieveImagesData
     }
 
     const { canceled, filePaths } = await dialog.showOpenDialog({
       buttonLabel: dialogButtonLabel,
-      defaultPath: '~/',
+      defaultPath: folderPath,
       message: dialogTitle,
       properties: [
         'createDirectory',
@@ -443,8 +449,9 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     });
 
     if (!canceled && filePaths.length) {
-      const folderPath = filePaths[0];
       let imagesData = [];
+
+      folderPath = filePaths[0];
 
       if (retrieveImagesData) {
         const imageFiles = CrFile.getImageFiles(folderPath);
@@ -455,7 +462,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       const pathSeparator = folderPath.lastIndexOf('/');
       const folderName = folderPath.slice(pathSeparator + 1);
 
-      const data = {
+      data = {
         folderName,
         folderPath,
         imagesData
