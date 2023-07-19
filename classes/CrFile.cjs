@@ -45,6 +45,16 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * getFocalpointRegex
+   * @returns {string} regex
+   * @memberof CrCroppersUi
+   * @static
+   */
+  static getFocalpointRegex() {
+    return /__\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
+  }
+
+  /**
    * @function resizeAndCropImage
    * @param {event} event - CrFile:resizeAndCropImage event captured by ipcMain.handle
    * @param {object} data - Data
@@ -227,7 +237,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       folderPath
     } = CrFile.getFileNameParts(fileName);
 
-    const regex = /__\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
+    const regex = CrFile.getFocalpointRegex();
 
     const oldFileName = `${folderPath}/${fileNameAndExt}`;
     const newFileName = oldFileName.replace(regex, '');
@@ -572,7 +582,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       folderPath
     } = CrFile.getFileNameParts(fileName);
 
-    const regex = /__\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
+    const regex = CrFile.getFocalpointRegex();
 
     const fileNameOnlyNoRegex = fileNameOnly.replace(regex, ''); // foo
 
