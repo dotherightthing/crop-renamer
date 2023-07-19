@@ -87,9 +87,16 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       fileNameClean
     } = CrFile.getFileNameParts(fileName);
 
-    let baseExportPath = '';
+    const currentDir = process.cwd();
+    const sourceFileName = fileNameClean;
+    const targetPath = path.relative(currentDir, targetFolder);
+    const baseExportPath = `${targetPath}/${fileNameOnly}${extName}`;
 
-    cropsAndSizes.forEach(async (settings, index) => {
+    // forEach doesn't work here
+    // see https://masteringjs.io/tutorials/fundamentals/async-foreach
+    // see https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
+    // see https://www.techiediaries.com/promise-all-map-async-await-example/ - Promise.all + map didn't work
+    for (let i = 0; i < cropsAndSizes.length; i += 1) {
       const {
         fileNameSuffix,
         cropX,
@@ -98,17 +105,10 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
         cropH,
         resizeW,
         resizeH
-      } = settings;
+      } = cropsAndSizes[i];
 
-      const currentDir = process.cwd();
-      const targetPath = path.relative(currentDir, targetFolder);
       const suffix = (fileNameSuffix !== '') ? `__${fileNameSuffix}` : '';
-      const sourceFileName = fileNameClean;
       const targetFilename = `${targetPath}/${fileNameOnly}${suffix}${extName}`;
-
-      if (index === 0) {
-        baseExportPath = `${targetPath}/${fileNameOnly}${extName}`;
-      }
 
       // resizing based on a known width but unknown (null) height (and vice versa)
       //
@@ -118,7 +118,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       const _resizeW = (resizeW !== null) ? resizeW : null;
       // const _resizeH = (resizeH !== null) ? resizeH : null;
 
-      const successMessage = await CrFile.gmResizeAndCrop({
+      const successMessage = await CrFile.gmResizeAndCrop({ // eslint-disable-line no-await-in-loop
         sourceFileName,
         targetFilename,
         quality,
@@ -131,7 +131,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       });
 
       console.log(successMessage);
-    });
+    }
 
     return baseExportPath;
   }

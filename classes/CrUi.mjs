@@ -306,15 +306,13 @@ export class CrUi { // eslint-disable-line no-unused-vars
       this.setFolderWebsite({ folderName, folderPath });
     });
 
-    exportCropsAndSizesButton.addEventListener('click', () => {
+    exportCropsAndSizesButton.addEventListener('click', async () => {
       const { dataset } = folderOutButton;
       const { targetFolder } = dataset;
 
-      const baseExportPath = crCroppersUiInstance.resizeAndCropImage(targetFolder);
+      const baseExportPath = await crCroppersUiInstance.resizeAndCropImage(targetFolder);
 
-      setTimeout(() => {
-        this.setPaths(baseExportPath, false);
-      }, 5000); // TODO #24
+      this.setPaths(baseExportPath, false);
     });
 
     lastCropperImg.addEventListener('ready', () => {
