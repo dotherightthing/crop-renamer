@@ -6,7 +6,6 @@ const fs = require('fs');
 const { promises: Fs } = require('fs');
 const path = require('path');
 const process = require('process');
-const { resolve } = require('path');
 const ExifReader = require('exifreader');
 const { clipboard, dialog, shell } = require('electron');
 const gm = require('gm').subClass({ imageMagick: '7+' });
@@ -72,7 +71,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       crops
     } = data;
 
-    const { extName, fileNameOnly, fileNameRaw } = CrFile.getFileNameParts(fileName);
+    const { extName, fileNameOnly, fileNameClean } = CrFile.getFileNameParts(fileName);
 
     let baseExportPath = '';
 
@@ -104,7 +103,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
       // if (typeof cropX !== 'undefined')
 
-      gm(fileNameRaw)
+      gm(fileNameClean)
         .strip()
         .autoOrient()
         .quality(quality) // TODO possibly remove this line for PNG
@@ -175,7 +174,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       resizes
     } = data;
 
-    const { extName, fileNameOnly, fileNameRaw } = CrFile.getFileNameParts(fileName);
+    const { extName, fileNameOnly, fileNameClean } = CrFile.getFileNameParts(fileName);
 
     let baseExportPath = '';
 
@@ -194,7 +193,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
         baseExportPath = `${targetPath}/${fileNameOnly}.${extName}`;
       }
 
-      gm(fileNameRaw)
+      gm(fileNameClean)
         .strip()
         .autoOrient()
         .quality(quality) // TODO possibly remove this line for PNG
@@ -275,22 +274,18 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @static
    */
   static getFileNameParts(fileName) {
-    let fileNameRaw = fileName;
-    fileNameRaw = fileNameRaw.replace('file://', '');
-    fileNameRaw = fileNameRaw.replace(/%20/g, ' ');
-
-    const dirName = path.dirname(fileNameRaw);
-    const fileNameAndExt = path.basename(fileNameRaw); // foo.ext | foo__[nn%,nn%].ext
-    const extName = path.extname(fileNameRaw); // .ext
-    const fileNameOnly = fileNameAndExt.replace(extName, ''); // foo | foo__[nn%,nn%]
-    const folderPath = resolve(__dirname, dirName);
+    const fileNameAndExt = path.basename(fileName); // Filename.ext | Filename__[nn%,nn%].ext
+    const extName = path.extname(fileName); // .ext
+    const fileNameOnly = fileNameAndExt.replace(extName, ''); // Filename | Filename__[nn%,nn%]
+    const fileNameClean = fileName.replace('file://', '').replace(/%20/g, ' '); // /Volumes/Foo/Bar/Baz/Filename.ext
+    const folderPath = path.dirname(fileNameClean); // /Volumes/Foo/Bar/Baz
 
     return {
       extName,
       fileNameAndExt,
       fileNameOnly,
       folderPath,
-      fileNameRaw
+      fileNameClean
     };
   }
 
