@@ -61,14 +61,14 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @param {string} data.fileName - Filename
    * @param {number} data.quality - Quality
    * @param {string} data.targetFolder - Target folder
-   * @param {Array} data.crops - Crops
-   * @param {number} data.crops.resizeW - the width to resize the image to
-   * @param {number} data.crops.resizeH - the width to resize the image to
-   * @param {number} data.crops.cropW - the width of the cropped area
-   * @param {number} data.crops.cropH - the height of the cropped area
-   * @param {number} data.crops.cropX - the offset left of the cropped area
-   * @param {number} data.crops.cropY - the offset top of the cropped area
-   * @param {string} data.crops.fileNameSuffix - Filename suffix
+   * @param {Array} data.cropsAndSizes - Crops and sizes
+   * @param {number|null} data.cropsAndSizes.resizeW - the width to resize the image to
+   * @param {number|null} data.cropsAndSizes.resizeH - the width to resize the image to
+   * @param {number|undefined} data.cropsAndSizes.cropW - the width of the cropped area
+   * @param {number|undefined} data.cropsAndSizes.cropH - the height of the cropped area
+   * @param {number|undefined} data.cropsAndSizes.cropX - the offset left of the cropped area
+   * @param {number|undefined} data.cropsAndSizes.cropY - the offset top of the cropped area
+   * @param {string} data.cropsAndSizes.fileNameSuffix - Filename suffix
    * @returns {string} baseExportPath
    * @memberof CrFile
    * @static
@@ -78,29 +78,36 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       fileName,
       quality,
       targetFolder,
-      crops
+      cropsAndSizes
     } = data;
 
-    const { extName, fileNameOnly, fileNameClean } = CrFile.getFileNameParts(fileName);
+    const {
+      extName,
+      fileNameOnly,
+      fileNameClean
+    } = CrFile.getFileNameParts(fileName);
 
     let baseExportPath = '';
 
-    crops.forEach((crop, index) => {
+    cropsAndSizes.forEach(async (settings, index) => {
       const {
-        resizeW,
-        // resizeH,
+        fileNameSuffix,
         cropX,
         cropY,
         cropW,
         cropH,
-        fileNameSuffix
-      } = crop;
+        resizeW,
+        resizeH
+      } = settings;
 
       const currentDir = process.cwd();
       const targetPath = path.relative(currentDir, targetFolder);
+      const suffix = (fileNameSuffix !== '') ? `__${fileNameSuffix}` : '';
+      const sourceFileName = fileNameClean;
+      const targetFilename = `${targetPath}/${fileNameOnly}${suffix}${extName}`;
 
       if (index === 0) {
-        baseExportPath = `${targetPath}/${fileNameOnly}.${extName}`;
+        baseExportPath = `${targetPath}/${fileNameOnly}${extName}`;
       }
 
       // resizing based on a known width but unknown (null) height (and vice versa)
@@ -111,24 +118,89 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       const _resizeW = (resizeW !== null) ? resizeW : null;
       // const _resizeH = (resizeH !== null) ? resizeH : null;
 
-      // if (typeof cropX !== 'undefined')
+      const successMessage = await CrFile.gmResizeAndCrop({
+        sourceFileName,
+        targetFilename,
+        quality,
+        cropX,
+        cropY,
+        cropW,
+        cropH,
+        resizeW: _resizeW,
+        resizeH
+      });
 
-      gm(fileNameClean)
-        .strip()
-        .autoOrient()
-        .quality(quality) // TODO possibly remove this line for PNG
-        .crop(cropW, cropH, cropX, cropY)
-        .resize(_resizeW, null) // TODO make this possible to have width null
-        .write(`${targetPath}/${fileNameOnly}__${fileNameSuffix}.${extName}`, err => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(`Cropped ${fileNameOnly}__${fileNameSuffix}.${extName}`);
-          }
-        });
+      console.log(successMessage);
     });
 
     return baseExportPath;
+  }
+
+  /**
+   * @function gmResizeAndCrop
+   * @param {object} data - Data
+   * @param {string} data.sourceFileName - Source file name
+   * @param {number} data.quality - Quality
+   * @param {number|undefined} data.cropX - the offset left of the cropped area
+   * @param {number|undefined} data.cropY - the offset top of the cropped area
+   * @param {number|undefined} data.cropW - the width of the cropped area
+   * @param {number|undefined} data.cropH - the height of the cropped area
+   * @param {number} data.resizeW - the width to resize the image to
+   * @param {number|undefined} data.resizeH - the height to resize the image to
+   * @param {string} data.targetFilename - Export filename
+   * @returns {string} successMessage
+   * @memberof CrFile
+   * @static
+   */
+  static async gmResizeAndCrop(data) {
+    const {
+      sourceFileName,
+      quality,
+      cropX,
+      cropY,
+      cropW,
+      cropH,
+      resizeW,
+      resizeH,
+      targetFilename
+    } = data;
+
+    const isCrop = ((typeof cropX !== 'undefined') && (typeof cropY !== 'undefined') && (typeof cropW !== 'undefined') && (typeof cropH !== 'undefined'));
+
+    if (isCrop) {
+      return new Promise((resolve, reject) => {
+        gm(sourceFileName)
+          .strip()
+          .autoOrient()
+          .quality(quality) // TODO possibly remove this line for PNG
+          .crop(cropW, cropH, cropX, cropY)
+          .resize(resizeW, null) // TODO make this possible to have width null
+          .write(targetFilename, err => {
+            if (err) {
+              console.log(err);
+              reject(err);
+            } else {
+              resolve(`Generated crop ${targetFilename}`);
+            }
+          });
+      });
+    }
+
+    return new Promise((resolve, reject) => {
+      gm(sourceFileName)
+        .strip()
+        .autoOrient()
+        .quality(quality) // TODO possibly remove this line for PNG
+        .resize(resizeW, resizeH)
+        .write(targetFilename, err => {
+          if (err) {
+            console.log(err);
+            reject(err);
+          } else {
+            resolve(`Generated size ${targetFilename}`);
+          }
+        });
+    });
   }
 
   /**
@@ -159,65 +231,6 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     process.chdir(appFolder);
 
     return relativePath;
-  }
-
-  /**
-   * @function resizeImage
-   * @param {event} event - CrFile:resizeImage event captured by ipcMain.handle
-   * @param {object} data - Data
-   * @param {string} data.fileName - Filename
-   * @param {number} data.quality - Quality
-   * @param {string} data.targetFolder - Target folder
-   * @param {Array} data.crops - Crops
-   * @param {number} data.crops.resizeW - the width to resize the image to
-   * @param {number} data.crops.resizeH - the height to resize the image to
-   * @param {string} data.crops.fileNameSuffix - Filename suffix
-   * @returns {string} baseExportPath
-   * @memberof CrFile
-   * @static
-   */
-  static async resizeImage(event, data) {
-    const {
-      fileName,
-      quality,
-      targetFolder,
-      resizes
-    } = data;
-
-    const { extName, fileNameOnly, fileNameClean } = CrFile.getFileNameParts(fileName);
-
-    let baseExportPath = '';
-
-    resizes.forEach((resize, index) => {
-      const {
-        resizeW,
-        resizeH,
-        fileNameSuffix
-      } = resize;
-
-      const currentDir = process.cwd();
-      const targetPath = path.relative(currentDir, targetFolder);
-      const suffix = (fileNameSuffix !== '') ? `__${fileNameSuffix}` : '';
-
-      if (index === 0) {
-        baseExportPath = `${targetPath}/${fileNameOnly}.${extName}`;
-      }
-
-      gm(fileNameClean)
-        .strip()
-        .autoOrient()
-        .quality(quality) // TODO possibly remove this line for PNG
-        .resize(resizeW, resizeH)
-        .write(`${targetPath}/${fileNameOnly}${suffix}${extName}`, err => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(`Resized ${fileNameOnly}${suffix}${extName}`);
-          }
-        });
-    });
-
-    return baseExportPath;
   }
 
   /**

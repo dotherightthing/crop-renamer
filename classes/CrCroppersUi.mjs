@@ -641,6 +641,10 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
     // when an image appears, what you see is the cropper - not the img
     const cropperImages = document.querySelectorAll(`#${croppersId} .${cropperImageClass}`);
 
+    // prevent compounding arrays
+    this.croppers = [];
+    this.resizers = [];
+
     cropperImages.forEach((cropperImage, cropperIndex) => {
       const {
         cropperAction: action,
@@ -937,7 +941,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
 
     // CROP AND RESIZE
 
-    const crops = [];
+    const cropsAndSizes = [];
 
     slaveCroppers.forEach(cropper => {
       const {
@@ -953,7 +957,7 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
         height: cropH
       } = cropper.cropperInstance.getData();
 
-      crops.push({
+      cropsAndSizes.push({
         resizeW,
         resizeH,
         cropX,
@@ -964,10 +968,6 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
       });
     });
 
-    // RESIZE ONLY
-
-    const resizes = [];
-
     resizers.forEach(resizer => {
       const {
         exportWidth: resizeW,
@@ -975,28 +975,19 @@ export class CrCroppersUi { // eslint-disable-line no-unused-vars
         exportSuffix: fileNameSuffix
       } = resizer;
 
-      resizes.push({
+      cropsAndSizes.push({
         resizeW,
         resizeH,
         fileNameSuffix
       });
     });
 
-    const baseExportPathA = await window.electronAPI.resizeAndCropImage({
+    const baseExportPath = await window.electronAPI.resizeAndCropImage({
       fileName,
       quality: 75,
       targetFolder,
-      crops
+      cropsAndSizes
     });
-
-    const baseExportPathB = await window.electronAPI.resizeImage({
-      fileName,
-      quality: 75,
-      targetFolder,
-      resizes
-    });
-
-    const baseExportPath = (baseExportPathA !== '') ? baseExportPathA : baseExportPathB;
 
     CrUi.emitEvent(croppersId, 'statusChange', {
       msg: 'Generated crops and sizes'
