@@ -1,12 +1,12 @@
 /**
- * @file CrUi.js
+ * @file FmcUi.js
  */
 
 import dtrtValidate from 'dtrt-type-validate';
 
-export class CrUi { // eslint-disable-line no-unused-vars
+export class FmcUi { // eslint-disable-line no-unused-vars
   /**
-   * @class CrUi
+   * @class FmcUi
    * @summary Manages UI
    * @param {object} config - Instance config
    * @public
@@ -14,15 +14,15 @@ export class CrUi { // eslint-disable-line no-unused-vars
   constructor(config = {}) {
     // select the relevant arguments from the config object passed in
     const {
-      crCroppersUiInstance,
-      crThumbsUiInstance,
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance,
       elements,
       selectors
     } = config;
 
     Object.assign(this, {
-      crCroppersUiInstance,
-      crThumbsUiInstance,
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance,
       elements,
       selectors
     });
@@ -31,55 +31,55 @@ export class CrUi { // eslint-disable-line no-unused-vars
   /* Getters and Setters */
 
   /**
-   * crCroppersUiInstance
+   * fmcCroppersUiInstance
    * @type {object}
-   * @memberof CrUi
+   * @memberof FmcUi
    */
-  get crCroppersUiInstance() {
-    return this._crCroppersUiInstance;
+  get fmcCroppersUiInstance() {
+    return this._fmcCroppersUiInstance;
   }
 
-  set crCroppersUiInstance(crCroppersUiInstance) {
-    this._crCroppersUiInstance = dtrtValidate.validate(crCroppersUiInstance, 'object', 'CrUi.crCroppersUiInstance');
+  set fmcCroppersUiInstance(fmcCroppersUiInstance) {
+    this._fmcCroppersUiInstance = dtrtValidate.validate(fmcCroppersUiInstance, 'object', 'FmcUi.fmcCroppersUiInstance');
   }
 
   /**
-   * crThumbsUiInstance
+   * fmcThumbsUiInstance
    * @type {object}
-   * @memberof CrUi
+   * @memberof FmcUi
    */
-  get crThumbsUiInstance() {
-    return this._crThumbsUiInstance;
+  get fmcThumbsUiInstance() {
+    return this._fmcThumbsUiInstance;
   }
 
-  set crThumbsUiInstance(crThumbsUiInstance) {
-    this._crThumbsUiInstance = dtrtValidate.validate(crThumbsUiInstance, 'object', 'CrUi.crThumbsUiInstance');
+  set fmcThumbsUiInstance(fmcThumbsUiInstance) {
+    this._fmcThumbsUiInstance = dtrtValidate.validate(fmcThumbsUiInstance, 'object', 'FmcUi.fmcThumbsUiInstance');
   }
 
   /**
    * elements
    * @type {object}
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   get elements() {
     return this._elements;
   }
 
   set elements(elements) {
-    this._elements = dtrtValidate.validate(elements, 'object', 'CrUi.elements');
+    this._elements = dtrtValidate.validate(elements, 'object', 'FmcUi.elements');
   }
 
   /**
    * selectors
    * @type {object}
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   get selectors() {
     return this._selectors;
   }
 
   set selectors(selectors) {
-    this._selectors = dtrtValidate.validate(selectors, 'object', 'CrUi.selectors');
+    this._selectors = dtrtValidate.validate(selectors, 'object', 'FmcUi.selectors');
   }
 
   /* Instance methods */
@@ -87,12 +87,12 @@ export class CrUi { // eslint-disable-line no-unused-vars
   /**
    * @function addEventListeners
    * @summary Listen for native and custom events
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   addEventListeners() {
     const {
-      crCroppersUiInstance,
-      crThumbsUiInstance,
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance,
       elements,
       selectors
     } = this;
@@ -132,10 +132,10 @@ export class CrUi { // eslint-disable-line no-unused-vars
 
       if (keyCode === 37) {
         event.preventDefault(); // don't operate the native container scrollbar
-        crThumbsUiInstance.scrollToThumb('previous');
+        fmcThumbsUiInstance.scrollToThumb('previous');
       } else if (keyCode === 39) {
         event.preventDefault();
-        crThumbsUiInstance.scrollToThumb('next');
+        fmcThumbsUiInstance.scrollToThumb('next');
       }
     });
 
@@ -165,8 +165,8 @@ export class CrUi { // eslint-disable-line no-unused-vars
 
     croppersContainer.addEventListener('imageRenamed', (event) => {
       const { newFileName: src } = event.detail;
-      const { selectedClass } = crThumbsUiInstance;
-      const { imagePercentX, imagePercentY } = crCroppersUiInstance.getImagePercentXYFromImage(src);
+      const { selectedClass } = fmcThumbsUiInstance;
+      const { imagePercentX, imagePercentY } = fmcCroppersUiInstance.getImagePercentXYFromImage(src);
       const thumb = document.querySelector(`.${selectedClass}`).parentElement;
       const thumbImage = document.querySelector(`.${selectedClass} .${thumbImgClass}`);
       const thumbs = document.querySelectorAll(`.${thumbClass}`);
@@ -178,8 +178,8 @@ export class CrUi { // eslint-disable-line no-unused-vars
         }
       });
 
-      crThumbsUiInstance.changeSelectedImageSrc(src);
-      crThumbsUiInstance.setCssImagePercentXY({
+      fmcThumbsUiInstance.changeSelectedImageSrc(src);
+      fmcThumbsUiInstance.setCssImagePercentXY({
         thumbElement: thumb,
         thumbImgElement: thumbImage,
         thumbIndex,
@@ -235,7 +235,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
     });
 
     focalpointDeleteButton.addEventListener('click', () => {
-      crCroppersUiInstance.deleteImagePercentXYFromImage();
+      fmcCroppersUiInstance.deleteImagePercentXYFromImage();
 
       focalpointXInput.value = 50;
       focalpointYInput.value = 50;
@@ -248,7 +248,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
 
     focalpointInput.forEach(input => input.addEventListener('change', () => {
       // move cropbox
-      crCroppersUiInstance.displayImagePercentXY({
+      fmcCroppersUiInstance.displayImagePercentXY({
         imagePercentX: focalpointXInput.value,
         imagePercentY: focalpointYInput.value
       });
@@ -259,7 +259,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
     }));
 
     focalpointResetButton.addEventListener('click', (event) => {
-      crCroppersUiInstance.reinstateImagePercentXYFromImage(event);
+      fmcCroppersUiInstance.reinstateImagePercentXYFromImage(event);
     });
 
     folderInButton.addEventListener('click', async () => {
@@ -310,15 +310,15 @@ export class CrUi { // eslint-disable-line no-unused-vars
       const { dataset } = folderOutButton;
       const { targetFolder } = dataset;
 
-      const baseExportPath = await crCroppersUiInstance.resizeAndCropImage(targetFolder);
+      const baseExportPath = await fmcCroppersUiInstance.resizeAndCropImage(targetFolder);
 
       this.setPaths(baseExportPath, false);
     });
 
     lastCropperImg.addEventListener('ready', () => {
-      // short timeout prevents intermittent (browser) error from CrCroppersUi.calcCanvasOffsets()
+      // short timeout prevents intermittent (browser) error from FmcCroppersUi.calcCanvasOffsets()
       setTimeout(() => {
-        crCroppersUiInstance.initImagePercentXY();
+        fmcCroppersUiInstance.initImagePercentXY();
       }, 10);
     });
 
@@ -352,39 +352,39 @@ export class CrUi { // eslint-disable-line no-unused-vars
       const {
         clickedButton,
         clickedButtonIndex
-      } = crThumbsUiInstance.getClickedButton(event);
+      } = fmcThumbsUiInstance.getClickedButton(event);
 
       const newImageSrc = clickedButton.querySelector('img').getAttribute('src');
 
-      crThumbsUiInstance.applySelectedClass(clickedButton);
+      fmcThumbsUiInstance.applySelectedClass(clickedButton);
 
-      crThumbsUiInstance.scrollToThumb('selected');
+      fmcThumbsUiInstance.scrollToThumb('selected');
 
       setTimeout(() => {
-        crThumbsUiInstance.displayCount({
+        fmcThumbsUiInstance.displayCount({
           thumbIndex: clickedButtonIndex
         });
       }, 500);
 
       this.setPaths(newImageSrc);
 
-      // calls crCroppersUiInstance.init
-      crCroppersUiInstance.changeSourceImage(clickedButton);
+      // calls fmcCroppersUiInstance.init
+      fmcCroppersUiInstance.changeSourceImage(clickedButton);
     });
 
     window.addEventListener('resize', () => {
-      crThumbsUiInstance.scrollToThumb('selected');
+      fmcThumbsUiInstance.scrollToThumb('selected');
     });
   }
 
   /**
    * @function autosaveFocalpoint
    * @param {boolean} on - Auto-Save is on (true) or off (false)
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   autosaveFocalpoint(on) {
     const {
-      crCroppersUiInstance,
+      fmcCroppersUiInstance,
       elements
     } = this;
 
@@ -397,9 +397,9 @@ export class CrUi { // eslint-disable-line no-unused-vars
     if (on) {
       // value is a string despite input being of type number
       if ((Number(focalpointXInput.value) === 50) && (Number(focalpointYInput.value) === 50)) {
-        crCroppersUiInstance.deleteImagePercentXYFromImage();
+        fmcCroppersUiInstance.deleteImagePercentXYFromImage();
       } else {
-        crCroppersUiInstance.writeImagePercentXYToImage({
+        fmcCroppersUiInstance.writeImagePercentXYToImage({
           imagePercentX: focalpointXInput.value,
           imagePercentY: focalpointYInput.value
         });
@@ -415,11 +415,11 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @function getPathOut
    * @summary Set the target path in the footer
    * @returns {string} pathOut
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   getPathOut() {
     const {
-      crCroppersUiInstance,
+      fmcCroppersUiInstance,
       elements
     } = this;
 
@@ -427,11 +427,11 @@ export class CrUi { // eslint-disable-line no-unused-vars
       folderOutButton
     } = elements;
 
-    const { croppers } = crCroppersUiInstance;
+    const { croppers } = fmcCroppersUiInstance;
     const { targetFolder } = folderOutButton.dataset;
     const { src: cropperSrc } = croppers[0].cropperInstance.element;
 
-    const fileName = CrUi.getFileNameFromPath(cropperSrc);
+    const fileName = FmcUi.getFileNameFromPath(cropperSrc);
     const pathOut = `${targetFolder}/${fileName}`;
 
     return pathOut;
@@ -441,7 +441,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @function getPathWebEmbed
    * @summary Set the web embed path in the footer
    * @returns {string} pathWebEmbed
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   async getPathWebEmbed() {
     const {
@@ -474,7 +474,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
   /**
    * @function restoreSettings
    * @summary Restore previous stored settings if they exist
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   async restoreSettings() {
     const storedFolderIn = await window.electronAPI.selectFolder({
@@ -520,7 +520,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @function setAutoSave
    * @summary Turn auto save on or off
    * @param {boolean} enabled - On
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   setAutoSave(enabled) {
     const {
@@ -545,12 +545,12 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @param {string} args.folderName - Folder name
    * @param {string} args.folderPath - Folder path
    * @param {Array} args.imagesData - Images data
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   setFolderIn({ folderName, folderPath, imagesData }) {
     const {
-      crCroppersUiInstance,
-      crThumbsUiInstance,
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance,
       elements,
       selectors
     } = this;
@@ -573,7 +573,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
     folderInButton.dataset.hint = true;
     folderInButton.querySelector(`.${controlHintClass}`).textContent = folderName;
 
-    crThumbsUiInstance.generateThumbsHtml(imagesData);
+    fmcThumbsUiInstance.generateThumbsHtml(imagesData);
 
     const thumbs = document.querySelectorAll(`.${thumbClass}`);
     const thumbImages = document.querySelectorAll(`.${thumbImgClass}`);
@@ -582,9 +582,9 @@ export class CrUi { // eslint-disable-line no-unused-vars
       thumbs.forEach((thumb, index) => {
         const thumbImage = thumbImages[index];
         const { src } = thumbImage;
-        const { imagePercentX, imagePercentY } = crCroppersUiInstance.getImagePercentXYFromImage(src);
+        const { imagePercentX, imagePercentY } = fmcCroppersUiInstance.getImagePercentXYFromImage(src);
 
-        crThumbsUiInstance.setCssImagePercentXY({
+        fmcThumbsUiInstance.setCssImagePercentXY({
           thumbElement: thumb,
           thumbImgElement: thumbImage,
           thumbIndex: index + 1,
@@ -601,7 +601,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @param {object} args - Arguments
    * @param {string} args.folderName - Folder name
    * @param {string} args.folderPath - Folder path
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   setFolderOut({ folderName, folderPath }) {
     const {
@@ -636,7 +636,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @param {object} args - Arguments
    * @param {string} args.folderName - Folder name
    * @param {string} args.folderPath - Folder path
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   setFolderWebpage({ folderName, folderPath }) {
     const {
@@ -668,7 +668,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @param {object} args - Arguments
    * @param {string} args.folderName - Folder name
    * @param {string} args.folderPath - Folder path
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   setFolderWebsite({ folderName, folderPath }) {
     const {
@@ -699,7 +699,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @summary Update attributes in the path links and buttons
    * @param {string} src - Image src
    * @param {boolean} checkPathExists - Check whether the baseExport path exists
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   setPaths(src, checkPathExists = true) {
     const {
@@ -715,7 +715,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
       thumbFileName
     } = elements;
 
-    const fileName = CrUi.getFileNameFromPath(src);
+    const fileName = FmcUi.getFileNameFromPath(src);
 
     copyPathInButton.setAttribute('title', src);
     pathInLink.setAttribute('href', src);
@@ -758,14 +758,14 @@ export class CrUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function useTestData
-   * @memberof CrUi
+   * @memberof FmcUi
    */
   testData() {
     const {
-      crThumbsUiInstance
+      fmcThumbsUiInstance
     } = this;
 
-    crThumbsUiInstance.generateThumbsHtml({
+    fmcThumbsUiInstance.generateThumbsHtml({
       imagesData: [
         {
           src: './cypress/fixtures/landscape.jpeg',
@@ -805,7 +805,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @param {object} eventDetail - name-value pair
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent}
    * @see {@link https://gomakethings.com/callbacks-vs.-custom-events-in-vanilla-js/}
-   * @memberof CrUi
+   * @memberof FmcUi
    * @static
    */
   static emitEvent(elementId, eventName, eventDetail = {}) {
@@ -823,7 +823,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @function getFileNameFromPath
    * @param {string} path - File path
    * @returns {string} fileName
-   * @memberof CrUi
+   * @memberof FmcUi
    * @static
    */
   static getFileNameFromPath(path) {
@@ -839,7 +839,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @param {HTMLElement} el - Element
    * @returns {object} offset - { top, left }
    * @see {@link https://usefulangle.com/post/179/jquery-offset-vanilla-javascript}
-   * @memberof CrUi
+   * @memberof FmcUi
    * @static
    */
   static getOffset(el) {
@@ -858,7 +858,7 @@ export class CrUi { // eslint-disable-line no-unused-vars
    * @param {object} obj - Object
    * @returns {boolean} is empty
    * @see {@link https://stackoverflow.com/a/49729848}
-   * @memberof CrUi
+   * @memberof FmcUi
    * @static
    */
   static isEmptyObject(obj) {

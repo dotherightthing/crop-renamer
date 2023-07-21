@@ -1,12 +1,12 @@
 /**
- * @file CrThumbsUi.js
+ * @file FmcThumbsUi.js
  */
 
 import dtrtValidate from 'dtrt-type-validate';
 
-export class CrThumbsUi { // eslint-disable-line no-unused-vars
+export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   /**
-   * @class CrThumbsUi
+   * @class FmcThumbsUi
    * @summary Manages thumbs component
    * @param {object} config - Instance config
    * @public
@@ -41,92 +41,92 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * selectedClass
    * @type {string}
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   get selectedClass() {
     return this._selectedClass;
   }
 
   set selectedClass(selectedClass) {
-    this._selectedClass = dtrtValidate.validate(selectedClass, 'string', 'CrThumbsUi.selectedClass');
+    this._selectedClass = dtrtValidate.validate(selectedClass, 'string', 'FmcThumbsUi.selectedClass');
   }
 
   /**
    * thumbButtonClass
    * @type {string}
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   get thumbButtonClass() {
     return this._thumbButtonClass;
   }
 
   set thumbButtonClass(thumbButtonClass) {
-    this._thumbButtonClass = dtrtValidate.validate(thumbButtonClass, 'string', 'CrThumbsUi.thumbButtonClass');
+    this._thumbButtonClass = dtrtValidate.validate(thumbButtonClass, 'string', 'FmcThumbsUi.thumbButtonClass');
   }
 
   /**
    * thumbClass
    * @type {string}
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   get thumbClass() {
     return this._thumbClass;
   }
 
   set thumbClass(thumbClass) {
-    this._thumbClass = dtrtValidate.validate(thumbClass, 'string', 'CrThumbsUi.thumbClass');
+    this._thumbClass = dtrtValidate.validate(thumbClass, 'string', 'FmcThumbsUi.thumbClass');
   }
 
   /**
    * thumbImgClass
    * @type {string}
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   get thumbImgClass() {
     return this._thumbImgClass;
   }
 
   set thumbImgClass(thumbImgClass) {
-    this._thumbImgClass = dtrtValidate.validate(thumbImgClass, 'string', 'CrThumbsUi.thumbImgClass');
+    this._thumbImgClass = dtrtValidate.validate(thumbImgClass, 'string', 'FmcThumbsUi.thumbImgClass');
   }
 
   /**
    * thumbImgWrapperClass
    * @type {string}
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   get thumbImgWrapperClass() {
     return this._thumbImgWrapperClass;
   }
 
   set thumbImgWrapperClass(thumbImgWrapperClass) {
-    this._thumbImgWrapperClass = dtrtValidate.validate(thumbImgWrapperClass, 'string', 'CrThumbsUi.thumbImgWrapperClass');
+    this._thumbImgWrapperClass = dtrtValidate.validate(thumbImgWrapperClass, 'string', 'FmcThumbsUi.thumbImgWrapperClass');
   }
 
   /**
    * thumbMetaClass
    * @type {string}
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   get thumbMetaClass() {
     return this._thumbMetaClass;
   }
 
   set thumbMetaClass(thumbMetaClass) {
-    this._thumbMetaClass = dtrtValidate.validate(thumbMetaClass, 'string', 'CrThumbsUi.thumbMetaClass');
+    this._thumbMetaClass = dtrtValidate.validate(thumbMetaClass, 'string', 'FmcThumbsUi.thumbMetaClass');
   }
 
   /**
    * thumbsCountId
    * @type {string}
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   get thumbsCountId() {
     return this._thumbsCountId;
   }
 
   set thumbsCountId(thumbsCountId) {
-    this._thumbsCountId = dtrtValidate.validate(thumbsCountId, 'string', 'CrThumbsUi.thumbsCountId');
+    this._thumbsCountId = dtrtValidate.validate(thumbsCountId, 'string', 'FmcThumbsUi.thumbsCountId');
   }
 
   /* Instance methods */
@@ -135,7 +135,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @function applySelectedClass
    * @summary Apply the 'selected' class to the selected thumb
    * @param {HTMLElement} target - Selected thumb
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   applySelectedClass(target) {
     const { selectedClass } = this;
@@ -189,7 +189,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @function containsThumbs
    * @summary Whether the thumb area of the UI contains any thumbs
    * @returns {number} thumbLength (truthy|falsy)
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   containsThumbs() {
     const { thumbImgClass } = this;
@@ -204,7 +204,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @param {object} args - Arguments
    * @param {number} args.thumbTotal - Thumb total
    * @param {number} args.thumbIndex - Thumb index
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   displayCount({ thumbTotal, thumbIndex }) {
     const { thumbsCountId } = this;
@@ -232,7 +232,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @function generateThumbsHtml
    * @summary Inject the thumb images and their scaffolding, then select the first thumb
    * @param {Array} imagesData - Images data
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   generateThumbsHtml(imagesData) {
     const {
@@ -273,7 +273,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @function getClickedButton
    * @param {object} event - Event
    * @returns {HTMLElement} button
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   getClickedButton(event) {
     const {
@@ -307,7 +307,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @summary Get the index of the selected node in a nodelist
    * @param {NodeList} nodeList = NodeList
    * @returns {number} selectedIndex | -1
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   getSelectedIndex(nodeList) {
     const { selectedClass } = this;
@@ -326,7 +326,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * @function removeSelectedClass
    * @summary Remove the 'selected' class from the selected thumb
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   removeSelectedClass() {
     const {
@@ -345,7 +345,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @function scrollToThumb
    * @summary Click then scroll the appropriate thumb into view
    * @param {string} position - Position of thumb (previous|next|selected)
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    * @todo Would programmatically shifting the focus make this redundant? (#7)
    */
   scrollToThumb(position) {
@@ -360,9 +360,9 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
     let thumbsButtonNextIndex = -1;
 
     if (position === 'previous') {
-      thumbsButtonNextIndex = CrThumbsUi.getPreviousIndex(thumbsButtons, thumbsButtonSelectedIndex);
+      thumbsButtonNextIndex = FmcThumbsUi.getPreviousIndex(thumbsButtons, thumbsButtonSelectedIndex);
     } else if (position === 'next') {
-      thumbsButtonNextIndex = CrThumbsUi.getNextIndex(thumbsButtons, thumbsButtonSelectedIndex);
+      thumbsButtonNextIndex = FmcThumbsUi.getNextIndex(thumbsButtons, thumbsButtonSelectedIndex);
     } else if (position === 'selected') {
       thumbsButtonNextIndex = this.getSelectedIndex(thumbsButtons);
     }
@@ -381,7 +381,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * @function selectFirstThumb
    * @summary Select the first thumb
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    */
   selectFirstThumb() {
     const { thumbButtonClass } = this;
@@ -397,7 +397,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @param {NodeList} nodeList - List of thumb items
    * @param {number} selectedIndex - Index of selected thumb item
    * @returns {number} nextIndex | -1
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    * @static
    */
   static getNextIndex(nodeList, selectedIndex) {
@@ -418,7 +418,7 @@ export class CrThumbsUi { // eslint-disable-line no-unused-vars
    * @param {NodeList} nodeList - List of thumb items
    * @param {number} selectedIndex - Index of selected thumb item
    * @returns {number} previousIndex | -1
-   * @memberof CrThumbsUi
+   * @memberof FmcThumbsUi
    * @static
    */
   static getPreviousIndex(nodeList, selectedIndex) {

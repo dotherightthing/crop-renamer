@@ -7,7 +7,7 @@ const {
   Menu
 } = require('electron');
 
-const CrFile = require('./classes/CrFile.cjs');
+const FmcFile = require('./classes/FmcFile.cjs');
 
 const path = require('path');
 const contextMenu = require('electron-context-menu');
@@ -72,16 +72,16 @@ const createWindow = () => {
 app.whenReady().then(() => {
   // ipcMain module for inter-process communication (IPC) with render process
 
-  ipcMain.handle('CrFile:copyToClipboard', CrFile.copyToClipboard);
-  ipcMain.handle('CrFile:getRelativePath', CrFile.getRelativePath);
-  ipcMain.handle('CrFile:openInFinder', CrFile.openInFinder);
-  ipcMain.handle('CrFile:pathExists', CrFile.pathExists);
-  ipcMain.handle('CrFile:selectFolder', CrFile.selectFolder);
-  ipcMain.handle('CrFile:deleteImagePercentXYFromImage', CrFile.deleteImagePercentXYFromImage);
-  ipcMain.handle('CrFile:saveImagePercentXYToImage', CrFile.saveImagePercentXYToImage);
-  ipcMain.handle('CrFile:resizeAndCropImage', CrFile.resizeAndCropImage);
-  ipcMain.handle('CrFile:storeGet', CrFile.storeGet);
-  ipcMain.handle('CrFile:storeSet', CrFile.storeSet);
+  ipcMain.handle('FmcFile:copyToClipboard', FmcFile.copyToClipboard);
+  ipcMain.handle('FmcFile:getRelativePath', FmcFile.getRelativePath);
+  ipcMain.handle('FmcFile:openInFinder', FmcFile.openInFinder);
+  ipcMain.handle('FmcFile:pathExists', FmcFile.pathExists);
+  ipcMain.handle('FmcFile:selectFolder', FmcFile.selectFolder);
+  ipcMain.handle('FmcFile:deleteImagePercentXYFromImage', FmcFile.deleteImagePercentXYFromImage);
+  ipcMain.handle('FmcFile:saveImagePercentXYToImage', FmcFile.saveImagePercentXYToImage);
+  ipcMain.handle('FmcFile:resizeAndCropImage', FmcFile.resizeAndCropImage);
+  ipcMain.handle('FmcFile:storeGet', FmcFile.storeGet);
+  ipcMain.handle('FmcFile:storeSet', FmcFile.storeSet);
 
   createWindow();
 

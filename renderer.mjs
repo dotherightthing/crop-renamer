@@ -1,8 +1,8 @@
 // Electron's render process (web page)
 
-import { CrUi } from './classes/CrUi.mjs';
-import { CrCroppersUi } from './classes/CrCroppersUi.mjs';
-import { CrThumbsUi } from './classes/CrThumbsUi.mjs';
+import { FmcUi } from './classes/FmcUi.mjs';
+import { FmcCroppersUi } from './classes/FmcCroppersUi.mjs';
+import { FmcThumbsUi } from './classes/FmcThumbsUi.mjs';
 
 // listeners
 
@@ -13,7 +13,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const thumbClass = 'thumb';
   const thumbImgClass = 'thumb-img';
 
-  const crCroppersUiInstance = new CrCroppersUi({
+  const fmcCroppersUiInstance = new FmcCroppersUi({
     Cropper: window.Cropper,
     cropperCanvasClass: 'cropper-canvas',
     cropperImageClass: 'cropper-image',
@@ -47,7 +47,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     updateDelay: (typeof Cypress !== 'undefined') ? 0 : 1000
   });
 
-  const crThumbsUiInstance = new CrThumbsUi({
+  const fmcThumbsUiInstance = new FmcThumbsUi({
     selectedClass: 'btn-selected',
     thumbButtonClass: 'btn-thumb',
     thumbClass,
@@ -58,9 +58,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     thumbsId: 'thumbs'
   });
 
-  const crUi = new CrUi({
-    crCroppersUiInstance,
-    crThumbsUiInstance,
+  const fmcUi = new FmcUi({
+    fmcCroppersUiInstance,
+    fmcThumbsUiInstance,
     elements: {
       console: document.getElementById('console'),
       copyPaths: document.querySelectorAll('.control-copy'),
@@ -97,11 +97,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // function calls
 
-  crUi.addEventListeners();
+  fmcUi.addEventListeners();
 
-  await crUi.restoreSettings();
+  await fmcUi.restoreSettings();
 
   if (typeof window.electronAPI === 'undefined') {
-    CrUi.testData();
+    FmcUi.testData();
   }
 });

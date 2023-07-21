@@ -106,7 +106,7 @@ describe('template spec', () => {
       });
     });
 
-    describe('CrCroppersUi', () => {
+    describe('FmcCroppersUi', () => {
       images.forEach((image, imageIndex) => {
         describe(image, () => {
           /* Instance methods */
@@ -120,8 +120,8 @@ describe('template spec', () => {
             cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
 
             cy.get('@croppers').then($c => {
-              const { crCroppersUi } = $c[0];
-              const { top, left } = crCroppersUi.calcCanvasOffsets();
+              const { fmcCroppersUi } = $c[0];
+              const { top, left } = fmcCroppersUi.calcCanvasOffsets();
 
               cy.get('@cropperMasterCanvas').then($el2 => {
                 const canvasTop = $el2[0].getBoundingClientRect().top;
@@ -158,7 +158,7 @@ describe('template spec', () => {
               const scale = width / naturalWidth;
 
               cy.get('@croppers').then($el2 => {
-                const { crCroppersUi } = $el2[0];
+                const { fmcCroppersUi } = $el2[0];
 
                 cy.fixture(`${image}.json`).then(imageFocalpoints => {
                   imageFocalpoints.forEach(imageFocalpoint => {
@@ -175,7 +175,7 @@ describe('template spec', () => {
                     const {
                       imageX,
                       imageY
-                    } = crCroppersUi.calcImageXYFromImagePercentXY({ imagePercentX, imagePercentY });
+                    } = fmcCroppersUi.calcImageXYFromImagePercentXY({ imagePercentX, imagePercentY });
 
                     cy.roundToDp(imageX, 2).then(val => {
                       cy.roundToDp(fixtureX * scale, 2).should('equal', val);
@@ -206,7 +206,7 @@ describe('template spec', () => {
               const scale = width / naturalWidth;
 
               cy.get('@croppers').then($el2 => {
-                const { crCroppersUi } = $el2[0];
+                const { fmcCroppersUi } = $el2[0];
 
                 cy.fixture(`${image}.json`).then(imageFocalpoints => {
                   imageFocalpoints.forEach(imageFocalpoint => {
@@ -224,13 +224,13 @@ describe('template spec', () => {
                     const imageX = fixtureX * scale;
                     const imageY = fixtureY * scale;
 
-                    const imagePercentX = crCroppersUi.calcImagePercentXYFromImageXorY({
+                    const imagePercentX = fmcCroppersUi.calcImagePercentXYFromImageXorY({
                       imageXorY: imageX,
                       dimensionLength: imageW,
                       round: true
                     });
 
-                    const imagePercentY = crCroppersUi.calcImagePercentXYFromImageXorY({
+                    const imagePercentY = fmcCroppersUi.calcImagePercentXYFromImageXorY({
                       imageXorY: imageY,
                       dimensionLength: imageH,
                       round: true
@@ -258,7 +258,7 @@ describe('template spec', () => {
               const scale = width / naturalWidth;
 
               cy.get('@croppers').then($el2 => {
-                const { crCroppersUi } = $el2[0];
+                const { fmcCroppersUi } = $el2[0];
 
                 cy.get('@cropperMasterCanvas').then($el3 => {
                   const canvasLeft = $el3[0].getBoundingClientRect().left;
@@ -281,7 +281,7 @@ describe('template spec', () => {
                       const {
                         imagePercentX,
                         imagePercentY
-                      } = crCroppersUi.calcImagePercentXYFromPageXY({ pageX, pageY, round: true });
+                      } = fmcCroppersUi.calcImagePercentXYFromPageXY({ pageX, pageY, round: true });
 
                       expect(imagePercentX).to.equal(fixturePercentX);
                       expect(imagePercentY).to.equal(fixturePercentY);
@@ -312,8 +312,8 @@ describe('template spec', () => {
               // and then check that programmatically retrieved coordinates are the same
 
               cy.get('@croppers').then($c => {
-                const { crCroppersUi } = $c[0];
-                const { pageX, pageY } = crCroppersUi.calcPageXYFromImageXY({ imageX, imageY });
+                const { fmcCroppersUi } = $c[0];
+                const { pageX, pageY } = fmcCroppersUi.calcPageXYFromImageXY({ imageX, imageY });
 
                 cy.get('@cropperMasterCanvas').then($el2 => {
                   const canvasTop = $el2[0].getBoundingClientRect().top;
@@ -357,7 +357,7 @@ describe('template spec', () => {
       });
     });
 
-    describe('CrThumbsUi', () => {
+    describe('FmcThumbsUi', () => {
       /* Instance methods */
       it.skip('applySelectedClass', () => {});
       it.skip('changeSelectedImageSrc', () => {});
@@ -375,7 +375,7 @@ describe('template spec', () => {
       it.skip('getPreviousIndex', () => {});
     });
 
-    describe('CrUi', () => {
+    describe('FmcUi', () => {
       /* Instance methods */
 
       /* Static methods */

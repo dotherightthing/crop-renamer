@@ -17,15 +17,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // function in renderer.js or frontend class calls window.electronAPI.methodName, with or without a data object
   // backend responds and returns data to calling function
 
-  copyToClipboard: (data) => ipcRenderer.invoke('CrFile:copyToClipboard', data),
-  getRelativePath: (data) => ipcRenderer.invoke('CrFile:getRelativePath', data),
-  openInFinder: (data) => ipcRenderer.invoke('CrFile:openInFinder', data),
-  pathExists: (data) => ipcRenderer.invoke('CrFile:pathExists', data),
-  selectFolder: (data) => ipcRenderer.invoke('CrFile:selectFolder', data),
-  deleteImagePercentXYFromImage: (data) => ipcRenderer.invoke('CrFile:deleteImagePercentXYFromImage', data),
-  saveImagePercentXYToImage: (data) => ipcRenderer.invoke('CrFile:saveImagePercentXYToImage', data),
-  resizeImage: (data) => ipcRenderer.invoke('CrFile:resizeImage', data),
-  resizeAndCropImage: (data) => ipcRenderer.invoke('CrFile:resizeAndCropImage', data),
-  storeGet: (data) => ipcRenderer.invoke('CrFile:storeGet', data),
-  storeSet: (data) => ipcRenderer.invoke('CrFile:storeSet', data)
+  copyToClipboard: (data) => ipcRenderer.invoke('FmcFile:copyToClipboard', data),
+  getRelativePath: (data) => ipcRenderer.invoke('FmcFile:getRelativePath', data),
+  openInFinder: (data) => ipcRenderer.invoke('FmcFile:openInFinder', data),
+  pathExists: (data) => ipcRenderer.invoke('FmcFile:pathExists', data),
+  selectFolder: (data) => ipcRenderer.invoke('FmcFile:selectFolder', data),
+  deleteImagePercentXYFromImage: (data) => ipcRenderer.invoke('FmcFile:deleteImagePercentXYFromImage', data),
+  saveImagePercentXYToImage: (data) => ipcRenderer.invoke('FmcFile:saveImagePercentXYToImage', data),
+  resizeImage: (data) => ipcRenderer.invoke('FmcFile:resizeImage', data),
+  resizeAndCropImage: (data) => ipcRenderer.invoke('FmcFile:resizeAndCropImage', data),
+  storeGet: (data) => ipcRenderer.invoke('FmcFile:storeGet', data),
+  storeSet: (data) => ipcRenderer.invoke('FmcFile:storeSet', data)
 });

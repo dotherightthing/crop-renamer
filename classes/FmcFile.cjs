@@ -1,5 +1,5 @@
 /**
- * @file CrFile.js
+ * @file FmcFile.js
  */
 
 const fs = require('fs');
@@ -16,9 +16,9 @@ const store = new Store({
   defaults: {}
 });
 
-module.exports = class CrFile { // eslint-disable-line no-unused-vars
+module.exports = class FmcFile { // eslint-disable-line no-unused-vars
   /**
-   * @class CrFile
+   * @class FmcFile
    * @summary Manages file manipulation
    * @param {object} config - Instance config
    * @public
@@ -32,10 +32,10 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function copyToClipboard
-   * @param {event} event - CrFile:copyToClipboard event captured by ipcMain.handle
+   * @param {event} event - FmcFile:copyToClipboard event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.text - Text
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static copyToClipboard(event, data) {
@@ -47,7 +47,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   /**
    * getFocalpointRegex
    * @returns {string} regex
-   * @memberof CrCroppersUi
+   * @memberof FmcCroppersUi
    * @static
    */
   static getFocalpointRegex() {
@@ -56,7 +56,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function resizeAndCropImage
-   * @param {event} event - CrFile:resizeAndCropImage event captured by ipcMain.handle
+   * @param {event} event - FmcFile:resizeAndCropImage event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.fileName - Filename
    * @param {number} data.quality - Quality
@@ -70,7 +70,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @param {number|undefined} data.cropsAndSizes.cropY - the offset top of the cropped area
    * @param {string} data.cropsAndSizes.fileNameSuffix - Filename suffix
    * @returns {string} baseExportPath
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static async resizeAndCropImage(event, data) {
@@ -85,7 +85,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       extName,
       fileNameOnly,
       fileNameClean
-    } = CrFile.getFileNameParts(fileName);
+    } = FmcFile.getFileNameParts(fileName);
 
     const currentDir = process.cwd();
     const sourceFileName = fileNameClean;
@@ -118,7 +118,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       const _resizeW = (resizeW !== null) ? resizeW : null;
       // const _resizeH = (resizeH !== null) ? resizeH : null;
 
-      const successMessage = await CrFile.gmResizeAndCrop({ // eslint-disable-line no-await-in-loop
+      const successMessage = await FmcFile.gmResizeAndCrop({ // eslint-disable-line no-await-in-loop
         sourceFileName,
         targetFilename,
         quality,
@@ -149,7 +149,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @param {number|undefined} data.resizeH - the height to resize the image to
    * @param {string} data.targetFilename - Export filename
    * @returns {string} successMessage
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static async gmResizeAndCrop(data) {
@@ -205,14 +205,14 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function getRelativePath
-   * @param {event} event - CrFile:getRelativePath event captured by ipcMain.handle
+   * @param {event} event - FmcFile:getRelativePath event captured by ipcMain.handle
    * @summary Get the relative path from From to To based on the selected Base directory
    * @param {object} data - Data
    * @param {string} data.base - Website path
    * @param {string} data.from - From path
    * @param {string} data.to - To path
    * @returns {string} relativePath
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static getRelativePath(event, data) {
@@ -235,11 +235,11 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function deleteImagePercentXYFromImage
-   * @param {event} event - CrFile:openInFinder event captured by ipcMain.handle
+   * @param {event} event - FmcFile:openInFinder event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.fileName - Filename
    * @returns {string} newFileName
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static async deleteImagePercentXYFromImage(event, data) {
@@ -248,9 +248,9 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     const {
       fileNameAndExt,
       folderPath
-    } = CrFile.getFileNameParts(fileName);
+    } = FmcFile.getFileNameParts(fileName);
 
-    const regex = CrFile.getFocalpointRegex();
+    const regex = FmcFile.getFocalpointRegex();
 
     const oldFileName = `${folderPath}/${fileNameAndExt}`;
     const newFileName = oldFileName.replace(regex, '');
@@ -268,11 +268,11 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function pathExists
-   * @param {event} event - CrFile:fileExists event captured by ipcMain.handle
+   * @param {event} event - FmcFile:fileExists event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.path - Path
    * @returns {boolean} exists
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    * @see {@link https://futurestud.io/tutorials/node-js-check-if-a-file-exists}
    */
@@ -293,7 +293,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @function getFileNameParts
    * @param {string} fileName - File name
    * @returns {object} parts
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static getFileNameParts(fileName) {
@@ -316,7 +316,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @function getFiles
    * @param {string} dir - Directory path
    * @returns {Array} files
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static getFiles(dir) {
@@ -325,7 +325,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
       // get files from the directory
       if (fs.statSync(pth).isDirectory()) {
-        const files = CrFile.getFiles(pth);
+        const files = FmcFile.getFiles(pth);
 
         return files;
       }
@@ -338,11 +338,11 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @function getImageFiles
    * @param {string} dir - Directory path
    * @returns {Array} files
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static getImageFiles(dir) {
-    const files = CrFile.getFiles(dir);
+    const files = FmcFile.getFiles(dir);
 
     return files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
   }
@@ -352,7 +352,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @summary Get the path to a folder and the supported images within it
    * @param {Array} imageFiles - Supported file types contained within the folder
    * @returns {Array} imagesData
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static async getImagesData(imageFiles) {
@@ -374,10 +374,10 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function openInFinder
-   * @param {event} event - CrFile:openInFinder event captured by ipcMain.handle
+   * @param {event} event - FmcFile:openInFinder event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.href - HREF
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static openInFinder(event, data) {
@@ -395,7 +395,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
    * @param {string} args.storeKey - Store return value with this key
    * @param {boolean} args.retrieveImagesData - Return imagesData
    * @returns {object} { folderPath, imagesData }
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static async selectFolderDialog({
@@ -407,7 +407,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
   }) {
     let folderPath;
 
-    const data = await CrFile.storeGet(null, {
+    const data = await FmcFile.storeGet(null, {
       key: storeKey
     });
 
@@ -423,12 +423,12 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       }
 
       if (retrieveImagesData) {
-        const imageFiles = CrFile.getImageFiles(data.folderPath);
+        const imageFiles = FmcFile.getImageFiles(data.folderPath);
 
         const dataCopy = { ...data }; // #30
 
         // imagesData retrieved separately to accommodate file renaming in the interim
-        dataCopy.imagesData = await CrFile.getImagesData(imageFiles);
+        dataCopy.imagesData = await FmcFile.getImagesData(imageFiles);
 
         return dataCopy;
       }
@@ -454,9 +454,9 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       folderPath = filePaths[0];
 
       if (retrieveImagesData) {
-        const imageFiles = CrFile.getImageFiles(folderPath);
+        const imageFiles = FmcFile.getImageFiles(folderPath);
 
-        imagesData = await CrFile.getImagesData(imageFiles);
+        imagesData = await FmcFile.getImagesData(imageFiles);
       }
 
       const pathSeparator = folderPath.lastIndexOf('/');
@@ -468,7 +468,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
         imagesData
       };
 
-      CrFile.storeSet(null, {
+      FmcFile.storeSet(null, {
         key: storeKey,
         value: {
           folderName,
@@ -484,14 +484,14 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function selectFolder
-   * @param {event} event - CrFile:selectFolder event captured by ipcMain.handle
+   * @param {event} event - FmcFile:selectFolder event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.dialogTitle - Title for the dialog
    * @param {boolean} data.retrieveImagesData - Get information about images in the folder
    * @param {boolean} data.restore - Restore setting if it was previously stored
    * @param {string} data.storeKey - Key under which to persist the folder path in the JSON file
    * @returns { object } { folderName, folderPath, imagesData }
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static async selectFolder(event, data) { // eslint-disable-line no-unused-vars
@@ -504,7 +504,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
     // if getImagesData
     if (retrieveImagesData) {
-      const { folderName, folderPath, imagesData } = await CrFile.selectFolderDialog({
+      const { folderName, folderPath, imagesData } = await FmcFile.selectFolderDialog({
         dialogTitle,
         dialogButtonLabel: 'Select folder',
         retrieveImagesData,
@@ -520,7 +520,7 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
     }
 
     // if !getImagesData
-    const { folderName, folderPath } = await CrFile.selectFolderDialog({
+    const { folderName, folderPath } = await FmcFile.selectFolderDialog({
       dialogTitle,
       dialogButtonLabel: 'Select folder',
       retrieveImagesData,
@@ -537,11 +537,11 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function storeGet
-   * @param {event|null} event - CrFile:storeGet event captured by ipcMain.handle
+   * @param {event|null} event - FmcFile:storeGet event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.key - Key
    * @returns {*} value
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static async storeGet(event, data) {
@@ -558,11 +558,11 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function storeSet
-   * @param {event|null} event - CrFile:storeSet event captured by ipcMain.handle
+   * @param {event|null} event - FmcFile:storeSet event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.key - Key
    * @param {*} data.value - Value
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    */
   static storeSet(event, data) {
@@ -577,13 +577,13 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function saveImagePercentXYToImage
-   * @param {event} event - CrFile:saveImagePercentXYToImage event captured by ipcMain.handle
+   * @param {event} event - FmcFile:saveImagePercentXYToImage event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.fileName - File name
    * @param {number} data.imagePercentX - Image percent X
    * @param {number} data.imagePercentY - Image percent Y
    * @returns {string} newFileName
-   * @memberof CrFile
+   * @memberof FmcFile
    * @static
    * @see {@link https://www.geeksforgeeks.org/node-js-fs-rename-method/ }
    * @see {@link https://nodejs.dev/en/learn/nodejs-file-paths/ }
@@ -600,9 +600,9 @@ module.exports = class CrFile { // eslint-disable-line no-unused-vars
       fileNameAndExt,
       fileNameOnly,
       folderPath
-    } = CrFile.getFileNameParts(fileName);
+    } = FmcFile.getFileNameParts(fileName);
 
-    const regex = CrFile.getFocalpointRegex();
+    const regex = FmcFile.getFocalpointRegex();
 
     const fileNameOnlyNoRegex = fileNameOnly.replace(regex, ''); // foo
 

@@ -54,8 +54,8 @@ npm run test
 ### Debug
 
 ```js
-// inspect the current state of crCroppersUi
-document.getElementById('croppers').crCroppersUi
+// inspect the current state of fmcCroppersUi
+document.getElementById('croppers').fmcCroppersUi
 ```
 
 ## Research
