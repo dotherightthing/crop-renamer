@@ -8,9 +8,9 @@
   --text-smaller: .75rem;
   --text-medium: .9rem;
   --text-regular: 1rem;
-  --color-checked-on: rgba(0, 200, 0);
-  --color-checked-off: rgba(255, 0, 0);
-  --color-focus: rgba(255, 200, 0);
+  --color-checked-on: rgba(0, 200, 0, 1);
+  --color-checked-off: rgba(255, 0, 0, 1);
+  --color-focus: rgba(255, 200, 0, 1);
   --color-primary: rgba(255, 255, 255, 1);
   --color-primary-75: rgba(255, 255, 255, .75);
   --color-input: rgba(255, 255, 255, 1);

@@ -937,9 +937,13 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       slaveCroppers
     } = this;
 
-    const fileName = croppers[0].cropperInstance.element.src;
+    const masterCropper = croppers[0];
+    const fileName = masterCropper.cropperInstance.element.src;
 
-    // CROP AND RESIZE
+    const {
+      naturalWidth,
+      naturalHeight
+    } = masterCropper.cropperInstance.getImageData();
 
     const cropsAndSizes = [];
 
@@ -958,13 +962,13 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       } = cropper.cropperInstance.getData();
 
       cropsAndSizes.push({
-        resizeW,
-        resizeH,
-        cropX,
-        cropY,
         cropW,
         cropH,
-        fileNameSuffix
+        cropX,
+        cropY,
+        fileNameSuffix,
+        resizeH,
+        resizeW
       });
     });
 
@@ -975,10 +979,37 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
         exportSuffix: fileNameSuffix
       } = resizer;
 
+      let centerX;
+      let centerY;
+
+      if (fileNameSuffix === '') {
+        const {
+          imagePercentX = 50,
+          imagePercentY = 50
+        } = this.getImagePercentXYFromImage(fileName);
+
+        // calculate length of the missing side
+        let _resizeW = resizeW;
+        let _resizeH = resizeH;
+
+        if ((resizeW === null) && (resizeH !== null)) {
+          _resizeW = naturalWidth * (resizeH / naturalHeight);
+        } else if ((resizeH === null) && (resizeW !== null)) {
+          _resizeH = naturalHeight * (resizeW / naturalWidth);
+        }
+
+        centerX = (_resizeW * (imagePercentX / 100));
+        centerY = (_resizeH * (imagePercentY / 100));
+      }
       cropsAndSizes.push({
+        centerX,
+        centerY,
+        markerHex: '#00c800', // matches --color-checked-on
+        markerStrokeW: 4,
+        markerWH: 160,
+        fileNameSuffix,
         resizeW,
-        resizeH,
-        fileNameSuffix
+        resizeH
       });
     });
 

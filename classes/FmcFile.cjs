@@ -62,13 +62,6 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
    * @param {number} data.quality - Quality
    * @param {string} data.targetFolder - Target folder
    * @param {Array} data.cropsAndSizes - Crops and sizes
-   * @param {number|null} data.cropsAndSizes.resizeW - the width to resize the image to
-   * @param {number|null} data.cropsAndSizes.resizeH - the width to resize the image to
-   * @param {number|undefined} data.cropsAndSizes.cropW - the width of the cropped area
-   * @param {number|undefined} data.cropsAndSizes.cropH - the height of the cropped area
-   * @param {number|undefined} data.cropsAndSizes.cropX - the offset left of the cropped area
-   * @param {number|undefined} data.cropsAndSizes.cropY - the offset top of the cropped area
-   * @param {string} data.cropsAndSizes.fileNameSuffix - Filename suffix
    * @returns {string} baseExportPath
    * @memberof FmcFile
    * @static
@@ -88,7 +81,6 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
     } = FmcFile.getFileNameParts(fileName);
 
     const currentDir = process.cwd();
-    const sourceFileName = fileNameClean;
     const targetPath = path.relative(currentDir, targetFolder);
     const baseExportPath = `${targetPath}/${fileNameOnly}${extName}`;
 
@@ -98,11 +90,18 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
     // see https://www.techiediaries.com/promise-all-map-async-await-example/ - Promise.all + map didn't work
     for (let i = 0; i < cropsAndSizes.length; i += 1) {
       const {
-        fileNameSuffix,
-        cropX,
-        cropY,
+        centerX,
+        centerY,
         cropW,
         cropH,
+        cropX,
+        cropY,
+        fileNameSuffix,
+        imagePercentX,
+        imagePercentY,
+        markerHex,
+        markerStrokeW,
+        markerWH,
         resizeW,
         resizeH
       } = cropsAndSizes[i];
@@ -119,15 +118,23 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
       // const _resizeH = (resizeH !== null) ? resizeH : null;
 
       const successMessage = await FmcFile.gmResizeAndCrop({ // eslint-disable-line no-await-in-loop
-        sourceFileName,
-        targetFilename,
-        quality,
-        cropX,
-        cropY,
+        centerX,
+        centerY,
         cropW,
         cropH,
+        cropX,
+        cropY,
+        fileNameSuffix,
+        imagePercentX,
+        imagePercentY,
+        markerHex,
+        markerStrokeW,
+        markerWH,
+        quality,
         resizeW: _resizeW,
-        resizeH
+        resizeH,
+        sourceFileName: fileNameClean,
+        targetFilename
       });
 
       console.log(successMessage);
@@ -139,14 +146,20 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
   /**
    * @function gmResizeAndCrop
    * @param {object} data - Data
-   * @param {string} data.sourceFileName - Source file name
-   * @param {number} data.quality - Quality
-   * @param {number|undefined} data.cropX - the offset left of the cropped area
-   * @param {number|undefined} data.cropY - the offset top of the cropped area
+   * @param {number|undefined} data.centerX - center of image (X axis)
+   * @param {number|undefined} data.centerY - center of image (Y axis)
    * @param {number|undefined} data.cropW - the width of the cropped area
    * @param {number|undefined} data.cropH - the height of the cropped area
+   * @param {number|undefined} data.cropX - the offset left of the cropped area
+   * @param {number|undefined} data.cropY - the offset top of the cropped area
+   * @param {string} data.fileNameSuffix - suffix to add to the image
+   * @param {string} data.markerHex - hex color for the centerXY marker
+   * @param {number} data.markerStrokeW - width of the stroke applied to the centerXY marker
+   * @param {number} data.markerWH - width/height color for the centerXY marker
    * @param {number} data.resizeW - the width to resize the image to
    * @param {number|undefined} data.resizeH - the height to resize the image to
+   * @param {number} data.quality - Image quality
+   * @param {string} data.sourceFileName - Source file name
    * @param {string} data.targetFilename - Export filename
    * @returns {string} successMessage
    * @memberof FmcFile
@@ -154,14 +167,20 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
    */
   static async gmResizeAndCrop(data) {
     const {
-      sourceFileName,
-      quality,
-      cropX,
-      cropY,
+      centerX,
+      centerY,
       cropW,
       cropH,
+      cropX,
+      cropY,
+      fileNameSuffix,
+      markerHex,
+      markerStrokeW,
+      markerWH,
       resizeW,
       resizeH,
+      quality,
+      sourceFileName,
       targetFilename
     } = data;
 
@@ -175,6 +194,39 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
           .quality(quality) // TODO possibly remove this line for PNG
           .crop(cropW, cropH, cropX, cropY)
           .resize(resizeW, null) // TODO make this possible to have width null
+          .write(targetFilename, err => {
+            if (err) {
+              console.log(err);
+              reject(err);
+            } else {
+              resolve(`Generated crop ${targetFilename}`);
+            }
+          });
+      });
+    }
+
+    if (fileNameSuffix === '') {
+      // see https://legacy.imagemagick.org/discourse-server/viewtopic.php?p=36624#p36624
+      return new Promise((resolve, reject) => {
+        gm(sourceFileName)
+          .strip()
+          .autoOrient()
+          .quality(100) // TODO possibly remove this line for PNG
+          .resize(resizeW, null) // TODO make this possible to have width null
+          .stroke(markerHex)
+          .strokeWidth(markerStrokeW)
+          .drawLine( // horz
+            centerX,
+            (centerY - (markerWH / 2)),
+            centerX,
+            (centerY + (markerWH / 2))
+          )
+          .drawLine( // vert
+            (centerX - (markerWH / 2)),
+            centerY,
+            (centerX + (markerWH / 2)),
+            centerY
+          )
           .write(targetFilename, err => {
             if (err) {
               console.log(err);
