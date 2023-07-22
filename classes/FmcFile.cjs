@@ -319,7 +319,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function deleteImagePercentXYFromImage
-   * @param {event} event - FmcFile:openInFinder event captured by ipcMain.handle
+   * @param {event} event - FmcFile:deleteImagePercentXYFromImage event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.fileName - Filename
    * @returns {string} newFileName
@@ -352,7 +352,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function pathExists
-   * @param {event} event - FmcFile:fileExists event captured by ipcMain.handle
+   * @param {event} event - FmcFile:pathExists event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.path - Path
    * @returns {boolean} exists
