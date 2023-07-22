@@ -835,8 +835,9 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
     const _exportWidth = (exportWidth !== null) ? exportWidth : '?';
     const _exportHeight = (exportHeight !== null) ? exportHeight : '?';
+    const whStr = ((_exportWidth === '?') && (_exportHeight === '?')) ? '' : ` (${_exportWidth} x ${_exportHeight})`;
 
-    const labelText = `${label} (${_exportWidth} x ${_exportHeight})`;
+    const labelText = `${label}${whStr}`;
 
     if (!heading) {
       const headingText = document.createTextNode(labelText);
