@@ -831,13 +831,12 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
    */
   injectHeading(cropperImage, label, exportWidth, exportHeight) {
     const parent = cropperImage.parentNode;
-    let labelText = label;
-
     let heading = parent.querySelector('h2');
 
-    if ((exportWidth !== null) && (exportHeight !== null)) {
-      labelText = `${label} (${exportWidth} x ${exportHeight})`;
-    }
+    const _exportWidth = (exportWidth !== null) ? exportWidth : '?';
+    const _exportHeight = (exportHeight !== null) ? exportHeight : '?';
+
+    const labelText = `${label} (${_exportWidth} x ${_exportHeight})`;
 
     if (!heading) {
       const headingText = document.createTextNode(labelText);
