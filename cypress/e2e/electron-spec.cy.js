@@ -368,7 +368,6 @@ describe('template spec', () => {
       it.skip('getSelectedIndex', () => {});
       it.skip('removeSelectedClass', () => {});
       it.skip('scrollToThumb', () => {});
-      it.skip('selectFirstThumb', () => {});
 
       /* Static methods */
       it.skip('getNextIndex', () => {});

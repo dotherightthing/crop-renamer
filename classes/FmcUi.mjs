@@ -364,6 +364,11 @@ export class FmcUi { // eslint-disable-line no-unused-vars
         fmcThumbsUiInstance.displayCount({
           thumbIndex: clickedButtonIndex
         });
+
+        window.electronAPI.storeSet({
+          key: 'thumbIndex',
+          value: clickedButtonIndex
+        });
       }, 500);
 
       this.setPaths(newImageSrc);
@@ -547,7 +552,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
    * @param {Array} args.imagesData - Images data
    * @memberof FmcUi
    */
-  setFolderIn({ folderName, folderPath, imagesData }) {
+  async setFolderIn({ folderName, folderPath, imagesData }) {
     const {
       fmcCroppersUiInstance,
       fmcThumbsUiInstance,
@@ -573,7 +578,13 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     folderInButton.dataset.hint = true;
     folderInButton.querySelector(`.${controlHintClass}`).textContent = folderName;
 
-    fmcThumbsUiInstance.generateThumbsHtml(imagesData);
+    const storedThumbIndex = await window.electronAPI.storeGet({
+      key: 'thumbIndex'
+    });
+
+    const thumbIndex = (typeof storedThumbIndex !== 'undefined') ? storedThumbIndex : 1;
+
+    fmcThumbsUiInstance.generateThumbsHtml(imagesData, thumbIndex);
 
     const thumbs = document.querySelectorAll(`.${thumbClass}`);
     const thumbImages = document.querySelectorAll(`.${thumbImgClass}`);

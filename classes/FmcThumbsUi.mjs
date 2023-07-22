@@ -203,7 +203,7 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
    * @function displayCount
    * @param {object} args - Arguments
    * @param {number} args.thumbTotal - Thumb total
-   * @param {number} args.thumbIndex - Thumb index
+   * @param {number} args.thumbIndex - Thumb index (first is 1)
    * @memberof FmcThumbsUi
    */
   displayCount({ thumbTotal, thumbIndex }) {
@@ -232,9 +232,10 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
    * @function generateThumbsHtml
    * @summary Inject the thumb images and their scaffolding, then select the first thumb
    * @param {Array} imagesData - Images data
+   * @param {number} selectedThumbIndex - Selected thumb index
    * @memberof FmcThumbsUi
    */
-  generateThumbsHtml(imagesData) {
+  generateThumbsHtml(imagesData, selectedThumbIndex) {
     const {
       thumbButtonClass,
       thumbClass,
@@ -260,12 +261,13 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
 
       if (i === imagesData.length - 1) {
         document.getElementById(thumbsId).innerHTML = html;
-        this.selectFirstThumb();
+        document.querySelectorAll(`.${thumbButtonClass}`)[selectedThumbIndex - 1].click();
       }
     });
 
     this.displayCount({
-      thumbTotal: imagesData.length
+      thumbTotal: imagesData.length,
+      thumbIndex: selectedThumbIndex - 1
     });
   }
 
@@ -376,17 +378,6 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
         behavior: 'auto'
       });
     }
-  }
-
-  /**
-   * @function selectFirstThumb
-   * @summary Select the first thumb
-   * @memberof FmcThumbsUi
-   */
-  selectFirstThumb() {
-    const { thumbButtonClass } = this;
-
-    document.querySelectorAll(`.${thumbButtonClass}`)[0].click();
   }
 
   /* Static methods */
