@@ -99,6 +99,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
         fileNameSuffix,
         imagePercentX,
         imagePercentY,
+        marker,
         markerHex,
         markerStrokeW,
         markerWH,
@@ -127,6 +128,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
         fileNameSuffix,
         imagePercentX,
         imagePercentY,
+        marker,
         markerHex,
         markerStrokeW,
         markerWH,
@@ -146,18 +148,19 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
   /**
    * @function gmResizeAndCrop
    * @param {object} data - Data
-   * @param {number|undefined} data.centerX - center of image (X axis)
-   * @param {number|undefined} data.centerY - center of image (Y axis)
-   * @param {number|undefined} data.cropW - the width of the cropped area
-   * @param {number|undefined} data.cropH - the height of the cropped area
-   * @param {number|undefined} data.cropX - the offset left of the cropped area
-   * @param {number|undefined} data.cropY - the offset top of the cropped area
-   * @param {string} data.fileNameSuffix - suffix to add to the image
-   * @param {string} data.markerHex - hex color for the centerXY marker
-   * @param {number} data.markerStrokeW - width of the stroke applied to the centerXY marker
-   * @param {number} data.markerWH - width/height color for the centerXY marker
-   * @param {number} data.resizeW - the width to resize the image to
-   * @param {number|undefined} data.resizeH - the height to resize the image to
+   * @param {number|undefined} data.centerX - Center of image (X axis)
+   * @param {number|undefined} data.centerY - Center of image (Y axis)
+   * @param {number|undefined} data.cropW - Width of the cropped area
+   * @param {number|undefined} data.cropH - Height of the cropped area
+   * @param {number|undefined} data.cropX - Offset left of the cropped area
+   * @param {number|undefined} data.cropY - Offset top of the cropped area
+   * @param {string} data.fileNameSuffix - Suffix to add to the image
+   * @param {boolean} data.marker - Draw focalpoint marker on image
+   * @param {string} data.markerHex - Hex color of the focalpoint marker
+   * @param {number} data.markerStrokeW - Stroke width of the focalpoint marker
+   * @param {number} data.markerWH - Width/Height of the focalpoint marker
+   * @param {number} data.resizeW - Width to resize the image to
+   * @param {number|undefined} data.resizeH - Height to resize the image to
    * @param {number} data.quality - Image quality
    * @param {string} data.sourceFileName - Source file name
    * @param {string} data.targetFilename - Export filename
@@ -173,7 +176,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
       cropH,
       cropX,
       cropY,
-      fileNameSuffix,
+      marker,
       markerHex,
       markerStrokeW,
       markerWH,
@@ -186,28 +189,58 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
 
     const isCrop = ((typeof cropX !== 'undefined') && (typeof cropY !== 'undefined') && (typeof cropW !== 'undefined') && (typeof cropH !== 'undefined'));
 
-    if (isCrop) {
-      return new Promise((resolve, reject) => {
-        gm(sourceFileName)
-          .strip()
-          .autoOrient()
-          .quality(quality) // TODO possibly remove this line for PNG
-          .crop(cropW, cropH, cropX, cropY)
-          .resize(resizeW, null) // TODO make this possible to have width null
-          .write(targetFilename, err => {
-            if (err) {
-              console.log(err);
-              reject(err);
-            } else {
-              resolve(`Generated crop ${targetFilename}`);
-            }
-          });
-      });
-    }
-
-    if (fileNameSuffix === '') {
-      // see https://legacy.imagemagick.org/discourse-server/viewtopic.php?p=36624#p36624
-      return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+      if (isCrop) {
+        if (marker) {
+          // Crop with marker
+          gm(sourceFileName)
+            .strip()
+            .autoOrient()
+            .quality(quality) // TODO possibly remove this line for PNG
+            .crop(cropW, cropH, cropX, cropY)
+            .resize(resizeW, null) // TODO make this possible to have width null
+            .stroke(markerHex)
+            .strokeWidth(markerStrokeW)
+            .drawLine( // horz
+              centerX,
+              (centerY - (markerWH / 2)),
+              centerX,
+              (centerY + (markerWH / 2))
+            )
+            .drawLine( // vert
+              (centerX - (markerWH / 2)),
+              centerY,
+              (centerX + (markerWH / 2)),
+              centerY
+            )
+            .write(targetFilename, err => {
+              if (err) {
+                console.log(err);
+                reject(err);
+              } else {
+                resolve(`Generated crop ${targetFilename} - MARKER`);
+              }
+            });
+        } else {
+          // Crop
+          gm(sourceFileName)
+            .strip()
+            .autoOrient()
+            .quality(quality) // TODO possibly remove this line for PNG
+            .crop(cropW, cropH, cropX, cropY)
+            .resize(resizeW, null) // TODO make this possible to have width null
+            .write(targetFilename, err => {
+              if (err) {
+                console.log(err);
+                reject(err);
+              } else {
+                resolve(`Generated crop ${targetFilename}`);
+              }
+            });
+        }
+      } else if (marker) {
+        // Resize with marker
+        // see https://legacy.imagemagick.org/discourse-server/viewtopic.php?p=36624#p36624
         gm(sourceFileName)
           .strip()
           .autoOrient()
@@ -232,26 +265,25 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
               console.log(err);
               reject(err);
             } else {
-              resolve(`Generated crop ${targetFilename}`);
+              resolve(`Generated crop ${targetFilename} - MARKER`);
             }
           });
-      });
-    }
-
-    return new Promise((resolve, reject) => {
-      gm(sourceFileName)
-        .strip()
-        .autoOrient()
-        .quality(quality) // TODO possibly remove this line for PNG
-        .resize(resizeW, resizeH)
-        .write(targetFilename, err => {
-          if (err) {
-            console.log(err);
-            reject(err);
-          } else {
-            resolve(`Generated size ${targetFilename}`);
-          }
-        });
+      } else {
+        // Resize
+        gm(sourceFileName)
+          .strip()
+          .autoOrient()
+          .quality(quality) // TODO possibly remove this line for PNG
+          .resize(resizeW, resizeH)
+          .write(targetFilename, err => {
+            if (err) {
+              console.log(err);
+              reject(err);
+            } else {
+              resolve(`Generated size ${targetFilename}`);
+            }
+          });
+      }
     });
   }
 

@@ -621,6 +621,48 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function getResizedImageCenterXY
+   * @summary Get the center point of the resized image
+   * @param {string} fileName - Image file name and path
+   * @param {number} resizeW - Resize width
+   * @param {number} resizeH - Resize height
+   * @returns {object} { centerX, centerY }
+   * @memberof FmcCroppersUi
+   */
+  getResizedImageCenterXY(fileName, resizeW, resizeH) {
+    const {
+      masterCropper
+    } = this;
+
+    const {
+      imagePercentX = 50,
+      imagePercentY = 50
+    } = this.getImagePercentXYFromImage(fileName);
+
+    // calculate length of the missing side
+    let _resizeW = resizeW;
+    let _resizeH = resizeH;
+
+    if ((resizeW === null) || (resizeH === null)) {
+      const {
+        naturalWidth,
+        naturalHeight
+      } = masterCropper.cropperInstance.getImageData();
+
+      if ((resizeW === null) && (resizeH !== null)) {
+        _resizeW = naturalWidth * (resizeH / naturalHeight);
+      } else if ((resizeH === null) && (resizeW !== null)) {
+        _resizeH = naturalHeight * (resizeW / naturalWidth);
+      }
+    }
+
+    return {
+      centerX: (_resizeW * (imagePercentX / 100)),
+      centerY: (_resizeH * (imagePercentY / 100))
+    };
+  }
+
+  /**
    * @function init
    * @summary Initialise cropper instances (master and slaves)
    * @memberof FmcCroppersUi
@@ -695,6 +737,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       cropperAction: action,
       cropperExportWidth, // undefined for role="master"
       cropperExportHeight, // undefined for role="master"
+      cropperExportMarker = 'false',
       cropperExportSuffix: exportSuffix,
       cropperLabel: label,
       cropperRole: role
@@ -718,6 +761,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       exportHeight,
       exportSuffix,
       label,
+      marker: cropperExportMarker === 'true',
       role
     };
 
@@ -740,6 +784,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       cropperAction: action,
       cropperExportWidth,
       cropperExportHeight,
+      cropperExportMarker = 'false',
       cropperExportSuffix: exportSuffix,
       cropperLabel: label,
       cropperRole: role
@@ -759,6 +804,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       exportHeight,
       exportSuffix,
       label,
+      marker: cropperExportMarker === 'true',
       role
     };
 
@@ -932,26 +978,20 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
   async resizeAndCropImage(targetFolder) {
     const {
       croppersId,
-      croppers,
+      masterCropper,
       resizers,
       slaveCroppers
     } = this;
 
-    const masterCropper = croppers[0];
-    const fileName = masterCropper.cropperInstance.element.src;
-
-    const {
-      naturalWidth,
-      naturalHeight
-    } = masterCropper.cropperInstance.getImageData();
-
     const cropsAndSizes = [];
+    const fileName = masterCropper.cropperInstance.element.src;
 
     slaveCroppers.forEach(cropper => {
       const {
         exportWidth: resizeW,
         exportHeight: resizeH,
-        exportSuffix: fileNameSuffix
+        exportSuffix: fileNameSuffix,
+        marker
       } = cropper;
 
       const {
@@ -961,12 +1001,28 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
         height: cropH
       } = cropper.cropperInstance.getData();
 
+      let centerX;
+      let centerY;
+
+      if (marker) {
+        ({
+          centerX,
+          centerY
+        } = this.getResizedImageCenterXY(fileName, resizeW, resizeH));
+      }
+
       cropsAndSizes.push({
+        centerX,
+        centerY,
         cropW,
         cropH,
         cropX,
         cropY,
         fileNameSuffix,
+        marker,
+        markerHex: '#00c800', // matches --color-checked-on
+        markerStrokeW: 4,
+        markerWH: 160,
         resizeH,
         resizeW
       });
@@ -976,38 +1032,28 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       const {
         exportWidth: resizeW,
         exportHeight: resizeH,
-        exportSuffix: fileNameSuffix
+        exportSuffix: fileNameSuffix,
+        marker
       } = resizer;
 
       let centerX;
       let centerY;
 
-      if (fileNameSuffix === '') {
-        const {
-          imagePercentX = 50,
-          imagePercentY = 50
-        } = this.getImagePercentXYFromImage(fileName);
-
-        // calculate length of the missing side
-        let _resizeW = resizeW;
-        let _resizeH = resizeH;
-
-        if ((resizeW === null) && (resizeH !== null)) {
-          _resizeW = naturalWidth * (resizeH / naturalHeight);
-        } else if ((resizeH === null) && (resizeW !== null)) {
-          _resizeH = naturalHeight * (resizeW / naturalWidth);
-        }
-
-        centerX = (_resizeW * (imagePercentX / 100));
-        centerY = (_resizeH * (imagePercentY / 100));
+      if (marker) {
+        ({
+          centerX,
+          centerY
+        } = this.getResizedImageCenterXY(fileName, resizeW, resizeH));
       }
+
       cropsAndSizes.push({
         centerX,
         centerY,
+        fileNameSuffix,
+        marker,
         markerHex: '#00c800', // matches --color-checked-on
         markerStrokeW: 4,
         markerWH: 160,
-        fileNameSuffix,
         resizeW,
         resizeH
       });
