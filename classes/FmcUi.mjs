@@ -101,6 +101,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       console,
       copyPaths,
       croppersContainer,
+      editWebpageButton,
       focalpointAutoSaveInput,
       focalpointDeleteButton,
       focalpointInput,
@@ -109,7 +110,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       focalpointYInput,
       folderInButton,
       folderOutButton,
-      folderWebpageButton,
+      fileWebpageButton,
       folderWebsiteButton,
       exportCropsAndSizesButton,
       lastCropperImg,
@@ -221,6 +222,21 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       console.innerHTML = (msg !== '') ? `${msg}.` : msg;
     });
 
+    editWebpageButton.addEventListener('click', async () => {
+      const { dataset } = fileWebpageButton;
+      const { targetFile } = dataset;
+
+      const msg = await window.electronAPI.openInEditor({
+        editorCommand: 'code', // see https://code.visualstudio.com/docs/editor/command-line
+        fileDescription: 'webpage',
+        filePath: targetFile
+      });
+
+      FmcUi.emitWindowEvent('message', {
+        msg
+      });
+    });
+
     focalpointAutoSaveInput.forEach(radio => {
       radio.addEventListener('change', (event) => {
         window.electronAPI.storeSet({
@@ -284,15 +300,14 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       this.setFolderOut({ folderName, folderPath });
     });
 
-    folderWebpageButton.addEventListener('click', async () => {
-      const { folderName, folderPath } = await window.electronAPI.selectFolder({
-        dialogTitle: 'Webpage folder',
-        retrieveImagesData: false,
+    fileWebpageButton.addEventListener('click', async () => {
+      const { fileName, filePath, folderPath } = await window.electronAPI.selectFile({
+        dialogTitle: 'Webpage file',
         restore: false,
-        storeKey: 'folderWebpage'
+        storeKey: 'fileWebpage'
       });
 
-      this.setFolderWebpage({ folderName, folderPath });
+      this.setFileWebpage({ fileName, filePath, folderPath });
     });
 
     folderWebsiteButton.addEventListener('click', async () => {
@@ -380,6 +395,12 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     window.addEventListener('resize', () => {
       fmcThumbsUiInstance.scrollToThumb('selected');
     });
+
+    window.addEventListener('message', (event) => {
+      const { msg } = event.detail;
+
+      console.innerHTML = (msg !== '') ? `${msg}.` : msg;
+    });
   }
 
   /**
@@ -454,11 +475,11 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = this;
 
     const {
-      folderWebpageButton,
+      fileWebpageButton,
       folderWebsiteButton
     } = elements;
 
-    const { targetFolder: pathWebEmbed } = folderWebpageButton.dataset;
+    const { targetFolder: pathWebEmbed } = fileWebpageButton.dataset;
     const { targetFolder: pathWebsite } = folderWebsiteButton.dataset;
 
     const pathOut = this.getPathOut();
@@ -496,11 +517,10 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       storeKey: 'folderOut'
     });
 
-    const storedFolderWebpage = await window.electronAPI.selectFolder({
+    const storedFileWebpage = await window.electronAPI.selectFile({
       dialogTitle: 'Webpage folder',
-      retrieveImagesData: false,
       restore: true,
-      storeKey: 'folderWebpage'
+      storeKey: 'fileWebpage'
     });
 
     const storedFolderWebsite = await window.electronAPI.selectFolder({
@@ -517,7 +537,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     this.setAutoSave(storedFocalpointAutoSave);
     this.setFolderIn(storedFolderIn);
     this.setFolderOut(storedFolderOut);
-    this.setFolderWebpage(storedFolderWebpage);
+    this.setFileWebpage(storedFileWebpage);
     this.setFolderWebsite(storedFolderWebsite);
   }
 
@@ -642,21 +662,22 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function setFolderWebpage
-   * @summary Set the webpage folder
+   * @function setFileWebpage
+   * @summary Set the webpage file
    * @param {object} args - Arguments
-   * @param {string} args.folderName - Folder name
+   * @param {string} args.fileName - File name
+   * @param {string} args.filePath - File path
    * @param {string} args.folderPath - Folder path
    * @memberof FmcUi
    */
-  setFolderWebpage({ folderName, folderPath }) {
+  setFileWebpage({ fileName, filePath, folderPath }) {
     const {
       elements,
       selectors
     } = this;
 
     const {
-      folderWebpageButton
+      fileWebpageButton
     } = elements;
 
     const {
@@ -664,13 +685,14 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = selectors;
 
     // if folder select was cancelled
-    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
+    if ((typeof fileName === 'undefined') || (typeof filePath === 'undefined')) {
       return;
     }
 
-    folderWebpageButton.dataset.targetFolder = folderPath;
-    folderWebpageButton.dataset.hint = true;
-    folderWebpageButton.querySelector(`.${controlHintClass}`).textContent = folderName;
+    fileWebpageButton.dataset.targetFile = filePath;
+    fileWebpageButton.dataset.targetFolder = folderPath;
+    fileWebpageButton.dataset.hint = true;
+    fileWebpageButton.querySelector(`.${controlHintClass}`).textContent = fileName;
   }
 
   /**
@@ -828,6 +850,27 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     });
 
     document.getElementById(elementId).dispatchEvent(event);
+  }
+
+  /**
+   * @function emitWindowEvent
+   * @summary Emit a custom event
+   * @param {string} eventName - Event names are case-sensitive
+   * @param {object} eventDetail - name-value pair
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent}
+   * @see {@link https://gomakethings.com/callbacks-vs.-custom-events-in-vanilla-js/}
+   * @memberof FmcUi
+   * @static
+   */
+  static emitWindowEvent(eventName, eventDetail = {}) {
+    const event = new CustomEvent(eventName, {
+      bubbles: true, // stop with event.stopPropagation()
+      cancelable: true, // cancel with event.preventDefault()
+      // composed // web components only
+      detail: eventDetail
+    });
+
+    window.dispatchEvent(event);
   }
 
   /**

@@ -19,8 +19,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   copyToClipboard: (data) => ipcRenderer.invoke('FmcFile:copyToClipboard', data),
   getRelativePath: (data) => ipcRenderer.invoke('FmcFile:getRelativePath', data),
+  openInEditor: (data) => ipcRenderer.invoke('FmcFile:openInEditor', data),
   openInFinder: (data) => ipcRenderer.invoke('FmcFile:openInFinder', data),
   pathExists: (data) => ipcRenderer.invoke('FmcFile:pathExists', data),
+  selectFile: (data) => ipcRenderer.invoke('FmcFile:selectFile', data),
   selectFolder: (data) => ipcRenderer.invoke('FmcFile:selectFolder', data),
   deleteImagePercentXYFromImage: (data) => ipcRenderer.invoke('FmcFile:deleteImagePercentXYFromImage', data),
   saveImagePercentXYToImage: (data) => ipcRenderer.invoke('FmcFile:saveImagePercentXYToImage', data),

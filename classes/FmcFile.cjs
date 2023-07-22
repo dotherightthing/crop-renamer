@@ -2,14 +2,17 @@
  * @file FmcFile.js
  */
 
+const commandExists = require('command-exists');
+const ExifReader = require('exifreader');
 const fs = require('fs');
-const { promises: Fs } = require('fs');
+const gm = require('gm').subClass({ imageMagick: '7+' });
 const path = require('path');
 const process = require('process');
-const ExifReader = require('exifreader');
-const { clipboard, dialog, shell } = require('electron');
-const gm = require('gm').subClass({ imageMagick: '7+' });
 const Store = require('./store.js');
+
+const { clipboard, dialog, shell } = require('electron');
+const { promises: Fs } = require('fs');
+const { spawn } = require('child_process');
 
 const store = new Store({
   configName: 'user-preferences',
@@ -457,6 +460,44 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function openInEditor
+   * @param {event} event - FmcFile:openInEditor event captured by ipcMain.handle
+   * @param {object} data - Data
+   * @param {string} data.editorCommand - Editor command (e.g. 'code')
+   * @param {string} data.fileDescription - File description
+   * @param {string} data.filePath - Path to file
+   * @returns {string} message
+   * @memberof FmcFile
+   * @static
+   */
+  static async openInEditor(event, data) {
+    const {
+      editorCommand,
+      fileDescription,
+      filePath
+    } = data;
+
+    const opts = {
+      // Make sure the editor processes are detached from the Desktop app.
+      // Otherwise, some editors (like Notepad++) will be killed when the
+      // Desktop app is closed.
+      detached: true
+    };
+
+    let message = `Opened ${fileDescription} in editor`;
+
+    commandExists(editorCommand, (err, exists) => { // eslint-disable-line no-unused-vars
+      if (exists) {
+        spawn(editorCommand, [ filePath ], opts);
+      } else {
+        message = `Could not open ${fileDescription} - the command '${editorCommand}' is not available)`;
+      }
+    });
+
+    return message;
+  }
+
+  /**
    * @function openInFinder
    * @param {event} event - FmcFile:openInFinder event captured by ipcMain.handle
    * @param {object} data - Data
@@ -471,6 +512,166 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function selectFile
+   * @param {event} event - FmcFile:selectFile event captured by ipcMain.handle
+   * @param {object} data - Data
+   * @param {string} data.dialogTitle - Title for the dialog
+   * @param {boolean} data.restore - Restore setting if it was previously stored
+   * @param {string} data.storeKey - Key under which to persist the file path in the JSON file
+   * @returns { object } { fileName, filePath }
+   * @memberof FmcFile
+   * @static
+   */
+  static async selectFile(event, data) { // eslint-disable-line no-unused-vars
+    const {
+      dialogTitle,
+      restore,
+      storeKey
+    } = data;
+
+    const { fileName, filePath, folderPath } = await FmcFile.selectFileDialog({
+      dialogTitle,
+      dialogButtonLabel: 'Select file',
+      restore,
+      storeKey
+    });
+
+    if ((typeof fileName === 'undefined') || (typeof filePath === 'undefined') || (typeof folderPath === 'undefined')) {
+      return {};
+    }
+
+    return { fileName, filePath, folderPath };
+  }
+
+  /**
+   * @function selectFileDialog
+   * @param {object} args - Arguments
+   * @param {string} args.dialogTitle - Dialog title
+   * @param {string} args.dialogButtonLabel - Dialog button label
+   * @param {string} args.restore - Restore previously stored return
+   * @param {string} args.storeKey - Store return value with this key
+   * @returns {object} { fileName, filePath, folderPath }
+   * @memberof FmcFile
+   * @static
+   */
+  static async selectFileDialog({
+    dialogTitle,
+    dialogButtonLabel,
+    restore,
+    storeKey
+  }) {
+    let filePath;
+    let folderPath;
+
+    let data = await FmcFile.storeGet(null, {
+      key: storeKey
+    });
+
+    if (typeof data !== 'undefined') {
+      ({
+        filePath,
+        folderPath
+      } = data);
+    }
+
+    if (restore) {
+      if (typeof data === 'undefined') {
+        return {};
+      }
+
+      return data;
+    }
+
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      buttonLabel: dialogButtonLabel,
+      defaultPath: filePath,
+      message: dialogTitle,
+      properties: [
+        'openFile',
+        'showHiddenFiles'
+      ],
+      title: dialogTitle
+    });
+
+    if (!canceled && filePaths.length) {
+      filePath = filePaths[0];
+
+      const pathSeparator = filePath.lastIndexOf('/');
+      const fileName = filePath.slice(pathSeparator + 1);
+
+      folderPath = path.dirname(filePath);
+
+      data = {
+        fileName,
+        filePath,
+        folderPath
+      };
+
+      FmcFile.storeSet(null, {
+        key: storeKey,
+        value: data
+      });
+
+      return data;
+    }
+
+    return {};
+  }
+
+  /**
+   * @function selectFolder
+   * @param {event} event - FmcFile:selectFolder event captured by ipcMain.handle
+   * @param {object} data - Data
+   * @param {string} data.dialogTitle - Title for the dialog
+   * @param {boolean} data.retrieveImagesData - Get information about images in the folder
+   * @param {boolean} data.restore - Restore setting if it was previously stored
+   * @param {string} data.storeKey - Key under which to persist the folder path in the JSON file
+   * @returns { object } { folderName, folderPath }
+   * @memberof FmcFile
+   * @static
+   */
+  static async selectFolder(event, data) { // eslint-disable-line no-unused-vars
+    const {
+      dialogTitle,
+      retrieveImagesData,
+      restore,
+      storeKey
+    } = data;
+
+    // if getImagesData
+    if (retrieveImagesData) {
+      const { folderName, folderPath, imagesData } = await FmcFile.selectFolderDialog({
+        dialogTitle,
+        dialogButtonLabel: 'Select folder',
+        retrieveImagesData,
+        restore,
+        storeKey
+      });
+
+      if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
+        return {};
+      }
+
+      return { folderName, folderPath, imagesData };
+    }
+
+    // if !getImagesData
+    const { folderName, folderPath } = await FmcFile.selectFolderDialog({
+      dialogTitle,
+      dialogButtonLabel: 'Select folder',
+      retrieveImagesData,
+      restore,
+      storeKey
+    });
+
+    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
+      return {};
+    }
+
+    return { folderName, folderPath };
+  }
+
+  /**
    * @function selectFolderDialog
    * @param {object} args - Arguments
    * @param {string} args.dialogTitle - Dialog title
@@ -478,7 +679,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
    * @param {string} args.restore - Restore previously stored return
    * @param {string} args.storeKey - Store return value with this key
    * @param {boolean} args.retrieveImagesData - Return imagesData
-   * @returns {object} { folderPath, imagesData }
+   * @returns {object} { folderName, folderPath, imagesData }
    * @memberof FmcFile
    * @static
    */
@@ -564,59 +765,6 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
     }
 
     return {};
-  }
-
-  /**
-   * @function selectFolder
-   * @param {event} event - FmcFile:selectFolder event captured by ipcMain.handle
-   * @param {object} data - Data
-   * @param {string} data.dialogTitle - Title for the dialog
-   * @param {boolean} data.retrieveImagesData - Get information about images in the folder
-   * @param {boolean} data.restore - Restore setting if it was previously stored
-   * @param {string} data.storeKey - Key under which to persist the folder path in the JSON file
-   * @returns { object } { folderName, folderPath, imagesData }
-   * @memberof FmcFile
-   * @static
-   */
-  static async selectFolder(event, data) { // eslint-disable-line no-unused-vars
-    const {
-      dialogTitle,
-      retrieveImagesData,
-      restore,
-      storeKey
-    } = data;
-
-    // if getImagesData
-    if (retrieveImagesData) {
-      const { folderName, folderPath, imagesData } = await FmcFile.selectFolderDialog({
-        dialogTitle,
-        dialogButtonLabel: 'Select folder',
-        retrieveImagesData,
-        restore,
-        storeKey
-      });
-
-      if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
-        return {};
-      }
-
-      return { folderName, folderPath, imagesData };
-    }
-
-    // if !getImagesData
-    const { folderName, folderPath } = await FmcFile.selectFolderDialog({
-      dialogTitle,
-      dialogButtonLabel: 'Select folder',
-      retrieveImagesData,
-      restore,
-      storeKey
-    });
-
-    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
-      return {};
-    }
-
-    return { folderName, folderPath };
   }
 
   /**
