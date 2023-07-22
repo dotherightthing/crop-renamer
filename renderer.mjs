@@ -81,7 +81,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       folderOutButtonDependent: document.querySelector('[data-dependent="folder-out"]'),
       fileWebpageButton: document.getElementById('file-webpage'),
       folderWebsiteButton: document.getElementById('folder-website'),
-      lastCropperImg: document.querySelector('#croppers .img-container:last-child img'),
+      lastCropperImg: document.querySelector('#croppers .img-container-last img'),
       pathLinks: document.querySelectorAll('.control-link'),
       pathInLink: document.getElementById('link-path-in'),
       pathOutLink: document.getElementById('link-path-out'),

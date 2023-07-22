@@ -268,7 +268,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
               console.log(err);
               reject(err);
             } else {
-              resolve(`Generated crop ${targetFilename} - MARKER`);
+              resolve(`Generated size ${targetFilename} - MARKER`);
             }
           });
       } else {
