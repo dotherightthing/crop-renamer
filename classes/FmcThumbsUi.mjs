@@ -248,14 +248,19 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
     let html = '';
 
     imagesData.forEach((loadedThumb, i) => {
-      const { src, dateTimeOriginal } = loadedThumb;
+      const {
+        src,
+        dateTimeOriginal
+      } = loadedThumb;
+
+      const dateTimeOriginalStr = (dateTimeOriginal !== '') ? dateTimeOriginal : '-';
 
       html += `<li class="${thumbClass}">
     <button type="button" class="${thumbButtonClass}">
       <div class="${thumbImgWrapperClass}">
         <img src="${src}" class="${thumbImgClass}">
       </div>
-      <p class="${thumbMetaClass}">${dateTimeOriginal}</p>  
+      <p class="${thumbMetaClass}">${dateTimeOriginalStr}</p>  
     </button>
   </li>`;
 
