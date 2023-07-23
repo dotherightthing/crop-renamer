@@ -699,7 +699,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
   }) {
     let folderPath;
 
-    const data = await FmcFile.storeGet(null, {
+    let data = await FmcFile.storeGet(null, {
       key: storeKey
     });
 
