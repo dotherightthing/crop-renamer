@@ -448,11 +448,18 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
     for (let i = 0; i < imageFiles.length; i += 1) {
       const image = imageFiles[i];
       const tags = await ExifReader.load(image); /* eslint-disable-line no-await-in-loop */
-      const imageDate = tags.DateTimeOriginal.description;
+
+      const {
+        DateTimeOriginal = {}
+      } = tags; // object: { id: number, value: Array of strings, description: string }
+
+      const {
+        description = ''
+      } = DateTimeOriginal;
 
       imagesData.push({
         src: image,
-        dateTimeOriginal: imageDate
+        dateTimeOriginal: description
       });
     }
 
