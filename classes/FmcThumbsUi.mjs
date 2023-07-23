@@ -303,14 +303,15 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
 
       const dateTimeOriginalStr = (dateTimeOriginal !== '') ? dateTimeOriginal : '-';
 
-      html += `<li class="${thumbClass}" data-index="${i + 1}">
-    <button type="button" class="${thumbButtonClass}">
-      <div class="${thumbImgWrapperClass}">
-        <img src="${src}" class="${thumbImgClass}">
-      </div>
-      <p class="${thumbMetaClass}">${dateTimeOriginalStr}</p>  
-    </button>
-  </li>`;
+      html += `<li class="${thumbClass}">
+  <div class="thumb-index">${i + 1}</div>
+  <button type="button" class="${thumbButtonClass}">
+    <div class="${thumbImgWrapperClass}">
+      <img src="${src}" class="${thumbImgClass}">
+    </div>
+    <p class="${thumbMetaClass}">${dateTimeOriginalStr}</p>  
+  </button>
+</li>`;
 
       if (i === imagesData.length - 1) {
         document.getElementById(thumbsId).innerHTML = html;

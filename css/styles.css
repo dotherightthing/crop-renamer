@@ -152,8 +152,7 @@ img {
   background-color: var(--color-bg-thumb); /* fill below image */
 }
 
-.thumb::before {
-  content: attr(data-index);
+.thumb-index {
   display: block;
   position: absolute;
   top: 0;
