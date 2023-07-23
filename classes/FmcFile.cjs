@@ -401,6 +401,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
 
   /**
    * @function getFiles
+   * @summary Get all files within a directory, ignoring subfolders
    * @param {string} dir - Directory path
    * @returns {Array} files
    * @memberof FmcFile
@@ -408,16 +409,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
    */
   static getFiles(dir) {
     return fs.readdirSync(dir).flatMap(item => {
-      const pth = `${dir}/${item}`;
-
-      // get files from the directory
-      if (fs.statSync(pth).isDirectory()) {
-        const files = FmcFile.getFiles(pth);
-
-        return files;
-      }
-
-      return pth;
+      return `${dir}/${item}`;
     });
   }
 
