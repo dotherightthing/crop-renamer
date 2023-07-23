@@ -64,6 +64,10 @@
   gap: var(--gutter);
 }
 
+.l-horz-list > fieldset {
+  min-width: 0;
+}
+
 .l-horz-list-center,
 .l-horz-list-center .l-horz-list-header {
   margin-right: auto;

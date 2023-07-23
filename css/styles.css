@@ -327,10 +327,18 @@ img {
   background-color: transparent;
 }
 
+.control-action .label,
+.control-hint {
+  display: block;
+  white-space: nowrap;
+}
+
 .control-hint {
   display: block;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 0.7em;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .control-label {
