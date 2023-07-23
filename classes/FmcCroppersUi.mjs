@@ -1290,12 +1290,12 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       } else if (newFileName !== oldFileName) {
         // timeout prevents broken image
         setTimeout(() => {
-          FmcUi.emitEvent(croppersId, 'imageRenamed', {
-            newFileName
-          });
-
           croppers.forEach(cropper => {
             cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
+          });
+
+          FmcUi.emitEvent(croppersId, 'imageRenamed', {
+            newFileName
           });
 
           resolve('Saved focalpoint to filename');

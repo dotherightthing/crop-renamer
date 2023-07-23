@@ -168,10 +168,7 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   changeSelectedImageSrc(src) {
     const { selectedClass } = this;
 
-    // timeout prevents broken thumbnail
-    setTimeout(() => {
-      document.querySelector(`.${selectedClass} img`).src = src;
-    }, 500);
+    document.querySelector(`.${selectedClass} img`).src = src;
   }
 
   /**
