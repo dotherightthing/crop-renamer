@@ -29,7 +29,8 @@
   --color-border-active: rgba(170, 170, 170, 1);
   --color-border-shadow: rgba(0, 0, 0, 1);
   --focalpoint-default: var(--color-secondary);
-  --focalpoint-custom: var(--color-checked-on);
+  --focalpoint-dirty: rgba(255, 140, 0, 1);
+  --focalpoint-saved: var(--color-checked-on);
   --height-controls-inner: 5rem;
   --height-controls-outer: calc(var(--height-controls-inner) + var(--gutter-half) + var(--gutter-half));
   --height-cropper-master: calc(70vh - var(--height-controls-outer));
@@ -41,4 +42,20 @@
   --opacity-modal-overlay: .5;
   --opacity-thumb-brightness: .8;
   --width-cropper-view-box: 4px; /* cannot use rems or calc() as must be exposed to getPropertyValue() as a number */
+
+  --color-border-cropper-view-box: var(--focalpoint-default);
+}
+
+/* #cropper states */
+
+[data-cropper-focalpoint-save-status='default'] {
+  --color-border-cropper-view-box: var(--focalpoint-default);
+}
+
+[data-cropper-focalpoint-save-status='dirty'] {
+  --color-border-cropper-view-box: var(--focalpoint-dirty);
+}
+
+[data-cropper-focalpoint-save-status='saved'] {
+  --color-border-cropper-view-box: var(--focalpoint-saved);
 }

@@ -106,6 +106,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       focalpointDeleteButton,
       focalpointInput,
       focalpointResetButton,
+      focalpointSaveButton,
       focalpointXInput,
       focalpointYInput,
       folderInButton,
@@ -241,7 +242,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     });
 
     focalpointAutoSaveInput.forEach(radio => {
-      radio.addEventListener('change', (event) => {
+      radio.addEventListener('change', async (event) => {
         window.electronAPI.storeSet({
           key: 'focalpointAutoSave',
           value: event.target.value === 'on'
@@ -249,13 +250,27 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
         const autosaveOn = event.target.value;
 
-        this.autosaveFocalpoint(autosaveOn);
+        await this.autosaveFocalpoint(autosaveOn === 'on');
+
+        fmcCroppersUiInstance.setFocalpointSaveState({
+          imagePercentXUi: focalpointXInput.value,
+          imagePercentYUi: focalpointYInput.value
+        });
       });
     });
 
-    focalpointDeleteButton.addEventListener('click', () => {
-      fmcCroppersUiInstance.deleteImagePercentXYFromImage();
+    focalpointDeleteButton.addEventListener('click', async () => {
+      const {
+        croppersId
+      } = fmcCroppersUiInstance;
 
+      const msg = await fmcCroppersUiInstance.deleteImagePercentXYFromImage();
+
+      FmcUi.emitEvent(croppersId, 'statusChange', {
+        msg
+      });
+
+      // input change listener calls setFocalpointSaveState
       focalpointXInput.value = 50;
       focalpointYInput.value = 50;
 
@@ -265,20 +280,35 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       focalpointYInput.dispatchEvent(ev); // for both X and Y
     });
 
-    focalpointInput.forEach(input => input.addEventListener('change', () => {
+    focalpointInput.forEach(input => input.addEventListener('change', async () => {
       // move cropbox
       fmcCroppersUiInstance.displayImagePercentXY({
-        imagePercentX: focalpointXInput.value,
-        imagePercentY: focalpointYInput.value
+        imagePercentX: focalpointXInput.value, // string
+        imagePercentY: focalpointYInput.value // string
       });
 
       const autosaveOn = [ ...focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
 
-      this.autosaveFocalpoint(autosaveOn);
+      await this.autosaveFocalpoint(autosaveOn === 'on');
+
+      fmcCroppersUiInstance.setFocalpointSaveState({
+        imagePercentXUi: focalpointXInput.value,
+        imagePercentYUi: focalpointYInput.value
+      });
     }));
 
     focalpointResetButton.addEventListener('click', (event) => {
+      // input change listener calls setFocalpointSaveState
       fmcCroppersUiInstance.reinstateImagePercentXYFromImage(event);
+    });
+
+    focalpointSaveButton.addEventListener('click', async () => {
+      await this.saveFocalpoint();
+
+      fmcCroppersUiInstance.setFocalpointSaveState({
+        imagePercentXUi: focalpointXInput.value,
+        imagePercentYUi: focalpointYInput.value
+      });
     });
 
     folderInButton.addEventListener('click', async () => {
@@ -432,32 +462,24 @@ export class FmcUi { // eslint-disable-line no-unused-vars
    * @param {boolean} on - Auto-Save is on (true) or off (false)
    * @memberof FmcUi
    */
-  autosaveFocalpoint(on) {
+  async autosaveFocalpoint(on) {
     const {
-      fmcCroppersUiInstance,
       elements
     } = this;
 
     const {
       focalpointResetButton,
-      focalpointXInput,
-      focalpointYInput
+      focalpointSaveButton
     } = elements;
 
     if (on) {
-      // value is a string despite input being of type number
-      if ((Number(focalpointXInput.value) === 50) && (Number(focalpointYInput.value) === 50)) {
-        fmcCroppersUiInstance.deleteImagePercentXYFromImage();
-      } else {
-        fmcCroppersUiInstance.writeImagePercentXYToImage({
-          imagePercentX: focalpointXInput.value,
-          imagePercentY: focalpointYInput.value
-        });
-      }
+      await this.saveFocalpoint();
 
       focalpointResetButton.setAttribute('disabled', '');
+      focalpointSaveButton.setAttribute('disabled', '');
     } else {
       focalpointResetButton.removeAttribute('disabled');
+      focalpointSaveButton.removeAttribute('disabled');
     }
   }
 
@@ -563,6 +585,42 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     this.setFolderOut(storedFolderOut);
     this.setFileWebpage(storedFileWebpage);
     this.setFolderWebsite(storedFolderWebsite);
+  }
+
+  /**
+   * @function saveFocalpoint
+   * @memberof FmcUi
+   */
+  async saveFocalpoint() {
+    const {
+      elements,
+      fmcCroppersUiInstance
+    } = this;
+
+    const {
+      focalpointXInput,
+      focalpointYInput
+    } = elements;
+
+    const {
+      croppersId
+    } = fmcCroppersUiInstance;
+
+    let msg;
+
+    // value is a string despite input being of type number
+    if ((Number(focalpointXInput.value) === 50) && (Number(focalpointYInput.value) === 50)) {
+      msg = await fmcCroppersUiInstance.deleteImagePercentXYFromImage();
+    } else {
+      msg = await fmcCroppersUiInstance.writeImagePercentXYToImage({
+        imagePercentX: focalpointXInput.value,
+        imagePercentY: focalpointYInput.value
+      });
+
+      FmcUi.emitEvent(croppersId, 'statusChange', {
+        msg
+      });
+    }
   }
 
   /**

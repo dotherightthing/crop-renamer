@@ -76,6 +76,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       focalpointDeleteButton: document.getElementById('delete-focalpoint'),
       focalpointInput: document.querySelectorAll('#focalpoint-x, #focalpoint-y'),
       focalpointResetButton: document.getElementById('reset-focalpoint'),
+      focalpointSaveButton: document.getElementById('save-focalpoint'),
       focalpointXInput: document.getElementById('focalpoint-x'),
       focalpointYInput: document.getElementById('focalpoint-y'),
       folderInButton: document.getElementById('folder-in'),

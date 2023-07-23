@@ -597,6 +597,51 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function setFocalpointSaveState
+   * @summary Determine whether the current focalpoint settings have been saved to the current image
+   * @param {object} args - Arguments
+   * @param {string} args.imagePercentXUi - Image Percent X as shown in the UI controls
+   * @param {string} args.imagePercentYUi - Image Percent Y as shown in the UI controls
+   * @returns {string} state
+   * @memberof FmcCroppersUi
+   */
+  setFocalpointSaveState({ imagePercentXUi, imagePercentYUi }) {
+    const {
+      croppersId,
+      masterCropper
+    } = this;
+
+    const { src } = masterCropper.cropperInstance.element;
+
+    let state;
+    let msg;
+
+    const {
+      imagePercentX: savedImagePercentX, // string
+      imagePercentY: savedImagePercentY // string
+    } = this.getImagePercentXYFromImage(src);
+
+    if ((imagePercentXUi === '50') && (imagePercentYUi === '50')) {
+      state = 'default';
+      msg = 'Default focalpoint';
+    } else if ((imagePercentXUi === savedImagePercentX) && (imagePercentYUi === savedImagePercentY)) {
+      state = 'saved';
+      msg = 'Focalpoint saved';
+    } else {
+      state = 'dirty';
+      msg = 'Warning: Focalpoint changed but not saved';
+    }
+
+    document.getElementById(croppersId).dataset.cropperFocalpointSaveStatus = state;
+
+    FmcUi.emitEvent(croppersId, 'statusChange', {
+      msg
+    });
+
+    return state;
+  }
+
+  /**
    * @function getImagePercentXYFromImage
    * @summary Get the values stored in the filename
    * @param {string} src - Image src
@@ -1075,13 +1120,14 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function deleteImagePercentXYFromImage
+   * @returns {Promise<string>} msg
    * @memberof FmcCroppersUi
    */
   async deleteImagePercentXYFromImage() {
     const {
+      croppers,
       croppersId,
-      masterCropper,
-      croppers
+      masterCropper
     } = this;
 
     const fileName = masterCropper.cropperInstance.element.src;
@@ -1090,20 +1136,24 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       fileName
     });
 
-    // timeout prevents broken image
-    setTimeout(() => {
-      croppers.forEach(cropper => {
-        cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
-      });
+    return new Promise(resolve => {
+      if (fileName === newFileName) {
+        resolve('Image filename does not contain a focalpoint');
+      } else {
+        // timeout prevents broken image
+        setTimeout(() => {
+          croppers.forEach(cropper => {
+            cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
+          });
 
-      FmcUi.emitEvent(croppersId, 'statusChange', {
-        msg: 'Removed focalpoint from filename'
-      });
+          FmcUi.emitEvent(croppersId, 'imageRenamed', {
+            newFileName
+          });
 
-      FmcUi.emitEvent(croppersId, 'imageRenamed', {
-        newFileName
-      });
-    }, 500);
+          resolve('Removed focalpoint from image filename');
+        }, 500);
+      }
+    });
   }
 
   /**
@@ -1203,8 +1253,9 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
    * @function writeImagePercentXYToImage
    * @summary Save the values to the image filename
    * @param {object} args - Arguments
-   * @param {number} args.imagePercentX - Image percentage X
-   * @param {number} args.imagePercentY - Image percentage Y
+   * @param {string} args.imagePercentX - Image percentage X
+   * @param {string} args.imagePercentY - Image percentage Y
+   * @returns {Promise<string>} msg
    * @memberof FmcCroppersUi
    */
   async writeImagePercentXYToImage({ imagePercentX, imagePercentY }) {
@@ -1215,39 +1266,44 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
     } = this;
 
     const fileName = masterCropper.cropperInstance.element.src;
-
-    if (isNaN(imagePercentX) || isNaN(imagePercentY)) { // eslint-disable-line no-restricted-globals
-      FmcUi.emitEvent(croppersId, 'statusChange', {
-        msg: 'Write failed - focalpoint percentages not available. Please click image to set a focalpoint.'
-      });
-
-      return;
-    }
-
     const oldFileName = fileName.replace('file://', '').replaceAll('%20', ' ');
 
-    const newFileName = await window.electronAPI.saveImagePercentXYToImage({
-      fileName,
-      imagePercentY,
-      imagePercentX
-    });
+    let errorMsg = '';
+    let newFileName;
 
-    if (newFileName !== oldFileName) {
-      // timeout prevents broken image
-      setTimeout(() => {
-        FmcUi.emitEvent(croppersId, 'imageRenamed', {
-          newFileName
-        });
-
-        croppers.forEach(cropper => {
-          cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
-        });
-
-        FmcUi.emitEvent(croppersId, 'statusChange', {
-          msg: 'Saved focalpoint to filename'
-        });
-      }, 500);
+    // an 'out of range' user input such as 'xx' will be input as ''
+    // although the change event may not actually fire in this case
+    if ((imagePercentX === '') || (imagePercentY === '')) {
+      errorMsg = 'Input out of range - focalpoint not saved to filename';
+    } else {
+      // cannot place await inside promise
+      newFileName = await window.electronAPI.saveImagePercentXYToImage({
+        fileName,
+        imagePercentY,
+        imagePercentX
+      });
     }
+
+    return new Promise(resolve => {
+      if (errorMsg !== '') {
+        resolve(errorMsg);
+      } else if (newFileName !== oldFileName) {
+        // timeout prevents broken image
+        setTimeout(() => {
+          FmcUi.emitEvent(croppersId, 'imageRenamed', {
+            newFileName
+          });
+
+          croppers.forEach(cropper => {
+            cropper.cropperInstance.replace(newFileName, true); // hasSameSize = true
+          });
+
+          resolve('Saved focalpoint to filename');
+        }, 500);
+      } else {
+        resolve('Focalpoint already saved to filename');
+      }
+    });
   }
 
   /* Static methods */

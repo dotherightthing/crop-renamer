@@ -96,7 +96,7 @@ img {
 }
 
 .cropper-master .cropper-view-box {
-  box-shadow: 0 0 0 var(--width-cropper-view-box) var(--color-border-active);
+  box-shadow: 0 0 0 var(--width-cropper-view-box) var(--color-border-cropper-view-box);
   outline: 0;
 }
 
@@ -198,7 +198,7 @@ img {
 }
 
 .thumb[style] .thumb-img-wrapper::before {
-  border-color: var(--focalpoint-custom);
+  border-color: var(--focalpoint-saved);
 }
 
 .thumb-meta {
