@@ -428,9 +428,11 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
         thumbsButtons[thumbsButtonNextIndex].click();
       }
 
-      thumbsButtons[thumbsButtonNextIndex].scrollIntoView({
-        behavior: 'auto'
-      });
+      setTimeout(() => {
+        thumbsButtons[thumbsButtonNextIndex].scrollIntoView({
+          behavior: 'auto'
+        });
+      }, 500);
     }
   }
 
