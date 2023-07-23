@@ -1104,7 +1104,10 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       });
     });
 
-    const baseExportPath = await window.electronAPI.resizeAndCropImage({
+    const {
+      baseExportPath,
+      counts
+    } = await window.electronAPI.resizeAndCropImage({
       fileName,
       quality: 75,
       targetFolder,
@@ -1112,7 +1115,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
     });
 
     FmcUi.emitEvent(croppersId, 'statusChange', {
-      msg: 'Generated crops and sizes'
+      msg: `Deleted ${counts.deletions} matching files. Generated ${counts.crops} crops and ${counts.resizes} sizes`
     });
 
     return baseExportPath;

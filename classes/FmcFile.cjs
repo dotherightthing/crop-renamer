@@ -65,7 +65,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
    * @param {number} data.quality - Quality
    * @param {string} data.targetFolder - Target folder
    * @param {Array} data.cropsAndSizes - Crops and sizes
-   * @returns {string} baseExportPath
+   * @returns {object} { baseExportPath, counts }
    * @memberof FmcFile
    * @static
    */
@@ -83,9 +83,31 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
       fileNameClean
     } = FmcFile.getFileNameParts(fileName);
 
+    const counts = {
+      deletions: 0,
+      crops: 0,
+      resizes: 0
+    };
+
     const currentDir = process.cwd();
     const targetPath = path.relative(currentDir, targetFolder);
     const baseExportPath = `${targetPath}/${fileNameOnly}${extName}`;
+
+    // delete existing files
+    const regex = FmcFile.getFocalpointRegex();
+    const baseTargetFilename = fileNameOnly.replace(regex, '');
+    const files = await FmcFile.getImageFiles(targetFolder);
+    const matchingFiles = files.filter(filePath => filePath.match(baseTargetFilename));
+
+    matchingFiles.forEach(file => {
+      fs.unlinkSync(file, err => {
+        if (err) {
+          throw err;
+        }
+      });
+    });
+
+    counts.deletions = matchingFiles.length;
 
     // forEach doesn't work here
     // see https://masteringjs.io/tutorials/fundamentals/async-foreach
@@ -121,7 +143,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
       const _resizeW = (resizeW !== null) ? resizeW : null;
       // const _resizeH = (resizeH !== null) ? resizeH : null;
 
-      const successMessage = await FmcFile.gmResizeAndCrop({ // eslint-disable-line no-await-in-loop
+      const successfulAction = await FmcFile.gmResizeAndCrop({ // eslint-disable-line no-await-in-loop
         centerX,
         centerY,
         cropW,
@@ -142,10 +164,17 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
         targetFilename
       });
 
-      console.log(successMessage);
+      if (successfulAction === 'crop') {
+        counts.crops += 1;
+      } else if (successfulAction === 'resize') {
+        counts.resizes += 1;
+      }
     }
 
-    return baseExportPath;
+    return {
+      baseExportPath,
+      counts
+    };
   }
 
   /**
@@ -221,7 +250,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
                 console.log(err);
                 reject(err);
               } else {
-                resolve(`Generated crop ${targetFilename} - MARKER`);
+                resolve('crop');
               }
             });
         } else {
@@ -237,7 +266,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
                 console.log(err);
                 reject(err);
               } else {
-                resolve(`Generated crop ${targetFilename}`);
+                resolve('crop');
               }
             });
         }
@@ -268,7 +297,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
               console.log(err);
               reject(err);
             } else {
-              resolve(`Generated size ${targetFilename} - MARKER`);
+              resolve('resize');
             }
           });
       } else {
@@ -283,7 +312,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
               console.log(err);
               reject(err);
             } else {
-              resolve(`Generated size ${targetFilename}`);
+              resolve('resize');
             }
           });
       }
@@ -420,10 +449,10 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
    * @memberof FmcFile
    * @static
    */
-  static getImageFiles(dir) {
-    const files = FmcFile.getFiles(dir);
+  static async getImageFiles(dir) {
+    const files = await FmcFile.getFiles(dir);
 
-    return files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png)+/gi));
+    return files.filter(file => file.match(/(.gif|.jpg|.jpeg|.png|.webp)+/gi));
   }
 
   /**
@@ -707,7 +736,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
       }
 
       if (retrieveImagesData) {
-        const imageFiles = FmcFile.getImageFiles(data.folderPath);
+        const imageFiles = await FmcFile.getImageFiles(data.folderPath);
 
         const dataCopy = { ...data }; // #30
 
@@ -738,7 +767,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
       folderPath = filePaths[0];
 
       if (retrieveImagesData) {
-        const imageFiles = FmcFile.getImageFiles(folderPath);
+        const imageFiles = await FmcFile.getImageFiles(folderPath);
 
         imagesData = await FmcFile.getImagesData(imageFiles);
       }
