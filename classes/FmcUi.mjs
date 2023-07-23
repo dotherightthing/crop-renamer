@@ -116,6 +116,9 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       lastCropperImg,
       pathLinks,
       thumbsContainer,
+      thumbFileNameFilter,
+      thumbFileNameFilterClear,
+      thumbFileNameFilterSubmit,
       window
     } = elements;
 
@@ -361,6 +364,27 @@ export class FmcUi { // eslint-disable-line no-unused-vars
           });
         }
       });
+    });
+
+    thumbFileNameFilter.addEventListener('keydown', (event) => {
+      const { keyCode } = event;
+      const thumbFileNameFilterSubmitId = thumbFileNameFilterSubmit.getAttribute('id');
+
+      if (keyCode === 13) { // Enter
+        FmcUi.emitEvent(thumbFileNameFilterSubmitId, 'click', {});
+      }
+    });
+
+    thumbFileNameFilterClear.addEventListener('click', () => {
+      thumbFileNameFilter.value = '';
+
+      fmcThumbsUiInstance.filterByFilename('');
+    });
+
+    thumbFileNameFilterSubmit.addEventListener('click', () => {
+      const searchStr = thumbFileNameFilter.value;
+
+      fmcThumbsUiInstance.filterByFilename(searchStr);
     });
 
     thumbsContainer.addEventListener('click', (event) => {

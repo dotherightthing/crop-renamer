@@ -35,7 +35,7 @@
   --height-cropper-master: calc(70vh - var(--height-controls-outer));
   --height-cropper-slave: calc((70vh - var(--height-controls-outer) - var(--gutter)) / 2);
   --height-cropper-console: 1.3rem;
-  --height-image-meta: 4rem;
+  --height-image-meta: 5.6rem;
   --image-percent-x: 50%;
   --image-percent-y: 50%;
   --opacity-modal-overlay: .5;

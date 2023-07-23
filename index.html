@@ -169,37 +169,57 @@
         <ol class="thumbs-list" id="thumbs">
           <!-- loaded by Load images -->
         </ol>
-        <div class="image-meta l-image-meta">
-          <div class="image-meta-group l-horz-list l-horz-list-reverse">
-            <h3 class="thumb-filename h-medium l-horz-list-header separator-before" id="thumb-filename">Nothing selected</h3>
-            <p class="thumb-count h-medium" id="thumb-count"></p>
+        <div class="image-meta">
+          <div class="l-image-meta">
+            <div class="image-meta-group l-horz-list l-horz-list-reverse">
+              <h3 class="thumb-filename h-medium l-horz-list-header separator-before" id="thumb-filename">Nothing selected</h3>
+              <p class="thumb-count h-medium" id="thumb-count"></p>
+            </div>
+            <fieldset class="image-meta-group l-horz-list">
+              <legend>
+                <span class="h-small uc l-horz-list-header">Filter thumbs</span>
+              </legend>
+              <input class="control-action control-filter" id="thumb-filename-filter" placeholder="Enter filename" />
+              <button type="button" class="control-action" id="thumb-filename-filter-submit">
+                <span class="control-hint">Go</span>
+              </button>
+              <button type="button" class="control-action" id="thumb-filename-filter-clear">
+                <span class="control-hint">Clear</span>
+              </button>
+            </fieldset>
           </div>
-          <div class="image-meta-group l-horz-list">
-            <h2 class="h-small uc l-horz-list-header">Source image</h2>
-            <p class="control-action">
-              <a class="control-hint control-link" id="link-path-in" href="#">Show source in folder</a>
-            </p>
-            <button type="button" class="control-action control-copy" id="copy-path-in">
-              <span class="control-hint">Copy source path</span>
-            </button>
-          </div>
-          <div class="image-meta-group l-horz-list">
-            <h2 class="h-small uc l-horz-list-header">Target images</h2>
-            <button type="button" class="control-action" id="crop-image">
-              <span class="control-hint">Export crops/sizes</span>
-            </button>
-            <p class="control-action">
-              <a class="control-hint control-link" id="link-path-out" href="#">Show base export in folder</a>
-            </p>
-            <button type="button" class="control-action control-copy" id="copy-path-out">
-              <span class="control-hint">Copy base export path</span>
-            </button>
-            <button type="button" class="control-action control-copy" id="copy-path-web-embed">
-              <span class="control-hint">Copy base embed path</span>
-            </button>
-            <button type="button" class="control-action control-edit" id="edit-webpage">
-              <span class="control-hint">Edit webpage</span>
-            </button>
+          <div class="l-image-meta">
+            <fieldset class="image-meta-group l-horz-list">
+              <legend>
+                <span class="h-small uc l-horz-list-header">Source</span>
+              </legend>
+              <p class="control-action">
+                <a class="control-hint control-link" id="link-path-in" href="#">Show source in folder</a>
+              </p>
+              <button type="button" class="control-action control-copy" id="copy-path-in">
+                <span class="control-hint">Copy source path</span>
+              </button>
+            </fieldset>
+            <fieldset class="image-meta-group l-horz-list">
+              <legend>
+                <span class="h-small uc l-horz-list-header">Targets</span>
+              </legend>
+              <button type="button" class="control-action" id="crop-image">
+                <span class="control-hint">Export crops/sizes</span>
+              </button>
+              <p class="control-action">
+                <a class="control-hint control-link" id="link-path-out" href="#">Show base export in folder</a>
+              </p>
+              <button type="button" class="control-action control-copy" id="copy-path-out">
+                <span class="control-hint">Copy base export path</span>
+              </button>
+              <button type="button" class="control-action control-copy" id="copy-path-web-embed">
+                <span class="control-hint">Copy base embed path</span>
+              </button>
+              <button type="button" class="control-action control-edit" id="edit-webpage">
+                <span class="control-hint">Edit webpage</span>
+              </button>
+            </fieldset>
           </div>
         </div>
         <div class="cropper-console l-cropper-console">

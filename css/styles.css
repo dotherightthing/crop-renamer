@@ -153,8 +153,7 @@ img {
 }
 
 .thumb::before {
-  counter-increment: thumb-counter;
-  content: counter(thumb-counter);
+  content: attr(data-index);
   display: block;
   position: absolute;
   top: 0;
@@ -224,7 +223,7 @@ img {
   background-color: var(--color-bg-tertiary);
   color: var(--color-secondary);
   font-size: var(--text-regular);
-  padding: var(--gutter);
+  padding: 0 var(--gutter);
   border: var(--gutter) solid var(--color-bg-primary);
   margin: 0;
   overflow: hidden; /* height */
@@ -251,6 +250,10 @@ img {
   padding: var(--gutter);
   border-radius: .3em;
   margin-left: var(--gutter);
+}
+
+.l-image-meta + .l-image-meta .image-meta-group {
+  padding-top: 0;
 }
 
 .image-meta-group:first-child {
@@ -335,10 +338,18 @@ img {
 
 .control-hint {
   display: block;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  font-size: 0.7em;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.control-action.control-filter,
+.control-hint {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 0.7em;
+}
+
+.control-filter {
+  width: 19.15rem;
 }
 
 .control-label {

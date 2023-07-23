@@ -3,6 +3,7 @@
  */
 
 import dtrtValidate from 'dtrt-type-validate';
+import { FmcUi } from './FmcUi.mjs';
 
 export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   /**
@@ -14,6 +15,7 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   constructor(config = {}) {
     // select the relevant arguments from the config object passed in
     const {
+      hideClass,
       selectedClass,
       thumbButtonClass,
       thumbClass,
@@ -25,6 +27,7 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
     } = config;
 
     Object.assign(this, {
+      hideClass,
       selectedClass,
       thumbButtonClass,
       thumbClass,
@@ -37,6 +40,19 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /* Getters and Setters */
+
+  /**
+   * hideClass
+   * @type {string}
+   * @memberof FmcThumbsUi
+   */
+  get hideClass() {
+    return this._hideClass;
+  }
+
+  set hideClass(hideClass) {
+    this._hideClass = dtrtValidate.validate(hideClass, 'string', 'FmcThumbsUi.hideClass');
+  }
 
   /**
    * selectedClass
@@ -229,6 +245,38 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function filterByFilename
+   * @param {string} searchStr - Search string
+   * @memberof FmcThumbsUi
+   */
+  filterByFilename(searchStr) {
+    const {
+      hideClass,
+      thumbClass,
+      thumbImgClass,
+      thumbsId
+    } = this;
+
+    const thumbs = document.querySelectorAll(`#${thumbsId} .${thumbClass}`);
+    const thumbImages = document.querySelectorAll(`#${thumbsId} .${thumbImgClass}`);
+
+    thumbImages.forEach((thumbImg, index) => {
+      if (searchStr === '') {
+        thumbs[index].classList.remove(hideClass);
+      } else {
+        const { src } = thumbImg;
+        const filename = FmcUi.getFileNameFromPath(src);
+
+        if (filename.match(searchStr)) {
+          thumbs[index].classList.remove(hideClass);
+        } else {
+          thumbs[index].classList.add(hideClass);
+        }
+      }
+    });
+  }
+
+  /**
    * @function generateThumbsHtml
    * @summary Inject the thumb images and their scaffolding, then select the first thumb
    * @param {Array} imagesData - Images data
@@ -255,7 +303,7 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
 
       const dateTimeOriginalStr = (dateTimeOriginal !== '') ? dateTimeOriginal : '-';
 
-      html += `<li class="${thumbClass}">
+      html += `<li class="${thumbClass}" data-index="${i + 1}">
     <button type="button" class="${thumbButtonClass}">
       <div class="${thumbImgWrapperClass}">
         <img src="${src}" class="${thumbImgClass}">

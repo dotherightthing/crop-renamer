@@ -91,6 +91,10 @@
   flex-direction: row-reverse;
 }
 
+.l-horz-list > legend {
+  display: contents;
+}
+
 /* .l-image-meta */
 
 .l-image-meta {
@@ -113,7 +117,7 @@
 
 .l-page {
   display: grid;
-  grid-template-rows: 70vh 30vh;
+  grid-template-rows: 66vh 34vh;
   height: 100vh;
 }
 
