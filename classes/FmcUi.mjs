@@ -398,15 +398,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       });
     });
 
-    thumbFileNameFilter.addEventListener('keydown', (event) => {
-      const { keyCode } = event;
-      const thumbFileNameFilterSubmitId = thumbFileNameFilterSubmit.getAttribute('id');
-
-      if (keyCode === 13) { // Enter
-        FmcUi.emitEvent(thumbFileNameFilterSubmitId, 'click', {});
-      }
-    });
-
     thumbFileNameFilterClear.addEventListener('click', () => {
       thumbFileNameFilter.value = '';
 
@@ -448,14 +439,29 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       fmcCroppersUiInstance.changeSourceImage(clickedButton);
     });
 
-    window.addEventListener('resize', () => {
-      fmcThumbsUiInstance.scrollToThumb('selected');
+    window.addEventListener('keydown', async (event) => {
+      const {
+        key,
+        metaKey
+      } = event;
+
+      if (document.activeElement === thumbFileNameFilter) {
+        if (key === 'Enter') {
+          FmcUi.emitElementEvent(thumbFileNameFilterSubmit, 'click', {});
+        } else if (metaKey && (key === 'v')) {
+          thumbFileNameFilter.value = await window.electronAPI.copyFromClipboard();
+        }
+      }
     });
 
     window.addEventListener('message', (event) => {
       const { msg } = event.detail;
 
       console.innerHTML = (msg !== '') ? `${msg}.` : msg;
+    });
+
+    window.addEventListener('resize', () => {
+      fmcThumbsUiInstance.scrollToThumb('selected');
     });
   }
 
@@ -934,6 +940,28 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     });
 
     document.getElementById(elementId).dispatchEvent(event);
+  }
+
+  /**
+   * @function emitElementEvent
+   * @summary Emit a custom event
+   * @param {HTMLElement} element - element that will dispatch the event
+   * @param {string} eventName - Event names are case-sensitive
+   * @param {object} eventDetail - name-value pair
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent}
+   * @see {@link https://gomakethings.com/callbacks-vs.-custom-events-in-vanilla-js/}
+   * @memberof FmcUi
+   * @static
+   */
+  static emitElementEvent(element, eventName, eventDetail = {}) {
+    const event = new CustomEvent(eventName, {
+      bubbles: true, // stop with event.stopPropagation()
+      cancelable: true, // cancel with event.preventDefault()
+      // composed // web components only
+      detail: eventDetail
+    });
+
+    element.dispatchEvent(event);
   }
 
   /**

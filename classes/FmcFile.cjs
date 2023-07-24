@@ -34,6 +34,18 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
   /* Static methods */
 
   /**
+   * @function copyFromClipboard
+   * @returns {string} text
+   * @memberof FmcFile
+   * @static
+   */
+  static async copyFromClipboard() {
+    const text = await clipboard.readText();
+
+    return text;
+  }
+
+  /**
    * @function copyToClipboard
    * @param {event} event - FmcFile:copyToClipboard event captured by ipcMain.handle
    * @param {object} data - Data

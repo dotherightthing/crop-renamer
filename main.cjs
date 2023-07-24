@@ -72,6 +72,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
   // ipcMain module for inter-process communication (IPC) with render process
 
+  ipcMain.handle('FmcFile:copyFromClipboard', FmcFile.copyFromClipboard);
   ipcMain.handle('FmcFile:copyToClipboard', FmcFile.copyToClipboard);
   ipcMain.handle('FmcFile:getRelativePath', FmcFile.getRelativePath);
   ipcMain.handle('FmcFile:openInEditor', FmcFile.openInEditor);

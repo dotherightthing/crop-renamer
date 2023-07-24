@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // function in renderer.js or frontend class calls window.electronAPI.methodName, with or without a data object
   // backend responds and returns data to calling function
 
+  copyFromClipboard: (data) => ipcRenderer.invoke('FmcFile:copyFromClipboard', data),
   copyToClipboard: (data) => ipcRenderer.invoke('FmcFile:copyToClipboard', data),
   getRelativePath: (data) => ipcRenderer.invoke('FmcFile:getRelativePath', data),
   openInEditor: (data) => ipcRenderer.invoke('FmcFile:openInEditor', data),
