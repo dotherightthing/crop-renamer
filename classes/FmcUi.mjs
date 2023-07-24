@@ -124,25 +124,10 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = elements;
 
     const {
+      thumbButtonClass,
       thumbClass,
       thumbImgClass
     } = selectors;
-
-    document.body.addEventListener('keydown', (event) => {
-      if (!thumbsContainer.querySelectorAll('img').length) {
-        return;
-      }
-
-      const { keyCode } = event;
-
-      if (keyCode === 37) {
-        event.preventDefault(); // don't operate the native container scrollbar
-        fmcThumbsUiInstance.scrollToThumb('previous');
-      } else if (keyCode === 39) {
-        event.preventDefault();
-        fmcThumbsUiInstance.scrollToThumb('next');
-      }
-    });
 
     copyPaths.forEach(el => {
       el.addEventListener('click', (event) => {
@@ -450,6 +435,14 @@ export class FmcUi { // eslint-disable-line no-unused-vars
           FmcUi.emitElementEvent(thumbFileNameFilterSubmit, 'click', {});
         } else if (metaKey && (key === 'v')) {
           thumbFileNameFilter.value = await window.electronAPI.copyFromClipboard();
+        }
+      } else if (document.activeElement.classList.contains(thumbButtonClass)) {
+        if (key === 'ArrowLeft') {
+          event.preventDefault(); // don't operate the native container scrollbar
+          fmcThumbsUiInstance.scrollToThumb('previous');
+        } else if (key === 'ArrowRight') {
+          event.preventDefault();
+          fmcThumbsUiInstance.scrollToThumb('next');
         }
       }
     });

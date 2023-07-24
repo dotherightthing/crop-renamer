@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   const controlHintClass = 'control-hint';
   const hideClass = 'cropper-hide';
+  const thumbButtonClass = 'btn-thumb';
   const thumbClass = 'thumb';
   const thumbImgClass = 'thumb-img';
 
@@ -51,7 +52,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const fmcThumbsUiInstance = new FmcThumbsUi({
     hideClass,
     selectedClass: 'btn-selected',
-    thumbButtonClass: 'btn-thumb',
+    thumbButtonClass,
     thumbClass,
     thumbImgClass,
     thumbImgWrapperClass: 'thumb-img-wrapper',
@@ -97,6 +98,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     },
     selectors: {
       controlHintClass,
+      thumbButtonClass,
       thumbClass,
       thumbImgClass
     }
