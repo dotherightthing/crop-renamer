@@ -212,12 +212,22 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     });
 
     editWebpageButton.addEventListener('click', async () => {
-      const { dataset } = fileWebpageButton;
-      const { targetFile } = dataset;
+      const {
+        dataset: {
+          targetFolder
+        }
+      } = folderWebsiteButton;
+
+      const {
+        dataset: {
+          targetFile
+        }
+      } = fileWebpageButton;
 
       const msg = await window.electronAPI.openInEditor({
         editorCommand: 'code', // see https://code.visualstudio.com/docs/editor/command-line
         fileDescription: 'webpage',
+        folderPath: targetFolder,
         filePath: targetFile
       });
 

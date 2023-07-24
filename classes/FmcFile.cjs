@@ -505,7 +505,8 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
    * @param {object} data - Data
    * @param {string} data.editorCommand - Editor command (e.g. 'code')
    * @param {string} data.fileDescription - File description
-   * @param {string} data.filePath - Path to file
+   * @param {string} data.filePath - Path to website file
+   * @param {string} data.folderPath - Path to website (workspace) folder
    * @returns {string} message
    * @memberof FmcFile
    * @static
@@ -514,7 +515,8 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
     const {
       editorCommand,
       fileDescription,
-      filePath
+      filePath,
+      folderPath
     } = data;
 
     const opts = {
@@ -528,6 +530,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
 
     commandExists(editorCommand, (err, exists) => { // eslint-disable-line no-unused-vars
       if (exists) {
+        spawn(editorCommand, [ folderPath ], opts);
         spawn(editorCommand, [ filePath ], opts);
       } else {
         message = `Could not open ${fileDescription} - the command '${editorCommand}' is not available)`;
