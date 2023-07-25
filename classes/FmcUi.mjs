@@ -224,7 +224,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
         filePath: targetFile
       });
 
-      FmcUi.emitWindowEvent('message', {
+      FmcUi.emitElementEvent(window, 'message', {
         msg
       });
     });
@@ -1081,27 +1081,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     });
 
     element.dispatchEvent(event);
-  }
-
-  /**
-   * @function emitWindowEvent
-   * @summary Emit a custom event
-   * @param {string} eventName - Event names are case-sensitive
-   * @param {object} eventDetail - name-value pair
-   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent}
-   * @see {@link https://gomakethings.com/callbacks-vs.-custom-events-in-vanilla-js/}
-   * @memberof FmcUi
-   * @static
-   */
-  static emitWindowEvent(eventName, eventDetail = {}) {
-    const event = new CustomEvent(eventName, {
-      bubbles: true, // stop with event.stopPropagation()
-      cancelable: true, // cancel with event.preventDefault()
-      // composed // web components only
-      detail: eventDetail
-    });
-
-    window.dispatchEvent(event);
   }
 
   /**
