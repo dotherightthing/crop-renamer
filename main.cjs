@@ -7,6 +7,12 @@ const {
   Menu
 } = require('electron');
 
+// argv[0] = path to node
+// argv[1] = path to script
+// args[2] = -- separating npm arguments from app's arguments
+const args = process.argv.slice(3);
+const showDevTools = args.indexOf('devtools') !== -1;
+
 const FmcFile = require('./classes/FmcFile.cjs');
 
 const path = require('path');
@@ -60,6 +66,13 @@ const createWindow = () => {
   ];
 
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+
+  // Devtools need to be running from launch to enable console.log
+  if (showDevTools) {
+    mainWindow.webContents.openDevTools({
+      mode: 'right'
+    });
+  }
 
   // give dev tools drawer time to open
   // so that cropper is centered in remaining space
