@@ -120,7 +120,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       editWebpageButton,
       focalpointAutoSaveInput,
       focalpointDeleteButton,
-      focalpointInput,
       focalpointResetButton,
       focalpointSaveButton,
       focalpointXInput,
@@ -267,7 +266,8 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       FmcUi.emitElementEvent(focalpointYInput, 'change'); // for both X and Y
     });
 
-    focalpointInput.forEach(input => input.addEventListener('change', handleFocalpointInputChangeDebounced.bind(this)));
+    focalpointXInput.addEventListener('change', handleFocalpointInputChangeDebounced.bind(this));
+    focalpointYInput.addEventListener('change', handleFocalpointInputChangeDebounced.bind(this));
 
     focalpointResetButton.addEventListener('click', (event) => {
       // input change listener calls setFocalpointSaveState

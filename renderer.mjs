@@ -10,6 +10,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   // instantiate classes
 
   const controlHintClass = 'control-hint';
+  const focalpointXInputId = 'focalpoint-x';
+  const focalpointYInputId = 'focalpoint-y';
   const hideClass = 'cropper-hide';
   const thumbButtonClass = 'btn-thumb';
   const thumbClass = 'thumb';
@@ -45,6 +47,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       zoomOnTouch: false, // Enable to zoom the image by dragging touch
       zoomOnWheel: false // Enable to zoom the image by mouse wheeling
     },
+    focalpointXInputId,
+    focalpointYInputId,
     initDelay: 5000,
     updateDelay: (typeof Cypress !== 'undefined') ? 0 : 1000
   });
@@ -74,11 +78,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       exportCropsAndSizesButton: document.getElementById('crop-image'),
       focalpointAutoSaveInput: document.getElementsByName('focalpoint-autosave'),
       focalpointDeleteButton: document.getElementById('delete-focalpoint'),
-      focalpointInput: document.querySelectorAll('#focalpoint-x, #focalpoint-y'),
       focalpointResetButton: document.getElementById('reset-focalpoint'),
       focalpointSaveButton: document.getElementById('save-focalpoint'),
-      focalpointXInput: document.getElementById('focalpoint-x'),
-      focalpointYInput: document.getElementById('focalpoint-y'),
+      focalpointXInput: document.getElementById(focalpointXInputId),
+      focalpointYInput: document.getElementById(focalpointYInputId),
       folderInButton: document.getElementById('folder-in'),
       folderOutButton: document.getElementById('folder-out'),
       folderOutButtonDependent: document.querySelector('[data-dependent="folder-out"]'),

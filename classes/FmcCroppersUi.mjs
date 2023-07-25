@@ -20,6 +20,8 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       cropperImageClass,
       croppersId,
       croppersOptions,
+      focalpointXInputId,
+      focalpointYInputId,
       updateDelay
     } = config;
 
@@ -29,6 +31,8 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       cropperImageClass,
       croppersId,
       croppersOptions,
+      focalpointXInputId,
+      focalpointYInputId,
       updateDelay
     });
 
@@ -118,6 +122,32 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
   set croppersOptions(croppersOptions) {
     this._croppersOptions = dtrtValidate.validate(croppersOptions, 'object', 'FmcCroppersUi.croppersOptions');
+  }
+
+  /**
+   * focalpointXInputId
+   * @type {string}
+   * @memberof FmcCroppersUi
+   */
+  get focalpointXInputId() {
+    return this._focalpointXInputId;
+  }
+
+  set focalpointXInputId(focalpointXInputId) {
+    this._focalpointXInputId = dtrtValidate.validate(focalpointXInputId, 'string', 'FmcCroppersUi.focalpointXInputId');
+  }
+
+  /**
+   * focalpointYInputId
+   * @type {string}
+   * @memberof FmcCroppersUi
+   */
+  get focalpointYInputId() {
+    return this._focalpointYInputId;
+  }
+
+  set focalpointYInputId(focalpointYInputId) {
+    this._focalpointYInputId = dtrtValidate.validate(focalpointYInputId, 'string', 'FmcCroppersUi.focalpointYInputId');
   }
 
   /**
@@ -522,7 +552,9 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
   getCropperOptions(exportWidth, exportHeight, role, action) {
     const {
       croppersId,
-      croppersOptions
+      croppersOptions,
+      focalpointXInputId,
+      focalpointYInputId
     } = this;
 
     const options = { ...croppersOptions };
@@ -566,10 +598,10 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
               imagePercentY
             } = this.calcImagePercentXYFromPageXY({ pageXRounded, pageYRounded, round: true });
 
-            document.getElementById('focalpoint-x').value = imagePercentX;
-            document.getElementById('focalpoint-y').value = imagePercentY;
+            document.getElementById(focalpointXInputId).value = imagePercentX;
+            document.getElementById(focalpointYInputId).value = imagePercentY;
 
-            FmcUi.emitEvent('focalpoint-y', 'change');
+            FmcUi.emitEvent(focalpointYInputId, 'change');
 
             FmcUi.emitEvent(croppersId, 'statusChange', {
               msg: ''
@@ -1173,6 +1205,8 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
   reinstateImagePercentXYFromImage() {
     const {
       croppersId,
+      focalpointXInputId,
+      focalpointYInputId,
       masterCropper
     } = this;
 
@@ -1185,10 +1219,10 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
     const msg = this.isDefaultFocalpoint({ imagePercentX, imagePercentY }) ? 'Reset focalpoint' : 'Loaded focalpoint from image';
 
-    document.getElementById('focalpoint-x').value = imagePercentX;
-    document.getElementById('focalpoint-y').value = imagePercentY;
+    document.getElementById(focalpointXInputId).value = imagePercentX;
+    document.getElementById(focalpointYInputId).value = imagePercentY;
 
-    FmcUi.emitEvent('focalpoint-y', 'change');
+    FmcUi.emitEvent(focalpointYInputId, 'change');
 
     FmcUi.emitEvent(croppersId, 'statusChange', {
       msg
