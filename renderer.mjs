@@ -65,7 +65,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     fmcCroppersUiInstance,
     fmcThumbsUiInstance,
     elements: {
-      console: document.getElementById('console'),
+      consoleContainer: document.getElementById('console'),
       copyPaths: document.querySelectorAll('.control-copy'),
       copyPathInButton: document.getElementById('copy-path-in'),
       copyPathOutButton: document.getElementById('copy-path-out'),

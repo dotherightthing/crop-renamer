@@ -98,7 +98,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = this;
 
     const {
-      console,
+      consoleContainer,
       copyPaths,
       croppersContainer,
       editWebpageButton,
@@ -134,7 +134,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
         event.preventDefault();
 
         if (typeof window.electronAPI === 'undefined') {
-          console.innerHTML = 'Error: Clipboard operations require Electron';
+          consoleContainer.textContent = 'Error: Clipboard operations require Electron';
 
           return;
         }
@@ -208,7 +208,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     croppersContainer.addEventListener('statusChange', (event) => {
       const { msg } = event.detail;
 
-      console.innerHTML = (msg !== '') ? `${msg}.` : msg;
+      consoleContainer.textContent = (msg !== '') ? `${msg}.` : msg;
     });
 
     editWebpageButton.addEventListener('click', async () => {
@@ -372,7 +372,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
         event.preventDefault();
 
         if (typeof window.electronAPI === 'undefined') {
-          console.innerHTML = 'Error: Finder links require Electron';
+          consoleContainer.textContent = 'Error: Finder links require Electron';
 
           return;
         }
@@ -460,7 +460,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     window.addEventListener('message', (event) => {
       const { msg } = event.detail;
 
-      console.innerHTML = (msg !== '') ? `${msg}.` : msg;
+      consoleContainer.textContent = (msg !== '') ? `${msg}.` : msg;
     });
 
     window.addEventListener('resize', () => {
