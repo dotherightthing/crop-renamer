@@ -567,6 +567,79 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function disable
+   * @param {HTMLElement} el - Element
+   * @memberof FmcUi
+   */
+  disable(el) {
+    const tagName = el.tagName.toLowerCase();
+
+    if (tagName === 'a') {
+      if (typeof el.dataset.href === 'undefined') {
+        el.dataset.href = el.getAttribute('href') || '';
+      }
+
+      if (typeof el.dataset.title === 'undefined') {
+        el.dataset.title = el.getAttribute('title') || '';
+      }
+
+      el.parentElement.dataset.disabled = true;
+      el.removeAttribute('href');
+      el.removeAttribute('title');
+    } else if (tagName === 'button') {
+      if (typeof el.dataset.title === 'undefined') {
+        el.dataset.title = el.getAttribute('title') || '';
+      }
+
+      el.setAttribute('disabled', '');
+      el.removeAttribute('title');
+    }
+  }
+
+  /**
+   * @function enable
+   * @param {HTMLElement} el - Element
+   * @param {object} attrs - Attributes
+   * @param {string} attrs.href - href attribute
+   * @param {string} attrs.title - title attribute
+   * @memberof FmcUi
+   */
+  enable(el, attrs) {
+    const tagName = el.tagName.toLowerCase();
+
+    if (tagName === 'a') {
+      const {
+        href = el.dataset.href,
+        title = el.dataset.title
+      } = attrs;
+
+      if (typeof el.parentElement.dataset.disabled !== 'undefined') {
+        delete el.parentElement.dataset.disabled;
+      }
+
+      el.setAttribute('href', href);
+      el.setAttribute('title', title);
+    } else if (tagName === 'button') {
+      const {
+        title = el.dataset.title
+      } = attrs;
+
+      el.removeAttribute('disabled');
+      el.setAttribute('title', title);
+    }
+  }
+
+  /**
+   * @function srcSafe
+   * @param {string} src - Path
+   * @returns {string} srcSafe
+   * @memberof FmcUi
+   */
+  srcSafe(src) {
+    return src.replace(/%20/g, ' ');
+  }
+
+  /**
    * @function getPathOut
    * @summary Set the target path in the footer
    * @returns {string} pathOut
@@ -914,10 +987,16 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = elements;
 
     const fileName = FmcUi.getFileNameFromPath(src);
+    const srcSafe = this.srcSafe(src);
 
-    copyPathInButton.setAttribute('title', src);
-    pathInLink.setAttribute('href', src);
-    pathInLink.setAttribute('title', src);
+    this.enable(copyPathInButton, {
+      title: srcSafe
+    });
+
+    this.enable(pathInLink, {
+      href: srcSafe,
+      title: srcSafe
+    });
 
     thumbFileName.textContent = fileName;
 
@@ -929,27 +1008,26 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       }) : true;
 
       if (pathOutExists) {
+        const pathOutSafe = this.srcSafe(pathOut);
         const pathWebEmbed = await this.getPathWebEmbed();
+        const pathWebEmbedSafe = this.srcSafe(pathWebEmbed);
 
-        copyPathOutButton.removeAttribute('disabled');
-        copyPathOutButton.setAttribute('title', pathOut);
+        this.enable(copyPathOutButton, {
+          title: pathOutSafe
+        });
 
-        copyPathWebEmbedButton.removeAttribute('disabled');
-        copyPathWebEmbedButton.setAttribute('title', pathWebEmbed);
+        this.enable(copyPathWebEmbedButton, {
+          title: pathWebEmbedSafe
+        });
 
-        delete pathOutLink.parentElement.dataset.disabled;
-        pathOutLink.setAttribute('href', pathOut);
-        pathOutLink.setAttribute('title', pathOut);
+        this.enable(pathOutLink, {
+          href: pathOutSafe,
+          title: pathOutSafe
+        });
       } else {
-        copyPathOutButton.setAttribute('disabled', '');
-        copyPathOutButton.removeAttribute('title');
-
-        copyPathWebEmbedButton.setAttribute('disabled', '');
-        copyPathWebEmbedButton.removeAttribute('title');
-
-        pathOutLink.parentElement.dataset.disabled = true;
-        pathOutLink.removeAttribute('href');
-        pathOutLink.removeAttribute('title');
+        this.disable(copyPathOutButton);
+        this.disable(copyPathWebEmbedButton);
+        this.disable(pathOutLink);
       }
     }, 500);
   }
