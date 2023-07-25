@@ -819,14 +819,18 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   async handleWindowKeydown(event) {
     const {
       elements,
-      fmcThumbsUiInstance
+      fmcThumbsUiInstance,
+      selectors
     } = this;
 
     const {
-      thumbButtonClass,
       filter,
       filterSubmit
     } = elements;
+
+    const {
+      thumbButtonClass
+    } = selectors;
 
     const {
       key,
