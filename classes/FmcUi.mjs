@@ -146,6 +146,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = selectors;
 
     const handleFocalpointInputChangeDebounced = FmcUi.debounce(this.handleFocalpointInputChange, debounceDelay);
+    const handleThumbClickDebounced = FmcUi.debounce(this.handleThumbClick, debounceDelay);
 
     copyPaths.forEach(el => {
       el.addEventListener('click', (event) => {
@@ -383,34 +384,8 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       fmcThumbsUiInstance.filterByFilename(searchStr);
     });
 
-    thumbsContainer.addEventListener('click', (event) => {
-      const {
-        clickedButton,
-        clickedButtonIndex
-      } = fmcThumbsUiInstance.getClickedButton(event);
-
-      const newImageSrc = clickedButton.querySelector('img').getAttribute('src');
-
-      fmcThumbsUiInstance.applySelectedClass(clickedButton);
-
-      fmcThumbsUiInstance.scrollToThumb('selected');
-
-      setTimeout(() => {
-        fmcThumbsUiInstance.displayCount({
-          thumbIndex: clickedButtonIndex
-        });
-
-        window.electronAPI.storeSet({
-          key: 'thumbIndex',
-          value: clickedButtonIndex
-        });
-      }, 500);
-
-      this.setPaths(newImageSrc);
-
-      // calls fmcCroppersUiInstance.init
-      fmcCroppersUiInstance.changeSourceImage(clickedButton);
-    });
+    thumbsContainer.addEventListener('click', this.handleThumbSelect.bind(this));
+    thumbsContainer.addEventListener('click', handleThumbClickDebounced.bind(this));
 
     window.addEventListener('keydown', async (event) => {
       const {
@@ -535,6 +510,60 @@ export class FmcUi { // eslint-disable-line no-unused-vars
         }, 500);
       }
     }
+  }
+
+  /**
+   * @function handleThumbClick
+   * @param {object} event - Click event
+   * @memberof FmcUi
+   */
+  handleThumbClick(event) {
+    const {
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance
+    } = this;
+
+    const {
+      clickedButton,
+      clickedButtonIndex
+    } = fmcThumbsUiInstance.getClickedButton(event);
+
+    const newImageSrc = clickedButton.querySelector('img').getAttribute('src');
+
+    setTimeout(() => {
+      fmcThumbsUiInstance.displayCount({
+        thumbIndex: clickedButtonIndex
+      });
+
+      window.electronAPI.storeSet({
+        key: 'thumbIndex',
+        value: clickedButtonIndex
+      });
+    }, 500);
+
+    this.setPaths(newImageSrc);
+
+    // calls fmcCroppersUiInstance.init
+    fmcCroppersUiInstance.changeSourceImage(clickedButton);
+  }
+
+  /**
+   * @function handleThumbSelect
+   * @param {object} event - Click event
+   * @memberof FmcUi
+   */
+  handleThumbSelect(event) {
+    const {
+      fmcThumbsUiInstance
+    } = this;
+
+    const {
+      clickedButton
+    } = fmcThumbsUiInstance.getClickedButton(event);
+
+    fmcThumbsUiInstance.applySelectedClass(clickedButton);
+
+    fmcThumbsUiInstance.scrollToThumb('selected');
   }
 
   /**
