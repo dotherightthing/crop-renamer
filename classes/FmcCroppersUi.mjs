@@ -584,19 +584,29 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
             pageY: pageYRounded
           } = this.calcPageXYForRoundedImagePercentXY({ pageXRaw, pageYRaw });
 
-          this.moveCropperCropBoxToPageXY({ pageXRaw, pageYRaw });
+          this.moveCropperCropBoxToPageXY({
+            pageX: pageXRaw,
+            pageY: pageYRaw
+          });
 
           FmcUi.emitElementEvent(window, 'message', {
             msg: 'Rounding percentages for storage...'
           });
 
           setTimeout(() => {
-            this.moveCropperCropBoxToPageXY({ pageXRounded, pageYRounded });
+            this.moveCropperCropBoxToPageXY({
+              pageX: pageXRounded,
+              pageY: pageYRounded
+            });
 
             const {
               imagePercentX,
               imagePercentY
-            } = this.calcImagePercentXYFromPageXY({ pageXRounded, pageYRounded, round: true });
+            } = this.calcImagePercentXYFromPageXY({
+              pageX: pageXRounded,
+              pageY: pageYRounded,
+              round: true
+            });
 
             document.getElementById(focalpointXInputId).value = imagePercentX;
             document.getElementById(focalpointYInputId).value = imagePercentY;
