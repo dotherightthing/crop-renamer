@@ -111,13 +111,15 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = this;
 
     const {
-      copyPaths,
+      copyPathInButton,
+      copyPathOutButton,
+      copyPathWebEmbedButton,
       croppersContainer,
       editWebpageButton,
       exportCropsAndSizesButton,
       fileWebpageButton,
-      filterClear,
-      filterSubmit,
+      filterClearButton,
+      filterSubmitButton,
       focalpointAutoSaveRadios,
       focalpointDeleteButton,
       focalpointResetButton,
@@ -128,7 +130,8 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       folderOutButton,
       folderWebsiteButton,
       lastCropperImg,
-      pathLinks,
+      pathInLink,
+      pathOutLink,
       thumbsContainer,
       window
     } = elements;
@@ -136,9 +139,11 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     const handleFocalpointInputDebounced = FmcUi.debounce(this.handleFocalpointInputChange, debounceDelay);
     const handleThumbClickDebounced = FmcUi.debounce(this.handleThumbClick, debounceDelay);
 
-    copyPaths.forEach(el => {
-      el.addEventListener('click', this.handleCopyPath.bind(this));
-    });
+    copyPathInButton.addEventListener('click', this.handleCopyPath.bind(this));
+
+    copyPathOutButton.addEventListener('click', this.handleCopyPath.bind(this));
+
+    copyPathWebEmbedButton.addEventListener('click', this.handleCopyPath.bind(this));
 
     croppersContainer.addEventListener('imageRenamed', this.handleImageRenamed.bind(this));
 
@@ -148,9 +153,9 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     fileWebpageButton.addEventListener('click', this.handleFileWebpageChange.bind(this));
 
-    filterClear.addEventListener('click', this.handleFilterClear.bind(this));
+    filterClearButton.addEventListener('click', this.handleFilterClear.bind(this));
 
-    filterSubmit.addEventListener('click', this.handleFilterSubmit.bind(this));
+    filterSubmitButton.addEventListener('click', this.handleFilterSubmit.bind(this));
 
     focalpointAutoSaveRadios.forEach(el => {
       el.addEventListener('change', this.handleAutosaveRadioChange.bind(this));
@@ -174,9 +179,9 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     lastCropperImg.addEventListener('ready', this.handleLastCropperImgReady.bind(this));
 
-    pathLinks.forEach(el => {
-      el.addEventListener('click', this.handlePathLink.bind(this));
-    });
+    pathInLink.addEventListener('click', this.handlePathLink.bind(this));
+
+    pathOutLink.addEventListener('click', this.handlePathLink.bind(this));
 
     thumbsContainer.addEventListener('click', this.handleThumbSelect.bind(this));
 
@@ -825,7 +830,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     const {
       filter,
-      filterSubmit
+      filterSubmitButton
     } = elements;
 
     const {
@@ -839,7 +844,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     if (document.activeElement === filter) {
       if (key === 'Enter') {
-        FmcUi.emitElementEvent(filterSubmit, 'click', {});
+        FmcUi.emitElementEvent(filterSubmitButton, 'click', {});
       } else if (metaKey && (key === 'v')) {
         filter.value = await window.electronAPI.copyFromClipboard();
       }
