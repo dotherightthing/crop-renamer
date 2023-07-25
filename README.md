@@ -28,7 +28,11 @@ npm install
 ### Run (Electron App)
 
 ```js
+# run with devtools closed
 npm run start
+
+# run with devtools open
+npm run start:debug
 ```
 
 ### Run (Web App)
