@@ -380,7 +380,6 @@ describe('template spec', () => {
       /* Static methods */
       it.skip('emitEvent', () => {});
       it.skip('getOffset', () => {});
-      it.skip('isEmptyObject', () => {});
     });
   });
 });

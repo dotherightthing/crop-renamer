@@ -547,42 +547,34 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
             pageY: pageYRaw
           } = e.detail.originalEvent;
 
-          const pageXYRaw = {
-            pageX: pageXRaw,
-            pageY: pageYRaw
-          };
+          const {
+            pageX: pageXRounded,
+            pageY: pageYRounded
+          } = this.calcPageXYForRoundedImagePercentXY({ pageXRaw, pageYRaw });
 
-          const pageXYRounded = this.calcPageXYForRoundedImagePercentXY({ pageXRaw, pageYRaw });
+          this.moveCropperCropBoxToPageXY({ pageXRaw, pageYRaw });
 
-          [ pageXYRaw, pageXYRounded ].forEach((pageXY, i) => {
-            const { pageX, pageY } = pageXY;
-            const isPageXYRounded = i > 0;
-
-            setTimeout(() => {
-              this.moveCropperCropBoxToPageXY({ pageX, pageY });
-
-              const {
-                imagePercentX,
-                imagePercentY
-              } = this.calcImagePercentXYFromPageXY({ pageX, pageY, round: isPageXYRounded });
-
-              FmcUi.emitEvent(croppersId, 'paramChange', {
-                parameter: 'focalpoint-x',
-                value: imagePercentX,
-                triggerChange: isPageXYRounded
-              });
-
-              FmcUi.emitEvent(croppersId, 'paramChange', {
-                parameter: 'focalpoint-y',
-                value: imagePercentY,
-                triggerChange: isPageXYRounded
-              });
-
-              FmcUi.emitEvent(croppersId, 'statusChange', {
-                msg: isPageXYRounded ? '' : 'Rounding percentages for storage...'
-              });
-            }, isPageXYRounded ? updateDelay : 0);
+          FmcUi.emitEvent(croppersId, 'statusChange', {
+            msg: 'Rounding percentages for storage...'
           });
+
+          setTimeout(() => {
+            this.moveCropperCropBoxToPageXY({ pageXRounded, pageYRounded });
+
+            const {
+              imagePercentX,
+              imagePercentY
+            } = this.calcImagePercentXYFromPageXY({ pageXRounded, pageYRounded, round: true });
+
+            document.getElementById('focalpoint-x').value = imagePercentX;
+            document.getElementById('focalpoint-y').value = imagePercentY;
+
+            FmcUi.emitEvent('focalpoint-y', 'change');
+
+            FmcUi.emitEvent(croppersId, 'statusChange', {
+              msg: ''
+            });
+          }, updateDelay);
         }
       });
     }
@@ -1160,6 +1152,21 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function isDefaultFocalpoint
+   * @param {object} args - Arguments
+   * @param {string|number} args.imagePercentX - Image percent X
+   * @param {string|number} args.imagePercentY - Image percent Y
+   * @returns {boolean} isDefaultFocalpoint
+   * @memberof FmcCroppersUi
+   */
+  isDefaultFocalpoint({ imagePercentX, imagePercentY }) {
+    const nX = Number(imagePercentX);
+    const nY = Number(imagePercentY);
+
+    return ((nX === 50) && (nY === 50));
+  }
+
+  /**
    * @function reinstateImagePercentXYFromImage
    * @memberof FmcCroppersUi
    */
@@ -1171,31 +1178,17 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
     const { src } = masterCropper.cropperInstance.element;
 
-    let imagePercentXY = this.getImagePercentXYFromImage(src);
-    let msg = 'Loaded focalpoint from image';
+    const {
+      imagePercentX = 50,
+      imagePercentY = 50
+    } = this.getImagePercentXYFromImage(src);
 
-    if (FmcUi.isEmptyObject(imagePercentXY)) {
-      imagePercentXY = {
-        imagePercentX: 50,
-        imagePercentY: 50
-      };
+    const msg = this.isDefaultFocalpoint({ imagePercentX, imagePercentY }) ? 'Reset focalpoint' : 'Loaded focalpoint from image';
 
-      msg = 'Reset focalpoint';
-    }
+    document.getElementById('focalpoint-x').value = imagePercentX;
+    document.getElementById('focalpoint-y').value = imagePercentY;
 
-    const { imagePercentX, imagePercentY } = imagePercentXY;
-
-    FmcUi.emitEvent(croppersId, 'paramChange', {
-      parameter: 'focalpoint-x',
-      value: imagePercentX,
-      triggerChange: true
-    });
-
-    FmcUi.emitEvent(croppersId, 'paramChange', {
-      parameter: 'focalpoint-y',
-      value: imagePercentY,
-      triggerChange: true
-    });
+    FmcUi.emitEvent('focalpoint-y', 'change');
 
     FmcUi.emitEvent(croppersId, 'statusChange', {
       msg

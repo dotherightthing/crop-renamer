@@ -199,8 +199,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       this.setPaths(src);
     });
 
-    croppersContainer.addEventListener('paramChange', this.handleParamChange);
-
     croppersContainer.addEventListener('statusChange', (event) => {
       const { msg } = event.detail;
 
@@ -266,9 +264,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       focalpointYInput.value = 50;
 
       // fire 'change' event so that change is picked up by listener
-      const ev = new Event('change');
-
-      focalpointYInput.dispatchEvent(ev); // for both X and Y
+      FmcUi.emitElementEvent(focalpointYInput, 'change'); // for both X and Y
     });
 
     focalpointInput.forEach(input => input.addEventListener('change', handleFocalpointInputChangeDebounced.bind(this)));
@@ -479,36 +475,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
         imagePercentXUi: focalpointXInput.value,
         imagePercentYUi: focalpointYInput.value
       });
-    }
-  }
-
-  /**
-   * @function handleParamChange
-   * @param {object} event - Change event
-   * @memberof FmcUi
-   */
-  handleParamChange(event) {
-    const {
-      triggerChange,
-      parameter,
-      value
-    } = event.detail;
-
-    const el = document.getElementById(parameter);
-
-    const oldValue = el.value;
-
-    if (oldValue !== value) {
-      el.value = value;
-
-      if (triggerChange) {
-        // let fields update before actioning new values
-        setTimeout(() => {
-          // fire 'change' event so that change is picked up by listener
-          const ev = new Event('change');
-          el.dispatchEvent(ev);
-        }, 500);
-      }
     }
   }
 
@@ -1206,22 +1172,5 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     };
 
     return offset;
-  }
-
-  /**
-   * @function isEmptyObject
-   * @summary Determine whether an object is empty ({})
-   * @param {object} obj - Object
-   * @returns {boolean} is empty
-   * @see {@link https://stackoverflow.com/a/49729848}
-   * @memberof FmcUi
-   * @static
-   */
-  static isEmptyObject(obj) {
-    return (
-      Object.getPrototypeOf(obj) === Object.prototype
-      && Object.getOwnPropertyNames(obj).length === 0
-      && Object.getOwnPropertySymbols(obj).length === 0
-    );
   }
 }
