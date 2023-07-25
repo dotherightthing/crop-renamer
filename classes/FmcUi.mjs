@@ -15,17 +15,17 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     // select the relevant arguments from the config object passed in
     const {
       debounceDelay,
+      elements,
       fmcCroppersUiInstance,
       fmcThumbsUiInstance,
-      elements,
       selectors
     } = config;
 
     Object.assign(this, {
       debounceDelay,
+      elements,
       fmcCroppersUiInstance,
       fmcThumbsUiInstance,
-      elements,
       selectors
     });
   }
