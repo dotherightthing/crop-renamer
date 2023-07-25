@@ -586,7 +586,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
           this.moveCropperCropBoxToPageXY({ pageXRaw, pageYRaw });
 
-          FmcUi.emitEvent(croppersId, 'statusChange', {
+          FmcUi.emitElementEvent(window, 'message', {
             msg: 'Rounding percentages for storage...'
           });
 
@@ -603,7 +603,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
             FmcUi.emitEvent(focalpointYInputId, 'change');
 
-            FmcUi.emitEvent(croppersId, 'statusChange', {
+            FmcUi.emitElementEvent(window, 'message', {
               msg: ''
             });
           }, updateDelay);
@@ -658,7 +658,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
     document.getElementById(croppersId).dataset.cropperFocalpointSaveStatus = state;
 
-    FmcUi.emitEvent(croppersId, 'statusChange', {
+    FmcUi.emitElementEvent(window, 'message', {
       msg
     });
 
@@ -774,7 +774,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
     });
 
     if (!this.croppers.length) {
-      FmcUi.emitEvent(croppersId, 'statusChange', {
+      FmcUi.emitElementEvent(window, 'message', {
         msg: 'Croppers could not be initialised'
       });
 
@@ -1138,7 +1138,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
       cropsAndSizes
     });
 
-    FmcUi.emitEvent(croppersId, 'statusChange', {
+    FmcUi.emitElementEvent(window, 'message', {
       msg: `Deleted ${counts.deletions} matching files. Generated ${counts.crops} crops and ${counts.resizes} sizes`
     });
 
@@ -1224,7 +1224,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
     FmcUi.emitEvent(focalpointYInputId, 'change');
 
-    FmcUi.emitEvent(croppersId, 'statusChange', {
+    FmcUi.emitElementEvent(window, 'message', {
       msg
     });
   }

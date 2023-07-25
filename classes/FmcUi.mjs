@@ -107,18 +107,18 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   addEventListeners() {
     const {
       debounceDelay,
-      fmcCroppersUiInstance,
-      fmcThumbsUiInstance,
-      elements,
-      selectors
+      elements
     } = this;
 
     const {
-      consoleContainer,
       copyPaths,
       croppersContainer,
       editWebpageButton,
-      focalpointAutoSaveInput,
+      exportCropsAndSizesButton,
+      fileWebpageButton,
+      filterClear,
+      filterSubmit,
+      focalpointAutoSaveRadios,
       focalpointDeleteButton,
       focalpointResetButton,
       focalpointSaveButton,
@@ -126,295 +126,67 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       focalpointYInput,
       folderInButton,
       folderOutButton,
-      fileWebpageButton,
       folderWebsiteButton,
-      exportCropsAndSizesButton,
       lastCropperImg,
       pathLinks,
       thumbsContainer,
-      thumbFileNameFilter,
-      thumbFileNameFilterClear,
-      thumbFileNameFilterSubmit,
       window
     } = elements;
 
-    const {
-      thumbButtonClass,
-      thumbClass,
-      thumbImgClass
-    } = selectors;
-
-    const handleFocalpointInputChangeDebounced = FmcUi.debounce(this.handleFocalpointInputChange, debounceDelay);
+    const handleFocalpointInputDebounced = FmcUi.debounce(this.handleFocalpointInputChange, debounceDelay);
     const handleThumbClickDebounced = FmcUi.debounce(this.handleThumbClick, debounceDelay);
 
     copyPaths.forEach(el => {
-      el.addEventListener('click', (event) => {
-        event.preventDefault();
-
-        if (typeof window.electronAPI === 'undefined') {
-          consoleContainer.textContent = 'Error: Clipboard operations require Electron';
-
-          return;
-        }
-
-        const et = event.currentTarget;
-
-        while (et.tagName.toLowerCase() !== 'button') {
-          et = et.parentElement;
-        }
-
-        const title = et.getAttribute('title');
-
-        window.electronAPI.copyToClipboard({
-          text: title
-        });
-      });
+      el.addEventListener('click', this.handleCopyPath.bind(this));
     });
 
-    croppersContainer.addEventListener('imageRenamed', (event) => {
-      const { newFileName: src } = event.detail;
-      const { selectedClass } = fmcThumbsUiInstance;
-      const { imagePercentX, imagePercentY } = fmcCroppersUiInstance.getImagePercentXYFromImage(src);
-      const thumb = document.querySelector(`.${selectedClass}`).parentElement;
-      const thumbImage = document.querySelector(`.${selectedClass} .${thumbImgClass}`);
-      const thumbs = document.querySelectorAll(`.${thumbClass}`);
-      const thumbIndex = 0;
+    croppersContainer.addEventListener('imageRenamed', this.handleImageRenamed.bind(this));
 
-      thumbs.forEach((_thumb, index) => {
-        if (_thumb.classList.contains(selectedClass)) {
-          thumbIndex = index;
-        }
-      });
+    editWebpageButton.addEventListener('click', this.handleEditWebpage.bind(this));
 
-      fmcThumbsUiInstance.changeSelectedImageSrc(src);
-      fmcThumbsUiInstance.setCssImagePercentXY({
-        thumbElement: thumb,
-        thumbImgElement: thumbImage,
-        thumbIndex,
-        imagePercentX,
-        imagePercentY
-      });
+    exportCropsAndSizesButton.addEventListener('click', this.handleExportCropsAndSizes.bind(this));
 
-      this.setPaths(src);
+    fileWebpageButton.addEventListener('click', this.handleFileWebpageChange.bind(this));
+
+    filterClear.addEventListener('click', this.handleFilterClear.bind(this));
+
+    filterSubmit.addEventListener('click', this.handleFilterSubmit.bind(this));
+
+    focalpointAutoSaveRadios.forEach(el => {
+      el.addEventListener('change', this.handleAutosaveRadioChange.bind(this));
     });
 
-    croppersContainer.addEventListener('statusChange', (event) => {
-      const { msg } = event.detail;
+    focalpointDeleteButton.addEventListener('click', this.handleFocalpointDelete.bind(this));
 
-      consoleContainer.textContent = (msg !== '') ? `${msg}.` : msg;
-    });
+    focalpointResetButton.addEventListener('click', this.handleFocalpointReset.bind(this));
 
-    editWebpageButton.addEventListener('click', async () => {
-      const {
-        dataset: {
-          targetFolder
-        }
-      } = folderWebsiteButton;
+    focalpointSaveButton.addEventListener('click', this.handleFocalpointSave.bind(this));
 
-      const {
-        dataset: {
-          targetFile
-        }
-      } = fileWebpageButton;
+    focalpointXInput.addEventListener('change', handleFocalpointInputDebounced.bind(this));
 
-      const msg = await window.electronAPI.openInEditor({
-        editorCommand: 'code', // see https://code.visualstudio.com/docs/editor/command-line
-        fileDescription: 'webpage',
-        folderPath: targetFolder,
-        filePath: targetFile
-      });
+    focalpointYInput.addEventListener('change', handleFocalpointInputDebounced.bind(this));
 
-      FmcUi.emitElementEvent(window, 'message', {
-        msg
-      });
-    });
+    folderInButton.addEventListener('click', this.handleFolderInChange.bind(this));
 
-    focalpointAutoSaveInput.forEach(radio => {
-      radio.addEventListener('change', async (event) => {
-        window.electronAPI.storeSet({
-          key: 'focalpointAutoSave',
-          value: event.target.value === 'on'
-        });
+    folderOutButton.addEventListener('click', this.handleFolderOutChange.bind(this));
 
-        const autosaveOn = event.target.value;
+    folderWebsiteButton.addEventListener('click', this.handleFolderWebsiteChange.bind(this));
 
-        await this.autosaveFocalpoint(autosaveOn === 'on');
-
-        fmcCroppersUiInstance.setFocalpointSaveState({
-          imagePercentXUi: focalpointXInput.value,
-          imagePercentYUi: focalpointYInput.value
-        });
-      });
-    });
-
-    focalpointDeleteButton.addEventListener('click', async () => {
-      const {
-        croppersId
-      } = fmcCroppersUiInstance;
-
-      const msg = await fmcCroppersUiInstance.deleteImagePercentXYFromImage();
-
-      FmcUi.emitEvent(croppersId, 'statusChange', {
-        msg
-      });
-
-      // input change listener calls setFocalpointSaveState
-      focalpointXInput.value = 50;
-      focalpointYInput.value = 50;
-
-      // fire 'change' event so that change is picked up by listener
-      FmcUi.emitElementEvent(focalpointYInput, 'change'); // for both X and Y
-    });
-
-    focalpointXInput.addEventListener('change', handleFocalpointInputChangeDebounced.bind(this));
-    focalpointYInput.addEventListener('change', handleFocalpointInputChangeDebounced.bind(this));
-
-    focalpointResetButton.addEventListener('click', (event) => {
-      // input change listener calls setFocalpointSaveState
-      fmcCroppersUiInstance.reinstateImagePercentXYFromImage(event);
-    });
-
-    focalpointSaveButton.addEventListener('click', async () => {
-      await this.saveFocalpoint();
-
-      fmcCroppersUiInstance.setFocalpointSaveState({
-        imagePercentXUi: focalpointXInput.value,
-        imagePercentYUi: focalpointYInput.value
-      });
-    });
-
-    folderInButton.addEventListener('click', async () => {
-      const { folderName, folderPath, imagesData } = await window.electronAPI.selectFolder({
-        dialogTitle: 'Source folder',
-        retrieveImagesData: true,
-        restore: false,
-        storeKey: 'folderIn'
-      });
-
-      this.setFolderIn({ folderName, folderPath, imagesData });
-    });
-
-    folderOutButton.addEventListener('click', async () => {
-      const { folderName, folderPath } = await window.electronAPI.selectFolder({
-        dialogTitle: 'Export folder',
-        retrieveImagesData: false,
-        restore: false,
-        storeKey: 'folderOut'
-      });
-
-      this.setFolderOut({ folderName, folderPath });
-    });
-
-    fileWebpageButton.addEventListener('click', async () => {
-      const { fileName, filePath, folderPath } = await window.electronAPI.selectFile({
-        dialogTitle: 'Webpage file',
-        restore: false,
-        storeKey: 'fileWebpage'
-      });
-
-      this.setFileWebpage({ fileName, filePath, folderPath });
-    });
-
-    folderWebsiteButton.addEventListener('click', async () => {
-      const { folderName, folderPath } = await window.electronAPI.selectFolder({
-        dialogTitle: 'Website folder',
-        retrieveImagesData: false,
-        restore: false,
-        storeKey: 'folderWebsite'
-      });
-
-      this.setFolderWebsite({ folderName, folderPath });
-    });
-
-    exportCropsAndSizesButton.addEventListener('click', async () => {
-      const { dataset } = folderOutButton;
-      const { targetFolder } = dataset;
-
-      const baseExportPath = await fmcCroppersUiInstance.resizeAndCropImage(targetFolder);
-
-      this.setPaths(baseExportPath, false);
-    });
-
-    lastCropperImg.addEventListener('ready', () => {
-      // short timeout prevents intermittent (browser) error from FmcCroppersUi.calcCanvasOffsets()
-      setTimeout(() => {
-        fmcCroppersUiInstance.initImagePercentXY();
-      }, 10);
-    });
+    lastCropperImg.addEventListener('ready', this.handleLastCropperImgReady.bind(this));
 
     pathLinks.forEach(el => {
-      el.addEventListener('click', (event) => {
-        event.preventDefault();
-
-        if (typeof window.electronAPI === 'undefined') {
-          consoleContainer.textContent = 'Error: Finder links require Electron';
-
-          return;
-        }
-
-        const et = event.currentTarget;
-
-        while (et.tagName.toLowerCase() !== 'a') {
-          et = et.parentElement;
-        }
-
-        const href = et.getAttribute('href');
-
-        if (href !== '#') {
-          window.electronAPI.openInFinder({
-            href
-          });
-        }
-      });
-    });
-
-    thumbFileNameFilterClear.addEventListener('click', () => {
-      thumbFileNameFilter.value = '';
-
-      fmcThumbsUiInstance.filterByFilename('');
-    });
-
-    thumbFileNameFilterSubmit.addEventListener('click', () => {
-      const searchStr = thumbFileNameFilter.value;
-
-      fmcThumbsUiInstance.filterByFilename(searchStr);
+      el.addEventListener('click', this.handlePathLink.bind(this));
     });
 
     thumbsContainer.addEventListener('click', this.handleThumbSelect.bind(this));
+
     thumbsContainer.addEventListener('click', handleThumbClickDebounced.bind(this));
 
-    window.addEventListener('keydown', async (event) => {
-      const {
-        key,
-        metaKey
-      } = event;
+    window.addEventListener('keydown', this.handleWindowKeydown.bind(this));
 
-      if (document.activeElement === thumbFileNameFilter) {
-        if (key === 'Enter') {
-          FmcUi.emitElementEvent(thumbFileNameFilterSubmit, 'click', {});
-        } else if (metaKey && (key === 'v')) {
-          thumbFileNameFilter.value = await window.electronAPI.copyFromClipboard();
-        }
-      } else if (document.activeElement.classList.contains(thumbButtonClass)) {
-        if (key === 'ArrowLeft') {
-          event.preventDefault(); // don't operate the native container scrollbar
-          fmcThumbsUiInstance.scrollToThumb('previous');
-        } else if (key === 'ArrowRight') {
-          event.preventDefault();
-          fmcThumbsUiInstance.scrollToThumb('next');
-        }
-      }
-    });
+    window.addEventListener('message', this.handleWindowMessage.bind(this));
 
-    window.addEventListener('message', (event) => {
-      const { msg } = event.detail;
-
-      consoleContainer.textContent = (msg !== '') ? `${msg}.` : msg;
-    });
-
-    window.addEventListener('resize', () => {
-      fmcThumbsUiInstance.scrollToThumb('selected');
-    });
+    window.addEventListener('resize', this.handleWindowResize.bind(this));
   }
 
   /**
@@ -441,95 +213,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       focalpointResetButton.removeAttribute('disabled');
       focalpointSaveButton.removeAttribute('disabled');
     }
-  }
-
-  /**
-   * @function handleFocalpointInputChange
-   * @param {object} event - Change event
-   * @memberof FmcUi
-   */
-  async handleFocalpointInputChange(event) {
-    const {
-      elements,
-      fmcCroppersUiInstance
-    } = this;
-
-    const {
-      focalpointAutoSaveInput,
-      focalpointXInput,
-      focalpointYInput
-    } = elements;
-
-    // move cropbox
-    fmcCroppersUiInstance.displayImagePercentXY({
-      imagePercentX: focalpointXInput.value, // string
-      imagePercentY: focalpointYInput.value // string
-    });
-
-    if ((event.isTrusted) || (event.target === focalpointYInput)) {
-      const autosaveOn = [ ...focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
-
-      await this.autosaveFocalpoint(autosaveOn === 'on');
-
-      fmcCroppersUiInstance.setFocalpointSaveState({
-        imagePercentXUi: focalpointXInput.value,
-        imagePercentYUi: focalpointYInput.value
-      });
-    }
-  }
-
-  /**
-   * @function handleThumbClick
-   * @param {object} event - Click event
-   * @memberof FmcUi
-   */
-  handleThumbClick(event) {
-    const {
-      fmcCroppersUiInstance,
-      fmcThumbsUiInstance
-    } = this;
-
-    const {
-      clickedButton,
-      clickedButtonIndex
-    } = fmcThumbsUiInstance.getClickedButton(event);
-
-    const newImageSrc = clickedButton.querySelector('img').getAttribute('src');
-
-    setTimeout(() => {
-      fmcThumbsUiInstance.displayCount({
-        thumbIndex: clickedButtonIndex
-      });
-
-      window.electronAPI.storeSet({
-        key: 'thumbIndex',
-        value: clickedButtonIndex
-      });
-    }, 500);
-
-    this.setPaths(newImageSrc);
-
-    // calls fmcCroppersUiInstance.init
-    fmcCroppersUiInstance.changeSourceImage(clickedButton);
-  }
-
-  /**
-   * @function handleThumbSelect
-   * @param {object} event - Click event
-   * @memberof FmcUi
-   */
-  handleThumbSelect(event) {
-    const {
-      fmcThumbsUiInstance
-    } = this;
-
-    const {
-      clickedButton
-    } = fmcThumbsUiInstance.getClickedButton(event);
-
-    fmcThumbsUiInstance.applySelectedClass(clickedButton);
-
-    fmcThumbsUiInstance.scrollToThumb('selected');
   }
 
   /**
@@ -596,16 +279,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function srcSafe
-   * @param {string} src - Path
-   * @returns {string} srcSafe
-   * @memberof FmcUi
-   */
-  srcSafe(src) {
-    return src.replace(/%20/g, ' ');
-  }
-
-  /**
    * @function getPathOut
    * @summary Set the target path in the footer
    * @returns {string} pathOut
@@ -663,6 +336,549 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     }
 
     return path;
+  }
+
+  /**
+   * @function handleAutosaveRadioChange
+   * @param {object} event - Change event
+   * @memberof FmcUi
+   */
+  async handleAutosaveRadioChange(event) {
+    const {
+      elements,
+      fmcCroppersUiInstance
+    } = this;
+
+    const {
+      focalpointXInput,
+      focalpointYInput
+    } = elements;
+
+    window.electronAPI.storeSet({
+      key: 'focalpointAutoSave',
+      value: event.target.value === 'on'
+    });
+
+    const autosaveOn = event.target.value;
+
+    await this.autosaveFocalpoint(autosaveOn === 'on');
+
+    fmcCroppersUiInstance.setFocalpointSaveState({
+      imagePercentXUi: focalpointXInput.value,
+      imagePercentYUi: focalpointYInput.value
+    });
+  }
+
+  /**
+   * @function handleCopyPath
+   * @param {object} event - Click event
+   * @memberof FmcUi
+   */
+  handleCopyPath(event) {
+    const {
+      elements
+    } = this;
+
+    const {
+      consoleContainer
+    } = elements;
+
+    event.preventDefault();
+
+    if (typeof window.electronAPI === 'undefined') {
+      consoleContainer.textContent = 'Error: Clipboard operations require Electron';
+
+      return;
+    }
+
+    const et = event.currentTarget;
+
+    while (et.tagName.toLowerCase() !== 'button') {
+      et = et.parentElement;
+    }
+
+    const title = et.getAttribute('title');
+
+    window.electronAPI.copyToClipboard({
+      text: title
+    });
+  }
+
+  /**
+   * @function handleEditWebpage
+   * @memberof FmcUi
+   */
+  async handleEditWebpage() {
+    const {
+      elements
+    } = this;
+
+    const {
+      fileWebpageButton,
+      folderWebsiteButton
+    } = elements;
+
+    const {
+      dataset: {
+        targetFolder
+      }
+    } = folderWebsiteButton;
+
+    const {
+      dataset: {
+        targetFile
+      }
+    } = fileWebpageButton;
+
+    const msg = await window.electronAPI.openInEditor({
+      editorCommand: 'code', // see https://code.visualstudio.com/docs/editor/command-line
+      fileDescription: 'webpage',
+      folderPath: targetFolder,
+      filePath: targetFile
+    });
+
+    FmcUi.emitElementEvent(window, 'message', {
+      msg
+    });
+  }
+
+  /**
+   * @function handleExportCropsAndSizes
+   * @memberof FmcUi
+   */
+  async handleExportCropsAndSizes() {
+    const {
+      elements,
+      fmcCroppersUiInstance
+    } = this;
+
+    const {
+      folderOutButton
+    } = elements;
+
+    const { dataset } = folderOutButton;
+    const { targetFolder } = dataset;
+
+    const baseExportPath = await fmcCroppersUiInstance.resizeAndCropImage(targetFolder);
+
+    this.setPaths(baseExportPath, false);
+  }
+
+  /**
+   * @function handleFileWebpageChange
+   * @memberof FmcUi
+   */
+  async handleFileWebpageChange() {
+    const { fileName, filePath, folderPath } = await window.electronAPI.selectFile({
+      dialogTitle: 'Webpage file',
+      restore: false,
+      storeKey: 'fileWebpage'
+    });
+
+    this.setFileWebpage({ fileName, filePath, folderPath });
+  }
+
+  /**
+   * @function handleFilterClear
+   * @memberof FmcUi
+   */
+  async handleFilterClear() {
+    const {
+      elements,
+      fmcThumbsUiInstance
+    } = this;
+
+    const {
+      filter
+    } = elements;
+
+    filter.value = '';
+
+    fmcThumbsUiInstance.filterByFilename('');
+  }
+
+  /**
+   * @function handleFilterSubmit
+   * @memberof FmcUi
+   */
+  async handleFilterSubmit() {
+    const {
+      elements,
+      fmcThumbsUiInstance
+    } = this;
+
+    const {
+      filter
+    } = elements;
+
+    const searchStr = filter.value;
+
+    fmcThumbsUiInstance.filterByFilename(searchStr);
+  }
+
+  /**
+   * @function handleFocalpointDelete
+   * @memberof FmcUi
+   */
+  async handleFocalpointDelete() {
+    const {
+      elements,
+      fmcCroppersUiInstance
+    } = this;
+
+    const {
+      focalpointXInput,
+      focalpointYInput
+    } = elements;
+
+    const msg = await fmcCroppersUiInstance.deleteImagePercentXYFromImage();
+
+    FmcUi.emitElementEvent(window, 'message', {
+      msg
+    });
+
+    // input change listener calls setFocalpointSaveState
+    focalpointXInput.value = 50;
+    focalpointYInput.value = 50;
+
+    // fire 'change' event so that change is picked up by listener
+    FmcUi.emitElementEvent(focalpointYInput, 'change'); // for both X and Y
+  }
+
+  /**
+   * @function handleFocalpointInputChange
+   * @param {object} event - Change event
+   * @memberof FmcUi
+   */
+  async handleFocalpointInputChange(event) {
+    const {
+      elements,
+      fmcCroppersUiInstance
+    } = this;
+
+    const {
+      focalpointAutoSaveRadios,
+      focalpointXInput,
+      focalpointYInput
+    } = elements;
+
+    // move cropbox
+    fmcCroppersUiInstance.displayImagePercentXY({
+      imagePercentX: focalpointXInput.value, // string
+      imagePercentY: focalpointYInput.value // string
+    });
+
+    if ((event.isTrusted) || (event.target === focalpointYInput)) {
+      const autosaveOn = [ ...focalpointAutoSaveRadios ].filter(radio => radio.checked)[0].value;
+
+      await this.autosaveFocalpoint(autosaveOn === 'on');
+
+      fmcCroppersUiInstance.setFocalpointSaveState({
+        imagePercentXUi: focalpointXInput.value,
+        imagePercentYUi: focalpointYInput.value
+      });
+    }
+  }
+
+  /**
+   * @function handleFocalpointReset
+   * @param {object} event - Click event
+   * @memberof FmcUi
+   */
+  handleFocalpointReset(event) {
+    const {
+      fmcCroppersUiInstance
+    } = this;
+
+    // input change listener calls setFocalpointSaveState
+    fmcCroppersUiInstance.reinstateImagePercentXYFromImage(event);
+  }
+
+  /**
+   * @function handleFocalpointSave
+   * @memberof FmcUi
+   */
+  async handleFocalpointSave() {
+    const {
+      elements,
+      fmcCroppersUiInstance
+    } = this;
+
+    const {
+      focalpointXInput,
+      focalpointYInput
+    } = elements;
+
+    await this.saveFocalpoint();
+
+    fmcCroppersUiInstance.setFocalpointSaveState({
+      imagePercentXUi: focalpointXInput.value,
+      imagePercentYUi: focalpointYInput.value
+    });
+  }
+
+  /**
+   * @function handleFolderInChange
+   * @memberof FmcUi
+   */
+  async handleFolderInChange() {
+    const { folderName, folderPath, imagesData } = await window.electronAPI.selectFolder({
+      dialogTitle: 'Source folder',
+      retrieveImagesData: true,
+      restore: false,
+      storeKey: 'folderIn'
+    });
+
+    this.setFolderIn({ folderName, folderPath, imagesData });
+  }
+
+  /**
+   * @function handleFolderOutChange
+   * @memberof FmcUi
+   */
+  async handleFolderOutChange() {
+    const { folderName, folderPath } = await window.electronAPI.selectFolder({
+      dialogTitle: 'Export folder',
+      retrieveImagesData: false,
+      restore: false,
+      storeKey: 'folderOut'
+    });
+
+    this.setFolderOut({ folderName, folderPath });
+  }
+
+  /**
+   * @function handleFolderWebsiteChange
+   * @memberof FmcUi
+   */
+  async handleFolderWebsiteChange() {
+    const { folderName, folderPath } = await window.electronAPI.selectFolder({
+      dialogTitle: 'Website folder',
+      retrieveImagesData: false,
+      restore: false,
+      storeKey: 'folderWebsite'
+    });
+
+    this.setFolderWebsite({ folderName, folderPath });
+  }
+
+  /**
+   * @function handleImageRenamed
+   * @param {object} event - imageRenamed event
+   * @memberof FmcUi
+   */
+  handleImageRenamed(event) {
+    const {
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance,
+      selectors
+    } = this;
+
+    const {
+      thumbClass,
+      thumbImgClass
+    } = selectors;
+
+    const { newFileName: src } = event.detail;
+    const { selectedClass } = fmcThumbsUiInstance;
+    const { imagePercentX, imagePercentY } = fmcCroppersUiInstance.getImagePercentXYFromImage(src);
+    const thumb = document.querySelector(`.${selectedClass}`).parentElement;
+    const thumbImage = document.querySelector(`.${selectedClass} .${thumbImgClass}`);
+    const thumbs = document.querySelectorAll(`.${thumbClass}`);
+    const thumbIndex = 0;
+
+    thumbs.forEach((_thumb, index) => {
+      if (_thumb.classList.contains(selectedClass)) {
+        thumbIndex = index;
+      }
+    });
+
+    fmcThumbsUiInstance.changeSelectedImageSrc(src);
+    fmcThumbsUiInstance.setCssImagePercentXY({
+      thumbElement: thumb,
+      thumbImgElement: thumbImage,
+      thumbIndex,
+      imagePercentX,
+      imagePercentY
+    });
+
+    this.setPaths(src);
+  }
+
+  /**
+   * @function handleLastCropperImgReady
+   * @memberof FmcUi
+   */
+  handleLastCropperImgReady() {
+    const {
+      fmcCroppersUiInstance
+    } = this;
+
+    // short timeout prevents intermittent (browser) error from FmcCroppersUi.calcCanvasOffsets()
+    setTimeout(() => {
+      fmcCroppersUiInstance.initImagePercentXY();
+    }, 10);
+  }
+
+  /**
+   * @function handlePathLink
+   * @param {object} event - Click event
+   * @memberof FmcUi
+   */
+  async handlePathLink(event) {
+    const {
+      elements
+    } = this;
+
+    const {
+      consoleContainer
+    } = elements;
+
+    event.preventDefault();
+
+    if (typeof window.electronAPI === 'undefined') {
+      consoleContainer.textContent = 'Error: Finder links require Electron';
+
+      return;
+    }
+
+    const et = event.currentTarget;
+
+    while (et.tagName.toLowerCase() !== 'a') {
+      et = et.parentElement;
+    }
+
+    const href = et.getAttribute('href');
+
+    if (href !== '#') {
+      window.electronAPI.openInFinder({
+        href
+      });
+    }
+  }
+
+  /**
+   * @function handleThumbClick
+   * @param {object} event - Click event
+   * @memberof FmcUi
+   */
+  handleThumbClick(event) {
+    const {
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance
+    } = this;
+
+    const {
+      clickedButton,
+      clickedButtonIndex
+    } = fmcThumbsUiInstance.getClickedButton(event);
+
+    const newImageSrc = clickedButton.querySelector('img').getAttribute('src');
+
+    setTimeout(() => {
+      fmcThumbsUiInstance.displayCount({
+        thumbIndex: clickedButtonIndex
+      });
+
+      window.electronAPI.storeSet({
+        key: 'thumbIndex',
+        value: clickedButtonIndex
+      });
+    }, 500);
+
+    this.setPaths(newImageSrc);
+
+    // calls fmcCroppersUiInstance.init
+    fmcCroppersUiInstance.changeSourceImage(clickedButton);
+  }
+
+  /**
+   * @function handleThumbSelect
+   * @param {object} event - Click event
+   * @memberof FmcUi
+   */
+  handleThumbSelect(event) {
+    const {
+      fmcThumbsUiInstance
+    } = this;
+
+    const {
+      clickedButton
+    } = fmcThumbsUiInstance.getClickedButton(event);
+
+    fmcThumbsUiInstance.applySelectedClass(clickedButton);
+
+    fmcThumbsUiInstance.scrollToThumb('selected');
+  }
+
+  /**
+   * @function handleWindowKeydown
+   * @param {object} event - Keydown event
+   * @memberof FmcUi
+   */
+  async handleWindowKeydown(event) {
+    const {
+      elements,
+      fmcThumbsUiInstance
+    } = this;
+
+    const {
+      thumbButtonClass,
+      filter,
+      filterSubmit
+    } = elements;
+
+    const {
+      key,
+      metaKey
+    } = event;
+
+    if (document.activeElement === filter) {
+      if (key === 'Enter') {
+        FmcUi.emitElementEvent(filterSubmit, 'click', {});
+      } else if (metaKey && (key === 'v')) {
+        filter.value = await window.electronAPI.copyFromClipboard();
+      }
+    } else if (document.activeElement.classList.contains(thumbButtonClass)) {
+      if (key === 'ArrowLeft') {
+        event.preventDefault(); // don't operate the native container scrollbar
+        fmcThumbsUiInstance.scrollToThumb('previous');
+      } else if (key === 'ArrowRight') {
+        event.preventDefault();
+        fmcThumbsUiInstance.scrollToThumb('next');
+      }
+    }
+  }
+
+  /**
+   * @function handleWindowMessage
+   * @param {object} event - Message event
+   * @memberof FmcUi
+   */
+  handleWindowMessage(event) {
+    const {
+      elements
+    } = this;
+
+    const {
+      consoleContainer
+    } = elements;
+
+    const { msg } = event.detail;
+
+    consoleContainer.textContent = (msg !== '') ? `${msg}.` : msg;
+  }
+
+  /**
+   * @function handleWindowResize
+   * @memberof FmcUi
+   */
+  handleWindowResize() {
+    const {
+      fmcThumbsUiInstance
+    } = this;
+
+    fmcThumbsUiInstance.scrollToThumb('selected');
   }
 
   /**
@@ -739,7 +955,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
         imagePercentY: focalpointYInput.value
       });
 
-      FmcUi.emitEvent(croppersId, 'statusChange', {
+      FmcUi.emitElementEvent(window, 'message', {
         msg
       });
     }
@@ -757,14 +973,48 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = this;
 
     const {
-      focalpointAutoSaveInput
+      focalpointAutoSaveRadios
     } = elements;
 
     const autoSaveSetting = enabled ? 'on' : 'off';
 
-    focalpointAutoSaveInput.forEach(radio => {
+    focalpointAutoSaveRadios.forEach(radio => {
       radio.checked = (radio.value === autoSaveSetting);
     });
+  }
+
+  /**
+   * @function setFileWebpage
+   * @summary Set the webpage file
+   * @param {object} args - Arguments
+   * @param {string} args.fileName - File name
+   * @param {string} args.filePath - File path
+   * @param {string} args.folderPath - Folder path
+   * @memberof FmcUi
+   */
+  setFileWebpage({ fileName, filePath, folderPath }) {
+    const {
+      elements,
+      selectors
+    } = this;
+
+    const {
+      fileWebpageButton
+    } = elements;
+
+    const {
+      controlHintClass
+    } = selectors;
+
+    // if folder select was cancelled
+    if ((typeof fileName === 'undefined') || (typeof filePath === 'undefined')) {
+      return;
+    }
+
+    fileWebpageButton.dataset.targetFile = filePath;
+    fileWebpageButton.dataset.targetFolder = folderPath;
+    fileWebpageButton.dataset.hint = true;
+    fileWebpageButton.querySelector(`.${controlHintClass}`).textContent = fileName;
   }
 
   /**
@@ -863,40 +1113,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     folderOutButton.querySelector(`.${controlHintClass}`).textContent = folderName;
 
     folderOutButtonDependent.removeAttribute('disabled');
-  }
-
-  /**
-   * @function setFileWebpage
-   * @summary Set the webpage file
-   * @param {object} args - Arguments
-   * @param {string} args.fileName - File name
-   * @param {string} args.filePath - File path
-   * @param {string} args.folderPath - Folder path
-   * @memberof FmcUi
-   */
-  setFileWebpage({ fileName, filePath, folderPath }) {
-    const {
-      elements,
-      selectors
-    } = this;
-
-    const {
-      fileWebpageButton
-    } = elements;
-
-    const {
-      controlHintClass
-    } = selectors;
-
-    // if folder select was cancelled
-    if ((typeof fileName === 'undefined') || (typeof filePath === 'undefined')) {
-      return;
-    }
-
-    fileWebpageButton.dataset.targetFile = filePath;
-    fileWebpageButton.dataset.targetFolder = folderPath;
-    fileWebpageButton.dataset.hint = true;
-    fileWebpageButton.querySelector(`.${controlHintClass}`).textContent = fileName;
   }
 
   /**
@@ -999,6 +1215,16 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function srcSafe
+   * @param {string} src - Path
+   * @returns {string} srcSafe
+   * @memberof FmcUi
+   */
+  srcSafe(src) {
+    return src.replace(/%20/g, ' ');
+  }
+
+  /**
    * @function useTestData
    * @memberof FmcUi
    */
@@ -1038,6 +1264,43 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /* Static methods */
+
+  /**
+   * @function debounce
+   * @param {Function} func - Function to call after delay
+   * @param {number} wait - Wait time in ms
+   * @param {boolean} immediate - Call the function immediately
+   * @returns {Function} function
+   * @memberof FmcFile
+   * @static
+   * @see {@link https://stackoverflow.com/a/65081210}
+   * @see {@link https://www.freecodecamp.org/news/debounce-explained-how-to-make-your-javascript-wait-for-your-user-to-finish-typing-2/}
+   */
+  static debounce(func, wait, immediate) {
+    let timeout;
+
+    return function () { // eslint-disable-line func-names
+      const context = this;
+      const args = arguments;
+
+      const later = function () {
+        timeout = null;
+
+        if (!immediate) {
+          func.apply(context, args);
+        }
+      };
+
+      const callNow = immediate && !timeout;
+
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+
+      if (callNow) {
+        func.apply(context, args);
+      }
+    };
+  }
 
   /**
    * @function emitEvent
@@ -1081,43 +1344,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     });
 
     element.dispatchEvent(event);
-  }
-
-  /**
-   * @function debounce
-   * @param {Function} func - Function to call after delay
-   * @param {number} wait - Wait time in ms
-   * @param {boolean} immediate - Call the function immediately
-   * @returns {Function} function
-   * @memberof FmcFile
-   * @static
-   * @see {@link https://stackoverflow.com/a/65081210}
-   * @see {@link https://www.freecodecamp.org/news/debounce-explained-how-to-make-your-javascript-wait-for-your-user-to-finish-typing-2/}
-   */
-  static debounce(func, wait, immediate) {
-    let timeout;
-
-    return function () { // eslint-disable-line func-names
-      const context = this;
-      const args = arguments;
-
-      const later = function () {
-        timeout = null;
-
-        if (!immediate) {
-          func.apply(context, args);
-        }
-      };
-
-      const callNow = immediate && !timeout;
-
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-
-      if (callNow) {
-        func.apply(context, args);
-      }
-    };
   }
 
   /**
