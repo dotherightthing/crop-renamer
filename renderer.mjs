@@ -62,8 +62,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   const fmcUi = new FmcUi({
-    fmcCroppersUiInstance,
-    fmcThumbsUiInstance,
+    debounceDelay: 500,
     elements: {
       consoleContainer: document.getElementById('console'),
       copyPaths: document.querySelectorAll('.control-copy'),
@@ -96,6 +95,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       thumbFileNameFilterSubmit: document.getElementById('thumb-filename-filter-submit'),
       window: window
     },
+    fmcCroppersUiInstance,
+    fmcThumbsUiInstance,
     selectors: {
       controlHintClass,
       thumbButtonClass,

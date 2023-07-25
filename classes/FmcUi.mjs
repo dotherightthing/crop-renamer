@@ -14,6 +14,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   constructor(config = {}) {
     // select the relevant arguments from the config object passed in
     const {
+      debounceDelay,
       fmcCroppersUiInstance,
       fmcThumbsUiInstance,
       elements,
@@ -21,6 +22,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = config;
 
     Object.assign(this, {
+      debounceDelay,
       fmcCroppersUiInstance,
       fmcThumbsUiInstance,
       elements,
@@ -29,6 +31,19 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /* Getters and Setters */
+
+  /**
+   * debounceDelay
+   * @type {number}
+   * @memberof FmcUi
+   */
+  get debounceDelay() {
+    return this._debounceDelay;
+  }
+
+  set debounceDelay(debounceDelay) {
+    this._debounceDelay = dtrtValidate.validate(debounceDelay, 'number', 'FmcUi.debounceDelay');
+  }
 
   /**
    * fmcCroppersUiInstance
@@ -91,6 +106,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
    */
   addEventListeners() {
     const {
+      debounceDelay,
       fmcCroppersUiInstance,
       fmcThumbsUiInstance,
       elements,
@@ -128,6 +144,8 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       thumbClass,
       thumbImgClass
     } = selectors;
+
+    const handleFocalpointInputChangeDebounced = FmcUi.debounce(this.handleFocalpointInputChange, debounceDelay);
 
     copyPaths.forEach(el => {
       el.addEventListener('click', (event) => {
@@ -180,30 +198,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       this.setPaths(src);
     });
 
-    croppersContainer.addEventListener('paramChange', (event) => {
-      const {
-        triggerChange,
-        parameter,
-        value
-      } = event.detail;
-
-      const el = document.getElementById(parameter);
-
-      const oldValue = el.value;
-
-      if (oldValue !== value) {
-        el.value = value;
-
-        if (triggerChange) {
-          // let fields update before actioning new values
-          setTimeout(() => {
-            // fire 'change' event so that change is picked up by listener
-            const ev = new Event('change');
-            el.dispatchEvent(ev);
-          }, 500);
-        }
-      }
-    });
+    croppersContainer.addEventListener('paramChange', this.handleParamChange);
 
     croppersContainer.addEventListener('statusChange', (event) => {
       const { msg } = event.detail;
@@ -275,24 +270,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       focalpointYInput.dispatchEvent(ev); // for both X and Y
     });
 
-    focalpointInput.forEach(input => input.addEventListener('change', async (event) => {
-      // move cropbox
-      fmcCroppersUiInstance.displayImagePercentXY({
-        imagePercentX: focalpointXInput.value, // string
-        imagePercentY: focalpointYInput.value // string
-      });
-
-      if ((event.isTrusted) || (event.target === focalpointYInput)) {
-        const autosaveOn = [ ...focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
-
-        await this.autosaveFocalpoint(autosaveOn === 'on');
-
-        fmcCroppersUiInstance.setFocalpointSaveState({
-          imagePercentXUi: focalpointXInput.value,
-          imagePercentYUi: focalpointYInput.value
-        });
-      }
-    }));
+    focalpointInput.forEach(input => input.addEventListener('change', handleFocalpointInputChangeDebounced.bind(this)));
 
     focalpointResetButton.addEventListener('click', (event) => {
       // input change listener calls setFocalpointSaveState
@@ -491,6 +469,71 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } else {
       focalpointResetButton.removeAttribute('disabled');
       focalpointSaveButton.removeAttribute('disabled');
+    }
+  }
+
+  /**
+   * @function handleFocalpointInputChange
+   * @param {object} event - Change event
+   * @memberof FmcUi
+   */
+  async handleFocalpointInputChange(event) {
+    const {
+      elements,
+      fmcCroppersUiInstance
+    } = this;
+
+    const {
+      focalpointAutoSaveInput,
+      focalpointXInput,
+      focalpointYInput
+    } = elements;
+
+    // move cropbox
+    fmcCroppersUiInstance.displayImagePercentXY({
+      imagePercentX: focalpointXInput.value, // string
+      imagePercentY: focalpointYInput.value // string
+    });
+
+    if ((event.isTrusted) || (event.target === focalpointYInput)) {
+      const autosaveOn = [ ...focalpointAutoSaveInput ].filter(radio => radio.checked)[0].value;
+
+      await this.autosaveFocalpoint(autosaveOn === 'on');
+
+      fmcCroppersUiInstance.setFocalpointSaveState({
+        imagePercentXUi: focalpointXInput.value,
+        imagePercentYUi: focalpointYInput.value
+      });
+    }
+  }
+
+  /**
+   * @function handleParamChange
+   * @param {object} event - Change event
+   * @memberof FmcUi
+   */
+  handleParamChange(event) {
+    const {
+      triggerChange,
+      parameter,
+      value
+    } = event.detail;
+
+    const el = document.getElementById(parameter);
+
+    const oldValue = el.value;
+
+    if (oldValue !== value) {
+      el.value = value;
+
+      if (triggerChange) {
+        // let fields update before actioning new values
+        setTimeout(() => {
+          // fire 'change' event so that change is picked up by listener
+          const ev = new Event('change');
+          el.dispatchEvent(ev);
+        }, 500);
+      }
     }
   }
 
@@ -986,6 +1029,43 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     });
 
     window.dispatchEvent(event);
+  }
+
+  /**
+   * @function debounce
+   * @param {Function} func - Function to call after delay
+   * @param {number} wait - Wait time in ms
+   * @param {boolean} immediate - Call the function immediately
+   * @returns {Function} function
+   * @memberof FmcFile
+   * @static
+   * @see {@link https://stackoverflow.com/a/65081210}
+   * @see {@link https://www.freecodecamp.org/news/debounce-explained-how-to-make-your-javascript-wait-for-your-user-to-finish-typing-2/}
+   */
+  static debounce(func, wait, immediate) {
+    let timeout;
+
+    return function () { // eslint-disable-line func-names
+      const context = this;
+      const args = arguments;
+
+      const later = function () {
+        timeout = null;
+
+        if (!immediate) {
+          func.apply(context, args);
+        }
+      };
+
+      const callNow = immediate && !timeout;
+
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+
+      if (callNow) {
+        func.apply(context, args);
+      }
+    };
   }
 
   /**
