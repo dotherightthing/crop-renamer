@@ -949,10 +949,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       focalpointYInput
     } = elements;
 
-    const {
-      croppersId
-    } = fmcCroppersUiInstance;
-
     let msg;
 
     // value is a string despite input being of type number

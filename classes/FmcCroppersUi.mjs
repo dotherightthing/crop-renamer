@@ -551,7 +551,6 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
    */
   getCropperOptions(exportWidth, exportHeight, role, action) {
     const {
-      croppersId,
       croppersOptions,
       focalpointXInputId,
       focalpointYInputId
@@ -1056,7 +1055,6 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
    */
   async resizeAndCropImage(targetFolder) {
     const {
-      croppersId,
       masterCropper,
       resizers,
       slaveCroppers
@@ -1214,7 +1212,6 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
    */
   reinstateImagePercentXYFromImage() {
     const {
-      croppersId,
       focalpointXInputId,
       focalpointYInputId,
       masterCropper
