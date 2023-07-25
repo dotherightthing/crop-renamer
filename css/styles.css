@@ -471,10 +471,12 @@ input[type='radio']:focus {
 
 /* .btn-selected */
 
+.btn-thumb:focus,
 .btn-selected {
   position: relative;
 }
 
+.btn-thumb:focus::after,
 .btn-selected::after {
   content: '';
   display: block;
@@ -483,7 +485,16 @@ input[type='radio']:focus {
   right: 0;
   bottom: 0;
   left: 0;
-  border: var(--gutter-half) solid var(--color-border-active);
+  border: var(--gutter-half) solid;
+}
+
+.btn-thumb:focus::after,
+.btn-thumb.btn-selected:focus::after {
+  border-color: var(--color-border-focussed);
+}
+
+.btn-selected::after {
+  border-color: var(--color-border-active);
 }
 
 .btn-selected .thumb-meta {
