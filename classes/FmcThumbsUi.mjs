@@ -174,28 +174,28 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   /**
    * @function setCssImagePercentXY
    * @param {object} args - Arguments
-   * @param {HTMLElement} args.thumbElement - DOM Element
-   * @param {HTMLElement} args.thumbImgElement - DOM Element
+   * @param {HTMLElement} args.thumbButton - DOM Element
+   * @param {HTMLElement} args.thumbImg - DOM Element
    * @param {number} args.thumbIndex - Thumb index
    * @param {number} args.imagePercentX - Image percent X
    * @param {number} args.imagePercentY - Image percent Y
    */
   setCssImagePercentXY({
-    thumbElement, thumbImgElement, thumbIndex, imagePercentX, imagePercentY
+    thumbButton, thumbImg, thumbIndex, imagePercentX, imagePercentY
   }) {
     const x = (typeof imagePercentX !== 'undefined') ? imagePercentX : 50;
     const y = (typeof imagePercentY !== 'undefined') ? imagePercentY : 50;
 
     // suppressing default output shows the default overlay colour
     if (x !== 50) {
-      thumbElement.style.setProperty('--image-percent-x', `${x}%`);
+      thumbButton.style.setProperty('--image-percent-x', `${x}%`);
     }
 
     if (y !== 50) {
-      thumbElement.style.setProperty('--image-percent-y', `${y}%`);
+      thumbButton.style.setProperty('--image-percent-y', `${y}%`);
     }
 
-    thumbImgElement.setAttribute('alt', `Thumbnail ${thumbIndex} with focalpoint at ${y}% top and ${x}% left. `);
+    thumbImg.setAttribute('alt', `Thumbnail ${thumbIndex} with focalpoint at ${y}% top and ${x}% left. `);
   }
 
   /**

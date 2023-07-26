@@ -687,10 +687,10 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     const { newFileName: src } = event.detail;
     const { selectedClass } = fmcThumbsUiInstance;
     const { imagePercentX, imagePercentY } = fmcCroppersUiInstance.getImagePercentXYFromImage(src);
-    const thumb = document.querySelector(`.${selectedClass}`).parentElement;
-    const thumbImage = document.querySelector(`.${selectedClass} .${thumbImgClass}`);
-    const thumbs = document.querySelectorAll(`.${thumbClass}`);
+    const thumbButton = document.querySelector(`.${selectedClass}`);
+    const thumbImg = document.querySelector(`.${selectedClass} .${thumbImgClass}`);
     const thumbIndex = 0;
+    const thumbs = document.querySelectorAll(`.${thumbClass}`);
 
     thumbs.forEach((_thumb, index) => {
       if (_thumb.classList.contains(selectedClass)) {
@@ -700,8 +700,8 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     fmcThumbsUiInstance.changeSelectedImageSrc(src);
     fmcThumbsUiInstance.setCssImagePercentXY({
-      thumbElement: thumb,
-      thumbImgElement: thumbImage,
+      thumbButton,
+      thumbImg,
       thumbIndex,
       imagePercentX,
       imagePercentY
@@ -1065,18 +1065,18 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     fmcThumbsUiInstance.generateThumbsHtml(imagesData, thumbIndex);
 
-    const thumbs = document.querySelectorAll(`.${thumbClass}`);
-    const thumbImages = document.querySelectorAll(`.${thumbImgClass}`);
+    const thumbButtons = document.querySelectorAll(`.${thumbClass}`);
+    const thumbImgs = document.querySelectorAll(`.${thumbImgClass}`);
 
     setTimeout(() => {
-      thumbs.forEach((thumb, index) => {
-        const thumbImage = thumbImages[index];
-        const { src } = thumbImage;
+      thumbButtons.forEach((thumbButton, index) => {
+        const thumbImg = thumbImgs[index];
+        const { src } = thumbImg;
         const { imagePercentX, imagePercentY } = fmcCroppersUiInstance.getImagePercentXYFromImage(src);
 
         fmcThumbsUiInstance.setCssImagePercentXY({
-          thumbElement: thumb,
-          thumbImgElement: thumbImage,
+          thumbButton,
+          thumbImg,
           thumbIndex: index + 1,
           imagePercentX,
           imagePercentY
