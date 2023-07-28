@@ -482,13 +482,10 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
   /**
    * @function changeSourceImage
-   * @param {HTMLElement} target - Image element
+   * @param {string} newImageSrc - New image src
    * @memberof FmcCroppersUi
    */
-  changeSourceImage(target) {
-    const newImage = target.querySelector('img');
-    const newImageSrc = newImage.getAttribute('src');
-
+  changeSourceImage(newImageSrc) {
     // TODO if exists
     this.destroy();
 

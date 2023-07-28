@@ -168,7 +168,7 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   changeSelectedImageSrc(src) {
     const { selectedClass } = this;
 
-    document.querySelector(`.${selectedClass} img`).src = src;
+    document.querySelector(`.${selectedClass} img`).setAttribute('src', src);
   }
 
   /**

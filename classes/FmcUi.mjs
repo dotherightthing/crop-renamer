@@ -183,8 +183,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     pathOutLink.addEventListener('click', this.handlePathLink.bind(this));
 
-    thumbsContainer.addEventListener('click', this.handleThumbSelect.bind(this));
-
     thumbsContainer.addEventListener('click', handleThumbClickDebounced.bind(this));
 
     window.addEventListener('keydown', this.handleWindowKeydown.bind(this));
@@ -767,11 +765,22 @@ export class FmcUi { // eslint-disable-line no-unused-vars
    * @param {object} event - Click event
    * @memberof FmcUi
    */
-  handleThumbClick(event) {
+  async handleThumbClick(event) {
     const {
+      elements,
       fmcCroppersUiInstance,
       fmcThumbsUiInstance
     } = this;
+
+    const {
+      croppersContainer
+    } = elements;
+
+    const {
+      dataset: {
+        cropperFocalpointSaveStatus
+      }
+    } = croppersContainer;
 
     const {
       clickedButton,
@@ -779,6 +788,18 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } = fmcThumbsUiInstance.getClickedButton(event);
 
     const newImageSrc = clickedButton.querySelector('img').getAttribute('src');
+
+    if (cropperFocalpointSaveStatus === 'dirty') {
+      const saveChanges = window.confirm('Save focalpoint changes?'); // eslint-disable-line no-alert
+
+      if (saveChanges) {
+        await this.handleFocalpointSave();
+      }
+    }
+
+    fmcThumbsUiInstance.applySelectedClass(clickedButton);
+
+    fmcThumbsUiInstance.scrollToThumb('selected');
 
     setTimeout(() => {
       fmcThumbsUiInstance.displayCount({
@@ -794,26 +815,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     this.setPaths(newImageSrc);
 
     // calls fmcCroppersUiInstance.init
-    fmcCroppersUiInstance.changeSourceImage(clickedButton);
-  }
-
-  /**
-   * @function handleThumbSelect
-   * @param {object} event - Click event
-   * @memberof FmcUi
-   */
-  handleThumbSelect(event) {
-    const {
-      fmcThumbsUiInstance
-    } = this;
-
-    const {
-      clickedButton
-    } = fmcThumbsUiInstance.getClickedButton(event);
-
-    fmcThumbsUiInstance.applySelectedClass(clickedButton);
-
-    fmcThumbsUiInstance.scrollToThumb('selected');
+    fmcCroppersUiInstance.changeSourceImage(newImageSrc);
   }
 
   /**
