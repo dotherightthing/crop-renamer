@@ -12,12 +12,51 @@
   </head>
   <body>
     <div class="l-page">
+      <div class="l-title title">
+        <div class="l-cols-2">
+          <h1 class="h-title">Focalpoint Multi-Cropper tool</h1>
+          <h2 class="h-title">Settings</h2>
+        </div>
+      </div>
       <div class="editor">
-        <div class="controls l-controls" id="controls">
-          <div class="l-horz-list l-horz-list-center">
+        <div class="controls l-cols-2 l-cols-2-reverse" id="controls">
+          <div class="l-horz-list">
+            <fieldset>
+              <legend>
+                <span class="h-small uc l-horz-list-header">Import</span>
+              </legend>
+              <div class="l-horz-list">
+                <button type="button" class="control-action" id="folder-in">
+                  <span class="label">Source folder</span>
+                  <span class="control-hint"></span>
+                </button>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>
+                <span class="h-small uc l-horz-list-header">Export</span>
+              </legend>
+              <div class="l-horz-list">
+                <button type="button" class="control-action" id="folder-website">
+                  <span class="label">Website folder</span>
+                  <span class="control-hint"></span>
+                </button>
+                <button type="button" class="control-action" id="file-webpage">
+                  <span class="label">Webpage file</span>
+                  <span class="control-hint"></span>
+                </button>
+                <button type="button" class="control-action" id="folder-out">
+                  <span class="label">Export folder</span>
+                  <span class="control-hint"></span>
+                </button>
+              </div>
+            </fieldset>
+          </div>
+          <div class="l-horz-list">
+            <h2 class="l-visually-hidden">Focalpoint</h2>
             <fieldset disabled data-dependent="folder-out">
               <legend>
-                <span class="h-small uc l-horz-list-header">Image focalpoint</span>
+                <span class="h-small uc l-horz-list-header">Focalpoint controls</span>
               </legend>
               <div class="l-horz-list">
                 <div class="control-param">
@@ -39,46 +78,17 @@
                     On
                   </label>
                 </div>
-                <button type="button" class="control-action" id="delete-focalpoint">
-                  <span class="label">Delete</span>
+                <button type="button" class="control-action" id="save-focalpoint">
+                  <span class="label">Save</span>
                 </button>
                 <button type="button" class="control-action" id="reset-focalpoint">
                   <span class="label">Reset</span>
                 </button>
-                <button type="button" class="control-action" id="save-focalpoint">
-                  <span class="label">Save</span>
+                <button type="button" class="control-action" id="delete-focalpoint">
+                  <span class="label">Delete</span>
                 </button>
-              </div>
-            </fieldset>
-          </div>
-          <div class="l-horz-list">
-            <fieldset>
-              <legend>
-                <span class="h-small uc l-horz-list-header">Source folder</span>
-              </legend>
-              <div class="l-horz-list">
-                <button type="button" class="control-action" id="folder-in">
-                  <span class="label">Source folder</span>
-                  <span class="control-hint"></span>
-                </button>
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend>
-                <span class="h-small uc l-horz-list-header">Target files &amp; folders</span>
-              </legend>
-              <div class="l-horz-list">
-                <button type="button" class="control-action" id="folder-website">
-                  <span class="label">Website folder</span>
-                  <span class="control-hint"></span>
-                </button>
-                <button type="button" class="control-action" id="file-webpage">
-                  <span class="label">Webpage file</span>
-                  <span class="control-hint"></span>
-                </button>
-                <button type="button" class="control-action" id="folder-out">
-                  <span class="label">Export folder</span>
-                  <span class="control-hint"></span>
+                <button type="button" class="control-action" id="crop-image">
+                  <span class="label">Export crops</span>
                 </button>
               </div>
             </fieldset>
@@ -168,7 +178,7 @@
         </div>
       </div>
       <div class="thumbs" aria-labelledby="thumbs-heading">
-        <h2 hidden id="thumbs-heading">Image thumbnails</h2>
+        <h2 class="l-visually-hidden" id="thumbs-heading">Image thumbnails</h2>
         <ol class="thumbs-list" id="thumbs">
           <!-- loaded by Load images -->
         </ol>
@@ -180,7 +190,7 @@
             </div>
             <fieldset class="image-meta-group l-horz-list">
               <legend>
-                <span class="h-small uc l-horz-list-header">Filter thumbs</span>
+                <span class="h-small uc l-horz-list-header">Thumbnail filter</span>
               </legend>
               <input class="control-action control-filter" id="thumb-filename-filter" placeholder="Enter filename" />
               <button type="button" class="control-action" id="thumb-filename-filter-submit">
@@ -194,7 +204,7 @@
           <div class="l-image-meta">
             <fieldset class="image-meta-group l-horz-list">
               <legend>
-                <span class="h-small uc l-horz-list-header">Source</span>
+                <span class="h-small uc l-horz-list-header">Import helpers</span>
               </legend>
               <button type="button" class="control-action control-link" id="link-path-in" data-href="#">
                 <span class="control-hint">Show source in folder</span>
@@ -205,11 +215,8 @@
             </fieldset>
             <fieldset class="image-meta-group l-horz-list">
               <legend>
-                <span class="h-small uc l-horz-list-header">Targets</span>
+                <span class="h-small uc l-horz-list-header">Export helpers</span>
               </legend>
-              <button type="button" class="control-action" id="crop-image">
-                <span class="control-hint">Export crops/sizes</span>
-              </button>
               <button type="button" class="control-action control-link" id="link-path-out" data-href="#">
                 <span class="control-hint">Show base export in folder</span>
               </button>
@@ -226,8 +233,8 @@
           </div>
         </div>
         <div class="cropper-console l-cropper-console">
-          <h2 class="cropper-console-heading">Console</h2>
-          <p class="cropper-console-output" id="console"></p>
+          <h2 class="cropper-console-heading">Status</h2>
+          <p class="cropper-console-output" id="console" aria-live="polite"></p>
         </div>
       </div>
     </div>

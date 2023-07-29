@@ -34,6 +34,13 @@ fieldset {
 
 /* headings */
 
+.h-title {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: var(--text-small);
+  font-weight: normal;
+  margin: 0;
+}
+
 .h-medium {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: var(--text-medium);
@@ -102,6 +109,13 @@ img {
 
 .cropper-hide {
   display: none; /* .cropper-hidden is used by cropperjs */
+}
+
+.title {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-primary);
+  padding: var(--gutter);
+  border-bottom: 1px dotted var(--color-border-secondary);
 }
 
 .editor {
