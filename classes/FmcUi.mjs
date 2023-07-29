@@ -747,11 +747,11 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     const et = event.currentTarget;
 
-    while (et.tagName.toLowerCase() !== 'a') {
+    while (et.tagName.toLowerCase() !== 'button') {
       et = et.parentElement;
     }
 
-    const href = et.getAttribute('href');
+    const href = et.dataset('href');
 
     if (href !== '#') {
       window.electronAPI.openInFinder({

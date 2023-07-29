@@ -394,10 +394,6 @@ img {
   display: block;
 }
 
-.control-link {
-  text-decoration: none;
-}
-
 .radios-label {
   margin-right: var(--gutter);
 }
