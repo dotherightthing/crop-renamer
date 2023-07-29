@@ -179,9 +179,9 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     lastCropperImg.addEventListener('ready', this.handleLastCropperImgReady.bind(this));
 
-    pathInLink.addEventListener('click', this.handlePathLink.bind(this));
+    pathInLink.addEventListener('click', this.handleLinkToPath.bind(this));
 
-    pathOutLink.addEventListener('click', this.handlePathLink.bind(this));
+    pathOutLink.addEventListener('click', this.handleLinkToPath.bind(this));
 
     thumbsContainer.addEventListener('click', handleThumbClickDebounced.bind(this));
 
@@ -724,11 +724,11 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function handlePathLink
+   * @function handleLinkToPath
    * @param {object} event - Click event
    * @memberof FmcUi
    */
-  async handlePathLink(event) {
+  async handleLinkToPath(event) {
     const {
       elements
     } = this;
