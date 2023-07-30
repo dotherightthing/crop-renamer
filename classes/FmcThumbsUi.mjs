@@ -338,7 +338,7 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
 
       html += `<li class="${thumbClass}">
   <div class="thumb-index">${i + 1}</div>
-  <button type="button" class="${thumbButtonClass}">
+  <button type="button" class="${thumbButtonClass}" tabindex="-1">
     <div class="${thumbImgWrapperClass}">
       <img src="${src}" class="${thumbImgClass}">
     </div>

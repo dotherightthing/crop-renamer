@@ -689,12 +689,17 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     const {
       elements,
       fmcCroppersUiInstance,
-      fmcThumbsUiInstance
+      fmcThumbsUiInstance,
+      selectors
     } = this;
 
     const {
       croppersContainer
     } = elements;
+
+    const {
+      thumbButtonClass
+    } = selectors;
 
     const {
       dataset: {
@@ -719,7 +724,13 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     fmcThumbsUiInstance.applySelectedClass(clickedButton);
 
-    clickedButton.setAttribute('tabindex', '-1');
+    const allButtons = document.querySelectorAll(`.${thumbButtonClass}`);
+
+    allButtons.forEach(button => {
+      button.setAttribute('tabindex', '-1');
+    });
+
+    clickedButton.setAttribute('tabindex', '0');
     clickedButton.focus();
 
     setTimeout(() => {
