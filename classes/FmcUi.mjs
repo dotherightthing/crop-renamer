@@ -791,8 +791,10 @@ export class FmcUi { // eslint-disable-line no-unused-vars
    * @function handleWindowMessage
    * @param {object} event - Message event
    * @memberof FmcUi
+   * @see {link https://www.macarthur.me/posts/when-dom-updates-appear-to-be-asynchronous}
+   * @see {link https://stackoverflow.com/a/65144294}
    */
-  handleWindowMessage(event) {
+  async handleWindowMessage(event) {
     const {
       elements
     } = this;
@@ -804,6 +806,19 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     const { msg } = event.detail;
 
     consoleContainer.textContent = (msg !== '') ? `${msg}.` : msg;
+
+    // ensure each message is displayed
+    await new Promise(resolve => {
+      // fires before the next repaint (when queued UI changes are applied)
+      requestAnimationFrame(() => {
+        consoleContainer.textContent = (msg !== '') ? `${msg}.` : msg;
+
+        // fires before the _next_ next repaint
+        // ...which is effectively _after_ the next repaint
+        // i.e. when the console has been updated
+        requestAnimationFrame(resolve);
+      });
+    });
   }
 
   /**
