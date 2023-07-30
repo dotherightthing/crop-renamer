@@ -383,18 +383,13 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
    * @memberof FmcThumbsUi
    */
   getClickedButton(event) {
-    const e = event || window.event;
     const thumbsButtons = this.getButtons();
-    let clickedButton = e.target || e.srcElement;
 
     if (!thumbsButtons.length) {
       return null;
     }
 
-    while (clickedButton.tagName.toLowerCase() !== 'button') {
-      clickedButton = clickedButton.parentNode;
-    }
-
+    const clickedButton = FmcUi.getTargetElementOfType(event, 'button');
     const clickedButtonIndex = Array.from(thumbsButtons).indexOf(clickedButton) + 1;
 
     return {

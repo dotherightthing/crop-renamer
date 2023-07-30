@@ -228,6 +228,25 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function getTargetElementOfType
+   * @summary Ensures that the target element matches the expected element type
+   * @param {object} event - Event
+   * @param {string} elementType - Element type (tagName)
+   * @returns {HTMLElement} targetElement
+   * @memberof FmcUi
+   * @static
+   */
+  static getTargetElementOfType(event, elementType) {
+    let targetElement = event.target; // event.currentTarget
+
+    while (targetElement.tagName.toLowerCase() !== elementType) {
+      targetElement = targetElement.parentElement;
+    }
+
+    return targetElement;
+  }
+
+  /**
    * @function getPathWebEmbed
    * @summary Set the web embed path in the footer
    * @returns {string} pathWebEmbed
@@ -314,11 +333,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       return;
     }
 
-    const et = event.currentTarget;
-
-    while (et.tagName.toLowerCase() !== 'button') {
-      et = et.parentElement;
-    }
+    const et = FmcUi.getTargetElementOfType(event, 'button');
 
     const title = et.getAttribute('title');
 
@@ -665,11 +680,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       return;
     }
 
-    const et = event.currentTarget;
-
-    while (et.tagName.toLowerCase() !== 'button') {
-      et = et.parentElement;
-    }
+    const et = FmcUi.getTargetElementOfType(event, 'button');
 
     const href = et.dataset('href');
 
