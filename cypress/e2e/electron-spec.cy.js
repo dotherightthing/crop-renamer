@@ -365,9 +365,8 @@ describe('template spec', () => {
       it.skip('displayCount', () => {});
       it.skip('generateThumbsHtml', () => {});
       it.skip('getClickedButton', () => {});
-      it.skip('getSelectedIndex', () => {});
       it.skip('removeSelectedClass', () => {});
-      it.skip('scrollToThumb', () => {});
+      it.skip('focusThumb', () => {});
 
       /* Static methods */
       it.skip('getNextIndex', () => {});

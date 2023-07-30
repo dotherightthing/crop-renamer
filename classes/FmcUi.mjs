@@ -185,6 +185,9 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     thumbsContainer.addEventListener('click', handleThumbClickDebounced.bind(this));
 
+    // focus event does not bubble
+    thumbsContainer.addEventListener('focusin', this.handleThumbFocus.bind(this));
+
     window.addEventListener('keydown', this.handleWindowKeydown.bind(this));
 
     window.addEventListener('message', this.handleWindowMessage.bind(this));
@@ -279,6 +282,40 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       el.removeAttribute('disabled');
       el.setAttribute('title', title);
     }
+  }
+
+  /**
+   * @function getElementIndex
+   * @summary Get the index of the selected node in a nodelist
+   * @param {HTMLElement} element = Element
+   * @param {NodeList} nodeList = NodeList
+   * @returns {number} selectedIndex
+   * @memberof FmcUi
+   * @static
+   */
+  static getElementIndex(element, nodeList) {
+    return Array.from(nodeList).indexOf(element);
+  }
+
+  /**
+   * @function getElementIndexByClassName
+   * @summary Get the index of the selected node in a nodelist
+   * @param {string} elementClassName = CSS class name of element
+   * @param {NodeList} nodeList = NodeList
+   * @returns {number} selectedIndex | -1
+   * @memberof FmcUi
+   * @static
+   */
+  static getElementIndexByClassName(elementClassName, nodeList) {
+    let elementIndex = -1;
+
+    nodeList.forEach((node, index) => {
+      if (node.classList.contains(elementClassName)) {
+        elementIndex = index;
+      }
+    });
+
+    return elementIndex;
   }
 
   /**
@@ -799,7 +836,8 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     fmcThumbsUiInstance.applySelectedClass(clickedButton);
 
-    fmcThumbsUiInstance.scrollToThumb('selected');
+    clickedButton.setAttribute('tabindex', '-1');
+    clickedButton.focus();
 
     setTimeout(() => {
       fmcThumbsUiInstance.displayCount({
@@ -816,6 +854,26 @@ export class FmcUi { // eslint-disable-line no-unused-vars
 
     // calls fmcCroppersUiInstance.init
     fmcCroppersUiInstance.changeSourceImage(newImageSrc);
+  }
+
+  /**
+   * @function handleThumbFocus
+   * @param {object} event - Focus event
+   * @memberof FmcUi
+   */
+  handleThumbFocus(event) {
+    const e = event || window.event;
+    let focussedButton = e.target || e.srcElement;
+
+    while (focussedButton.tagName.toLowerCase() !== 'button') {
+      focussedButton = focussedButton.parentNode;
+    }
+
+    setTimeout(() => {
+      focussedButton.scrollIntoView({
+        behavior: 'auto'
+      });
+    }, 500);
   }
 
   /**
@@ -853,10 +911,10 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     } else if (document.activeElement.classList.contains(thumbButtonClass)) {
       if (key === 'ArrowLeft') {
         event.preventDefault(); // don't operate the native container scrollbar
-        fmcThumbsUiInstance.scrollToThumb('previous');
+        fmcThumbsUiInstance.focusThumb('previous');
       } else if (key === 'ArrowRight') {
         event.preventDefault();
-        fmcThumbsUiInstance.scrollToThumb('next');
+        fmcThumbsUiInstance.focusThumb('next');
       }
     }
   }
@@ -889,7 +947,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       fmcThumbsUiInstance
     } = this;
 
-    fmcThumbsUiInstance.scrollToThumb('selected');
+    fmcThumbsUiInstance.focusThumb('selected');
   }
 
   /**

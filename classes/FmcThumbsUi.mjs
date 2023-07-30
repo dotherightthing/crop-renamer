@@ -274,6 +274,50 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function focusThumb
+   * @summary Click then scroll the appropriate thumb into view
+   * @param {string} position - Position of thumb (previous|next|selected)
+   * @memberof FmcThumbsUi
+   * @todo Would programmatically shifting the focus make this redundant? (#7)
+   * @todo Promisify DOM operation so that scrollIntoView doesn't need a timeout
+   */
+  focusThumb(position) {
+    const {
+      thumbButtonClass
+    } = this;
+    const thumbsButtons = document.querySelectorAll(`.${thumbButtonClass}`);
+
+    if (!thumbsButtons.length) {
+      return;
+    }
+
+    const focussedElement = document.activeElement;
+    const thumbsButtonCurrentIndex = FmcUi.getElementIndex(focussedElement, thumbsButtons);
+    let thumbsButtonNewIndex = -1;
+
+    if (position === 'previous') {
+      thumbsButtonNewIndex = FmcThumbsUi.getPreviousIndex(thumbsButtons, thumbsButtonCurrentIndex);
+    } else if (position === 'next') {
+      thumbsButtonNewIndex = FmcThumbsUi.getNextIndex(thumbsButtons, thumbsButtonCurrentIndex);
+    } else if (position === 'selected') {
+      thumbsButtonNewIndex = thumbsButtonCurrentIndex;
+    }
+
+    if (thumbsButtonNewIndex > -1) {
+      if (position !== 'selected') {
+        // dispatchEvent doesn't apply :focus
+        thumbsButtons[thumbsButtonNewIndex].focus();
+      }
+
+      setTimeout(() => {
+        thumbsButtons[thumbsButtonNewIndex].scrollIntoView({
+          behavior: 'auto'
+        });
+      }, 500);
+    }
+  }
+
+  /**
    * @function generateThumbsHtml
    * @summary Inject the thumb images and their scaffolding, then select the first thumb
    * @param {Array} imagesData - Images data
@@ -312,7 +356,12 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
 
       if (i === imagesData.length - 1) {
         document.getElementById(thumbsId).innerHTML = html;
-        document.querySelectorAll(`.${thumbButtonClass}`)[selectedThumbIndex - 1].click();
+
+        const selectedThumb = document.querySelectorAll(`.${thumbButtonClass}`)[selectedThumbIndex - 1];
+
+        selectedThumb.setAttribute('tabindex', '-1');
+        selectedThumb.focus();
+        FmcUi.emitElementEvent(selectedThumb, 'click', {});
       }
     });
 
@@ -356,27 +405,6 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function getSelectedIndex
-   * @summary Get the index of the selected node in a nodelist
-   * @param {NodeList} nodeList = NodeList
-   * @returns {number} selectedIndex | -1
-   * @memberof FmcThumbsUi
-   */
-  getSelectedIndex(nodeList) {
-    const { selectedClass } = this;
-
-    let selectedIndex = -1;
-
-    nodeList.forEach((node, index) => {
-      if (node.classList.contains(selectedClass)) {
-        selectedIndex = index;
-      }
-    });
-
-    return selectedIndex;
-  }
-
-  /**
    * @function removeSelectedClass
    * @summary Remove the 'selected' class from the selected thumb
    * @memberof FmcThumbsUi
@@ -392,45 +420,6 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
     thumbItems.forEach(thumbItem => {
       thumbItem.classList.remove(selectedClass);
     });
-  }
-
-  /**
-   * @function scrollToThumb
-   * @summary Click then scroll the appropriate thumb into view
-   * @param {string} position - Position of thumb (previous|next|selected)
-   * @memberof FmcThumbsUi
-   * @todo Would programmatically shifting the focus make this redundant? (#7)
-   */
-  scrollToThumb(position) {
-    const { thumbButtonClass } = this;
-    const thumbsButtons = document.querySelectorAll(`.${thumbButtonClass}`);
-
-    if (!thumbsButtons.length) {
-      return;
-    }
-
-    const thumbsButtonSelectedIndex = this.getSelectedIndex(thumbsButtons);
-    let thumbsButtonNextIndex = -1;
-
-    if (position === 'previous') {
-      thumbsButtonNextIndex = FmcThumbsUi.getPreviousIndex(thumbsButtons, thumbsButtonSelectedIndex);
-    } else if (position === 'next') {
-      thumbsButtonNextIndex = FmcThumbsUi.getNextIndex(thumbsButtons, thumbsButtonSelectedIndex);
-    } else if (position === 'selected') {
-      thumbsButtonNextIndex = this.getSelectedIndex(thumbsButtons);
-    }
-
-    if (thumbsButtonNextIndex > -1) {
-      if (position !== 'selected') {
-        thumbsButtons[thumbsButtonNextIndex].click();
-      }
-
-      setTimeout(() => {
-        thumbsButtons[thumbsButtonNextIndex].scrollIntoView({
-          behavior: 'auto'
-        });
-      }, 500);
-    }
   }
 
   /* Static methods */
