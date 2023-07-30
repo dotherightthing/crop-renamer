@@ -202,27 +202,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function getElementIndexByClassName
-   * @summary Get the index of the selected node in a nodelist
-   * @param {string} elementClassName = CSS class name of element
-   * @param {NodeList} nodeList = NodeList
-   * @returns {number} selectedIndex | -1
-   * @memberof FmcUi
-   * @static
-   */
-  static getElementIndexByClassName(elementClassName, nodeList) {
-    let elementIndex = -1;
-
-    nodeList.forEach((node, index) => {
-      if (node.classList.contains(elementClassName)) {
-        elementIndex = index;
-      }
-    });
-
-    return elementIndex;
-  }
-
-  /**
    * @function getPathOut
    * @summary Set the target path in the footer
    * @returns {string} pathOut
