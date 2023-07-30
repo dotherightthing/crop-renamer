@@ -214,7 +214,8 @@ img {
   backdrop-filter: saturate(1.1) brightness(1.3);
 }
 
-.thumb[style] .thumb-img-wrapper::before {
+/* style="--image-percent-x: n%; --image-percent-y: n%;" */
+.btn-thumb[style^='--image-percent-x'] .thumb-img-wrapper::before {
   border-color: var(--focalpoint-saved);
 }
 
