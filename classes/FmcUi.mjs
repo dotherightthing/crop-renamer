@@ -317,18 +317,12 @@ export class FmcUi { // eslint-disable-line no-unused-vars
    * @memberof FmcUi
    */
   handleCopyPath(event) {
-    const {
-      elements
-    } = this;
-
-    const {
-      consoleContainer
-    } = elements;
-
     event.preventDefault();
 
     if (typeof window.electronAPI === 'undefined') {
-      consoleContainer.textContent = 'Error: Clipboard operations require Electron';
+      FmcUi.emitElementEvent(window, 'message', {
+        msg: 'Error: Clipboard operations require Electron'
+      });
 
       return;
     }
@@ -664,18 +658,12 @@ export class FmcUi { // eslint-disable-line no-unused-vars
    * @memberof FmcUi
    */
   async handleLinkToPath(event) {
-    const {
-      elements
-    } = this;
-
-    const {
-      consoleContainer
-    } = elements;
-
     event.preventDefault();
 
     if (typeof window.electronAPI === 'undefined') {
-      consoleContainer.textContent = 'Error: Finder links require Electron';
+      FmcUi.emitElementEvent(window, 'message', {
+        msg: 'Error: Finder links require Electron'
+      });
 
       return;
     }
