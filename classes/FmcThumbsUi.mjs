@@ -280,10 +280,7 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
    * @memberof FmcThumbsUi
    */
   focusThumb(position) {
-    const {
-      thumbButtonClass
-    } = this;
-    const thumbsButtons = document.querySelectorAll(`.${thumbButtonClass}`);
+    const thumbsButtons = this.getButtons();
 
     if (!thumbsButtons.length) {
       return;
@@ -349,7 +346,8 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
       if (i === imagesData.length - 1) {
         document.getElementById(thumbsId).innerHTML = html;
 
-        const selectedThumb = document.querySelectorAll(`.${thumbButtonClass}`)[selectedThumbIndex - 1];
+        const thumbsButtons = this.getButtons();
+        const selectedThumb = thumbsButtons[selectedThumbIndex - 1];
 
         selectedThumb.setAttribute('tabindex', '-1');
         selectedThumb.focus();
@@ -364,22 +362,32 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
   }
 
   /**
+   * @function getButtons
+   * @returns {NodeList} thumbsButtons - Thumb buttons
+   * @memberof FmcThumbsUi
+   */
+  getButtons() {
+    const {
+      thumbButtonClass
+    } = this;
+
+    const thumbButtons = document.querySelectorAll(`.${thumbButtonClass}`);
+
+    return thumbButtons;
+  }
+
+  /**
    * @function getClickedButton
    * @param {object} event - Event
    * @returns {HTMLElement} button
    * @memberof FmcThumbsUi
    */
   getClickedButton(event) {
-    const {
-      thumbButtonClass,
-      thumbsId,
-      thumbImgClass
-    } = this;
-
     const e = event || window.event;
+    const thumbsButtons = this.getButtons();
     let clickedButton = e.target || e.srcElement;
 
-    if (!document.querySelectorAll(`#${thumbsId} .${thumbImgClass}`).length) {
+    if (!thumbsButtons.length) {
       return null;
     }
 
@@ -387,8 +395,7 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
       clickedButton = clickedButton.parentNode;
     }
 
-    const buttons = document.querySelectorAll(`.${thumbButtonClass}`);
-    const clickedButtonIndex = Array.from(buttons).indexOf(clickedButton) + 1;
+    const clickedButtonIndex = Array.from(thumbsButtons).indexOf(clickedButton) + 1;
 
     return {
       clickedButton,
@@ -403,14 +410,13 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
    */
   removeSelectedClass() {
     const {
-      selectedClass,
-      thumbButtonClass
+      selectedClass
     } = this;
 
-    const thumbItems = document.querySelectorAll(`.${thumbButtonClass}`);
+    const thumbButtons = this.getButtons();
 
-    thumbItems.forEach(thumbItem => {
-      thumbItem.classList.remove(selectedClass);
+    thumbButtons.forEach(button => {
+      button.classList.remove(selectedClass);
     });
   }
 
