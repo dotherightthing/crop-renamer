@@ -490,6 +490,7 @@ input[type='radio']:focus {
   border: var(--gutter-half) solid;
 }
 
+/* note: if Dev Tools console is open it will steal the focus */
 .btn-thumb:focus {
   outline: var(--gutter-half) solid var(--color-border-focussed);
   outline-offset: 1px;
