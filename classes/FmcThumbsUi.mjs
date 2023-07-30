@@ -278,8 +278,6 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
    * @summary Click then scroll the appropriate thumb into view
    * @param {string} position - Position of thumb (previous|next|selected)
    * @memberof FmcThumbsUi
-   * @todo Would programmatically shifting the focus make this redundant? (#7)
-   * @todo Promisify DOM operation so that scrollIntoView doesn't need a timeout
    */
   focusThumb(position) {
     const {
