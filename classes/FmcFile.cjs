@@ -19,7 +19,7 @@ const store = new Store({
   defaults: {}
 });
 
-module.exports = class FmcFile { // eslint-disable-line no-unused-vars
+module.exports = class FmcFile {
   /**
    * @class FmcFile
    * @summary Manages file manipulation
@@ -155,7 +155,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
       const _resizeW = (resizeW !== null) ? resizeW : null;
       // const _resizeH = (resizeH !== null) ? resizeH : null;
 
-      const successfulAction = await FmcFile.gmResizeAndCrop({ // eslint-disable-line no-await-in-loop
+      const successfulAction = await FmcFile.gmResizeAndCrop({
         centerX,
         centerY,
         cropW,
@@ -480,7 +480,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
 
     for (let i = 0; i < imageFiles.length; i += 1) {
       const image = imageFiles[i];
-      const tags = await ExifReader.load(image); /* eslint-disable-line no-await-in-loop */
+      const tags = await ExifReader.load(image);
 
       const {
         DateTimeOriginal = {}
@@ -528,12 +528,12 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
 
     let message = `Opened ${fileDescription} in editor`;
 
-    commandExists(editorCommand, (err, exists) => { // eslint-disable-line no-unused-vars
+    commandExists(editorCommand, (error, exists) => {
       if (exists) {
         spawn(editorCommand, [ folderPath ], opts);
         spawn(editorCommand, [ filePath ], opts);
       } else {
-        message = `Could not open ${fileDescription} - the command '${editorCommand}' is not available)`;
+        message = `Could not open ${fileDescription} - the command '${editorCommand}' is not available.)`;
       }
     });
 
@@ -565,7 +565,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
    * @memberof FmcFile
    * @static
    */
-  static async selectFile(event, data) { // eslint-disable-line no-unused-vars
+  static async selectFile(event, data) {
     const {
       dialogTitle,
       restore,
@@ -673,7 +673,7 @@ module.exports = class FmcFile { // eslint-disable-line no-unused-vars
    * @memberof FmcFile
    * @static
    */
-  static async selectFolder(event, data) { // eslint-disable-line no-unused-vars
+  static async selectFolder(event, data) {
     const {
       dialogTitle,
       retrieveImagesData,

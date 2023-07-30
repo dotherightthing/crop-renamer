@@ -4,7 +4,7 @@
 import dtrtValidate from 'dtrt-type-validate';
 import { FmcUi } from './FmcUi.mjs';
 
-export class FmcCroppersUi { // eslint-disable-line no-unused-vars
+export class FmcCroppersUi {
   /**
    * @class FmcCroppersUi
    * @summary Manages croppers component, containing instances of cropperjs
@@ -1035,7 +1035,7 @@ export class FmcCroppersUi { // eslint-disable-line no-unused-vars
 
     const cropBoxCenterX = this.scaleSlaveVal(cropper, pageX) - (cropperWidth / 2);
     const cropBoxCenterY = this.scaleSlaveVal(cropper, pageY) - (cropperHeight / 2);
-    const croppercropBoxY = cropperCanvasTop + cropBoxCenterY - this.scaleSlaveVal(cropper, masterCropperCanvasOffsetTop); // eslint-disable-line max-len
+    const croppercropBoxY = cropperCanvasTop + cropBoxCenterY - this.scaleSlaveVal(cropper, masterCropperCanvasOffsetTop);
     const croppercropBoxX = cropBoxCenterX - this.scaleSlaveVal(cropper, masterCropperCanvasLeft);
 
     cropper.setCropBoxData({

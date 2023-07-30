@@ -4,7 +4,7 @@
 
 import dtrtValidate from 'dtrt-type-validate';
 
-export class FmcUi { // eslint-disable-line no-unused-vars
+export class FmcUi {
   /**
    * @class FmcUi
    * @summary Manages UI
@@ -394,10 +394,10 @@ export class FmcUi { // eslint-disable-line no-unused-vars
       if ((imagePercentX !== '') && (imagePercentY !== '')) {
         buttonEl.click();
 
-        await new Promise(resolve => { // eslint-disable-line no-await-in-loop
+        await new Promise(resolve => {
           // timeout prevents generic crops
           setTimeout(async () => {
-            await this.handleExportSelected(); // eslint-disable-line no-await-in-loop
+            await this.handleExportSelected();
 
             resolve();
           }, 500);
@@ -744,7 +744,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     const newImageSrc = clickedButton.querySelector('img').getAttribute('src');
 
     if (cropperFocalpointSaveStatus === 'dirty') {
-      const saveChanges = window.confirm('Save focalpoint changes?'); // eslint-disable-line no-alert
+      const saveChanges = window.confirm('Save focalpoint changes?');
 
       if (saveChanges) {
         await this.handleFocalpointSave();
@@ -1261,7 +1261,7 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   static debounce(func, wait, immediate) {
     let timeout;
 
-    return function () { // eslint-disable-line func-names
+    return function () {
       const context = this;
       const args = arguments;
 

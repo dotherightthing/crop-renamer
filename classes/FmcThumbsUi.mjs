@@ -5,7 +5,7 @@
 import dtrtValidate from 'dtrt-type-validate';
 import { FmcUi } from './FmcUi.mjs';
 
-export class FmcThumbsUi { // eslint-disable-line no-unused-vars
+export class FmcThumbsUi {
   /**
    * @class FmcThumbsUi
    * @summary Manages thumbs component

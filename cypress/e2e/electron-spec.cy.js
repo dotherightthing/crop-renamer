@@ -53,7 +53,7 @@ describe('template spec', () => {
             cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
 
             // avoid false negatives while image rendering into UI
-            cy.wait(1000); // eslint-disable-line cypress/no-unnecessary-waiting
+            cy.wait(1000);
 
             cy.get('@cropperMasterImg').then($el => {
               const cropper = $el[0].cropper;
@@ -117,7 +117,7 @@ describe('template spec', () => {
             cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
 
             // avoid false negatives while image rendering into UI
-            cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
+            cy.wait(500);
 
             cy.get('@croppers').then($c => {
               const { fmcCroppersUi } = $c[0];
@@ -150,7 +150,7 @@ describe('template spec', () => {
             cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
 
             // avoid false negatives while image rendering into UI
-            cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
+            cy.wait(500);
 
             cy.get('@cropperMasterImg').then($el => {
               const cropper = $el[0].cropper;
@@ -198,7 +198,7 @@ describe('template spec', () => {
             cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
 
             // avoid false negatives while image rendering into UI
-            cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
+            cy.wait(500);
 
             cy.get('@cropperMasterImg').then($el => {
               const { cropper } = $el[0];
@@ -250,7 +250,7 @@ describe('template spec', () => {
             cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
 
             // avoid false negatives while image rendering into UI
-            cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
+            cy.wait(500);
 
             cy.get('@cropperMasterImg').then($el => {
               const { cropper } = $el[0];
@@ -300,7 +300,7 @@ describe('template spec', () => {
             cy.get('@cropperMasterImg').should('have.attr', 'src', `./cypress/fixtures/${image}`);
 
             // avoid false negatives while image rendering into UI
-            cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
+            cy.wait(500);
 
             cy.get('@cropperMasterImg').then($el => {
               const cropper = $el[0].cropper;
