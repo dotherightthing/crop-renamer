@@ -375,10 +375,43 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function handleExportCropsAndSizes
+   * @function handleExportAll
+   * @memberof FmcUi
+   * @todo Replace timeout workaround with more robust check
+   */
+  async handleExportAll() {
+    const {
+      fmcThumbsUiInstance
+    } = this;
+
+    const thumbsButtons = fmcThumbsUiInstance.getButtons();
+
+    for (let b = 0; b < thumbsButtons.length; b += 1) {
+      const buttonEl = thumbsButtons[b];
+      const imagePercentX = buttonEl.style.getPropertyValue('--image-percent-x');
+      const imagePercentY = buttonEl.style.getPropertyValue('--image-percent-y');
+
+      if ((imagePercentX !== '') && (imagePercentY !== '')) {
+        buttonEl.click();
+
+        await new Promise(resolve => { // eslint-disable-line no-await-in-loop
+          // timeout prevents generic crops
+          setTimeout(async () => {
+            await this.handleExportSelected(); // eslint-disable-line no-await-in-loop
+
+            resolve();
+          }, 500);
+        });
+      }
+    }
+  }
+
+  /**
+   * @function handleExportSelected
+   * @returns {string} baseExportPath
    * @memberof FmcUi
    */
-  async handleExportCropsAndSizes() {
+  async handleExportSelected() {
     const {
       elements,
       fmcCroppersUiInstance
@@ -394,6 +427,8 @@ export class FmcUi { // eslint-disable-line no-unused-vars
     const baseExportPath = await fmcCroppersUiInstance.resizeAndCropImage(targetFolder);
 
     this.setPaths(baseExportPath, false);
+
+    return baseExportPath;
   }
 
   /**

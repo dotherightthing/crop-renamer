@@ -74,7 +74,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       copyPathWebEmbedButton: document.getElementById('copy-path-web-embed'),
       croppersContainer: document.getElementById('croppers'),
       editWebpageButton: document.getElementById('edit-webpage'),
-      exportCropsAndSizesButton: document.getElementById('crop-image'),
+      exportAllButton: document.getElementById('crop-all'),
+      exportSelectedButton: document.getElementById('crop-selected'),
       focalpointAutoSaveRadios: document.getElementsByName('focalpoint-autosave'),
       focalpointDeleteButton: document.getElementById('delete-focalpoint'),
       focalpointResetButton: document.getElementById('reset-focalpoint'),
@@ -125,7 +126,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       copyPathWebEmbedButton,
       croppersContainer,
       editWebpageButton,
-      exportCropsAndSizesButton,
+      exportAllButton,
+      exportSelectedButton,
       fileWebpageButton,
       filterClearButton,
       filterSubmitButton,
@@ -157,8 +159,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       .addEventListener('imageRenamed', _this.handleImageRenamed.bind(_this));
     editWebpageButton
       .addEventListener('click', _this.handleEditWebpage.bind(_this));
-    exportCropsAndSizesButton
-      .addEventListener('click', _this.handleExportCropsAndSizes.bind(_this));
+    exportAllButton
+      .addEventListener('click', _this.handleExportAll.bind(_this));
+    exportSelectedButton
+      .addEventListener('click', _this.handleExportSelected.bind(_this));
     fileWebpageButton
       .addEventListener('click', _this.handleFileWebpageChange.bind(_this));
     filterClearButton
