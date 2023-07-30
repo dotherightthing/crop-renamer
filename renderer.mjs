@@ -106,6 +106,101 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  /**
+   * @function addEventListeners
+   * @summary Expose fmcUi event listeners in renderer to simplify debugging
+   * @memberof FmcUi
+   */
+  fmcUi.addEventListeners = () => {
+    const _this = fmcUi;
+
+    const {
+      debounceDelay,
+      elements
+    } = _this;
+
+    const {
+      copyPathInButton,
+      copyPathOutButton,
+      copyPathWebEmbedButton,
+      croppersContainer,
+      editWebpageButton,
+      exportCropsAndSizesButton,
+      fileWebpageButton,
+      filterClearButton,
+      filterSubmitButton,
+      focalpointAutoSaveRadios,
+      focalpointDeleteButton,
+      focalpointResetButton,
+      focalpointSaveButton,
+      focalpointXInput,
+      focalpointYInput,
+      folderInButton,
+      folderOutButton,
+      folderWebsiteButton,
+      lastCropperImg,
+      pathInLink,
+      pathOutLink,
+      thumbsContainer,
+      window
+    } = elements;
+
+    const handleFocalpointInputDebounced = FmcUi.debounce(_this.handleFocalpointInputChange, debounceDelay);
+
+    copyPathInButton
+      .addEventListener('click', _this.handleCopyPath.bind(_this));
+    copyPathOutButton
+      .addEventListener('click', _this.handleCopyPath.bind(_this));
+    copyPathWebEmbedButton
+      .addEventListener('click', _this.handleCopyPath.bind(_this));
+    croppersContainer
+      .addEventListener('imageRenamed', _this.handleImageRenamed.bind(_this));
+    editWebpageButton
+      .addEventListener('click', _this.handleEditWebpage.bind(_this));
+    exportCropsAndSizesButton
+      .addEventListener('click', _this.handleExportCropsAndSizes.bind(_this));
+    fileWebpageButton
+      .addEventListener('click', _this.handleFileWebpageChange.bind(_this));
+    filterClearButton
+      .addEventListener('click', _this.handleFilterClear.bind(_this));
+    filterSubmitButton
+      .addEventListener('click', _this.handleFilterSubmit.bind(_this));
+    focalpointAutoSaveRadios.forEach(el => el
+      .addEventListener('change', _this.handleAutosaveRadioChange.bind(_this)));
+    focalpointDeleteButton
+      .addEventListener('click', _this.handleFocalpointDelete.bind(_this));
+    focalpointResetButton
+      .addEventListener('click', _this.handleFocalpointReset.bind(_this));
+    focalpointSaveButton
+      .addEventListener('click', _this.handleFocalpointSave.bind(_this));
+    focalpointXInput
+      .addEventListener('change', handleFocalpointInputDebounced.bind(_this));
+    focalpointYInput
+      .addEventListener('change', handleFocalpointInputDebounced.bind(_this));
+    folderInButton
+      .addEventListener('click', _this.handleFolderInChange.bind(_this));
+    folderOutButton
+      .addEventListener('click', _this.handleFolderOutChange.bind(_this));
+    folderWebsiteButton
+      .addEventListener('click', _this.handleFolderWebsiteChange.bind(_this));
+    lastCropperImg
+      .addEventListener('ready', _this.handleLastCropperImgReady.bind(_this));
+    pathInLink
+      .addEventListener('click', _this.handleLinkToPath.bind(_this));
+    pathOutLink
+      .addEventListener('click', _this.handleLinkToPath.bind(_this));
+    thumbsContainer
+      .addEventListener('click', _this.handleThumbClick.bind(_this));
+    thumbsContainer
+      .addEventListener('focusin', _this.handleThumbFocus.bind(_this)); // focus event does not bubble
+    window
+      .addEventListener('keydown', _this.handleWindowKeydown.bind(_this));
+    window
+      .addEventListener('message', _this.handleWindowMessage.bind(_this));
+    window
+      .addEventListener('resize', _this.handleWindowResize.bind(_this));
+  };
+
   // function calls
 
   fmcUi.addEventListeners();
