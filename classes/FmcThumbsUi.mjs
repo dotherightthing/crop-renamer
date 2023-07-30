@@ -308,12 +308,6 @@ export class FmcThumbsUi { // eslint-disable-line no-unused-vars
         // dispatchEvent doesn't apply :focus
         thumbsButtons[thumbsButtonNewIndex].focus();
       }
-
-      setTimeout(() => {
-        thumbsButtons[thumbsButtonNewIndex].scrollIntoView({
-          behavior: 'auto'
-        });
-      }, 500);
     }
   }
 

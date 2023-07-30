@@ -191,8 +191,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       .addEventListener('click', _this.handleLinkToPath.bind(_this));
     thumbsContainer
       .addEventListener('click', _this.handleThumbClick.bind(_this));
-    thumbsContainer
-      .addEventListener('focusin', _this.handleThumbFocus.bind(_this)); // focus event does not bubble
     window
       .addEventListener('keydown', _this.handleWindowKeydown.bind(_this));
     window

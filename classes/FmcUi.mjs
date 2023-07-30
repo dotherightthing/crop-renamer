@@ -740,26 +740,6 @@ export class FmcUi { // eslint-disable-line no-unused-vars
   }
 
   /**
-   * @function handleThumbFocus
-   * @param {object} event - Focus event
-   * @memberof FmcUi
-   */
-  handleThumbFocus(event) {
-    const e = event || window.event;
-    let focussedButton = e.target || e.srcElement;
-
-    while (focussedButton.tagName.toLowerCase() !== 'button') {
-      focussedButton = focussedButton.parentNode;
-    }
-
-    setTimeout(() => {
-      focussedButton.scrollIntoView({
-        behavior: 'auto'
-      });
-    }, 500);
-  }
-
-  /**
    * @function handleWindowKeydown
    * @param {object} event - Keydown event
    * @memberof FmcUi
