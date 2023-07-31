@@ -630,12 +630,19 @@ export class FmcCroppersUi {
    * @function setFocalpointSaveState
    * @summary Determine whether the current focalpoint settings have been saved to the current image
    * @param {object} args - Arguments
+   * @param {string} args.imagePercentXUiPrevious - Previous value for Image Percent X as shown in the UI controls
+   * @param {string} args.imagePercentYUiPrevious - Previous value for Image Percent Y as shown in the UI controls
    * @param {string} args.imagePercentXUi - Image Percent X as shown in the UI controls
    * @param {string} args.imagePercentYUi - Image Percent Y as shown in the UI controls
    * @returns {string} state
    * @memberof FmcCroppersUi
    */
-  setFocalpointSaveState({ imagePercentXUi, imagePercentYUi }) {
+  setFocalpointSaveState({
+    imagePercentXUiPrevious,
+    imagePercentYUiPrevious,
+    imagePercentXUi,
+    imagePercentYUi
+  }) {
     const {
       croppersId,
       masterCropper
@@ -655,8 +662,13 @@ export class FmcCroppersUi {
       state = 'default';
       msg = 'Default focalpoint';
     } else if ((imagePercentXUi === savedImagePercentX) && (imagePercentYUi === savedImagePercentY)) {
-      state = 'saved';
-      msg = 'Focalpoint saved';
+      if ((typeof imagePercentXUiPrevious === 'undefined') && (typeof imagePercentYUiPrevious === 'undefined')) {
+        state = 'saved';
+        msg = 'Focalpoint loaded';
+      } else {
+        state = 'saved';
+        msg = 'Focalpoint saved';
+      }
     } else {
       state = 'dirty';
       msg = 'Warning: Focalpoint changed but not saved';

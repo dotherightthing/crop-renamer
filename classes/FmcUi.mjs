@@ -306,6 +306,8 @@ export class FmcUi {
     await this.autosaveFocalpoint(autosaveOn === 'on');
 
     fmcCroppersUiInstance.setFocalpointSaveState({
+      imagePercentXUiPrevious: focalpointXInput.dataset.previousValue,
+      imagePercentYUiPrevious: focalpointYInput.dataset.previousValue,
       imagePercentXUi: focalpointXInput.value,
       imagePercentYUi: focalpointYInput.value
     });
@@ -541,9 +543,14 @@ export class FmcUi {
       await this.autosaveFocalpoint(autosaveOn === 'on');
 
       fmcCroppersUiInstance.setFocalpointSaveState({
+        imagePercentXUiPrevious: focalpointXInput.dataset.previousValue,
+        imagePercentYUiPrevious: focalpointYInput.dataset.previousValue,
         imagePercentXUi: focalpointXInput.value,
         imagePercentYUi: focalpointYInput.value
       });
+
+      focalpointXInput.dataset.previousValue = focalpointXInput.value;
+      focalpointYInput.dataset.previousValue = focalpointYInput.value;
     }
   }
 
@@ -579,6 +586,8 @@ export class FmcUi {
     await this.saveFocalpoint();
 
     fmcCroppersUiInstance.setFocalpointSaveState({
+      imagePercentXUiPrevious: focalpointXInput.dataset.previousValue,
+      imagePercentYUiPrevious: focalpointYInput.dataset.previousValue,
       imagePercentXUi: focalpointXInput.value,
       imagePercentYUi: focalpointYInput.value
     });
