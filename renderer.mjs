@@ -49,7 +49,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     },
     focalpointXInputId,
     focalpointYInputId,
-    initDelay: 5000,
     updateDelay: (typeof Cypress !== 'undefined') ? 0 : 1000
   });
 
