@@ -102,6 +102,10 @@ img {
   border-radius: 50%;
 }
 
+[data-cropper-focalpoint-loading] .cropper-master .cropper-crop-box {
+  visibility: hidden;
+}
+
 .cropper-master .cropper-view-box {
   box-shadow: 0 0 0 var(--width-cropper-view-box) var(--color-border-cropper-view-box);
   outline: 0;

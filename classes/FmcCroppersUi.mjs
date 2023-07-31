@@ -765,6 +765,8 @@ export class FmcCroppersUi {
       return;
     }
 
+    this.setLoadingState(true);
+
     // these are the images used by the 4 croppers
     // they start off with no src
     // when an image appears, what you see is the cropper - not the img
@@ -1243,6 +1245,10 @@ export class FmcCroppersUi {
     FmcUi.emitElementEvent(window, 'message', {
       msg
     });
+
+    setTimeout(() => {
+      this.setLoadingState(false);
+    }, 500);
   }
 
   /**
@@ -1267,6 +1273,25 @@ export class FmcCroppersUi {
     const scalingRatio = (cropperImageWidth / masterCropperImageWidth);
 
     return val * scalingRatio;
+  }
+
+  /**
+   * @function setLoadingState
+   * @param {boolean} loading - Loading
+   * @memberof FmcCroppersUi
+   */
+  setLoadingState(loading) {
+    const {
+      croppersId
+    } = this;
+
+    const croppersEl = document.getElementById(croppersId);
+
+    if (loading) {
+      croppersEl.dataset.cropperFocalpointLoading = true;
+    } else {
+      delete croppersEl.dataset.cropperFocalpointLoading;
+    }
   }
 
   /**
