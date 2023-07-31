@@ -559,7 +559,6 @@ export class FmcCroppersUi {
       Object.assign(options, {
         aspectRatio: 1,
         autoCropArea: 0.2, // size of circular cropbox (20%)
-        cropBoxMovable: true,
         guides: false,
         movable: true,
         // crop - fires during move, then after cropend
