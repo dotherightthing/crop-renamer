@@ -131,28 +131,9 @@ export class FmcUi {
    * @memberof FmcUi
    */
   disable(el) {
-    const tagName = el.tagName.toLowerCase();
+    el.removeAttribute('title');
 
-    if (tagName === 'a') {
-      if (typeof el.dataset.href === 'undefined') {
-        el.dataset.href = el.getAttribute('href') || '';
-      }
-
-      if (typeof el.dataset.title === 'undefined') {
-        el.dataset.title = el.getAttribute('title') || '';
-      }
-
-      el.parentElement.dataset.disabled = true;
-      el.removeAttribute('href');
-      el.removeAttribute('title');
-    } else if (tagName === 'button') {
-      if (typeof el.dataset.title === 'undefined') {
-        el.dataset.title = el.getAttribute('title') || '';
-      }
-
-      el.setAttribute('disabled', '');
-      el.removeAttribute('title');
-    }
+    el.setAttribute('disabled', '');
   }
 
   /**
@@ -164,28 +145,23 @@ export class FmcUi {
    * @memberof FmcUi
    */
   enable(el, attrs) {
-    const tagName = el.tagName.toLowerCase();
+    const {
+      href,
+      title
+    } = attrs;
 
-    if (tagName === 'a') {
-      const {
-        href = el.dataset.href,
-        title = el.dataset.title
-      } = attrs;
-
-      if (typeof el.parentElement.dataset.disabled !== 'undefined') {
-        delete el.parentElement.dataset.disabled;
-      }
-
-      el.setAttribute('href', href);
-      el.setAttribute('title', title);
-    } else if (tagName === 'button') {
-      const {
-        title = el.dataset.title
-      } = attrs;
-
-      el.removeAttribute('disabled');
-      el.setAttribute('title', title);
+    if (href) {
+      el.dataset.href = href;
     }
+
+    if (title) {
+      el.dataset.title = title;
+      el.setAttribute('title', title);
+    } else if (el.dataset.title) {
+      el.setAttribute('title', el.dataset.title);
+    }
+
+    el.removeAttribute('disabled');
   }
 
   /**
@@ -714,7 +690,7 @@ export class FmcUi {
 
     const et = FmcUi.getTargetElementOfType(event, 'button');
 
-    const href = et.dataset('href');
+    const { href } = et.dataset;
 
     if (href !== '#') {
       window.electronAPI.openInFinder({
