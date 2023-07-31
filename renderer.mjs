@@ -49,7 +49,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     },
     focalpointXInputId,
     focalpointYInputId,
-    updateDelay: (typeof Cypress !== 'undefined') ? 0 : 1000
+    updateDelay: (typeof Cypress === 'undefined') ? 1000 : 0
   });
 
   const fmcThumbsUiInstance = new FmcThumbsUi({
