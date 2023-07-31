@@ -331,7 +331,10 @@ export class FmcThumbsUi {
         dateTimeOriginal
       } = loadedThumb;
 
-      const dateTimeOriginalStr = (dateTimeOriginal !== '') ? dateTimeOriginal : '-';
+      const {
+        dayTimeStr,
+        dateStr
+      } = this.formatDateTimeOriginal(dateTimeOriginal);
 
       html += `<li class="${thumbClass}">
   <div class="thumb-index">${i + 1}</div>
@@ -339,7 +342,10 @@ export class FmcThumbsUi {
     <div class="${thumbImgWrapperClass}">
       <img src="${src}" class="${thumbImgClass}">
     </div>
-    <p class="${thumbMetaClass}">${dateTimeOriginalStr}</p>  
+    <p class="${thumbMetaClass}">
+      <span class="thumb-meta-day-time">${dayTimeStr}</span>
+      <span class="thumb-meta-date">${dateStr}</span>
+    </p>  
   </button>
 </li>`;
 
@@ -395,6 +401,39 @@ export class FmcThumbsUi {
     return {
       clickedButton,
       clickedButtonIndex
+    };
+  }
+
+  /**
+   * @function formatDateTimeOriginal
+   * @summary Convert '2015:08:23 11:28:48' into a human readable date
+   * @param {string} dateTimeOriginal - DateTimeOriginal.description
+   * @returns {object} { dayTimeStr, dateStr }
+   * @memberof FmcThumbsUi
+   */
+  formatDateTimeOriginal(dateTimeOriginal) {
+    let dayTimeStr = '-';
+    let dateStr = '-';
+
+    if (dateTimeOriginal !== '') {
+      const [ date, time ] = dateTimeOriginal.split(' ');
+      const validDate = [ date.replace(':', '-'), time ].join(' ');
+      const timeStamp = Date.parse(validDate);
+      const dt = new Date(timeStamp);
+      const day3 = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ][dt.getDay()];
+      const date2 = dt.getDate().toString().padStart(2, '0');
+      const month2 = (dt.getMonth() + 1).toString().padStart(2, '0');
+      const year4 = dt.getFullYear().toString();
+      const hours2 = dt.getHours().toString().padStart(2, '0');
+      const minutes2 = dt.getMinutes().toString().padStart(2, '0');
+
+      dayTimeStr = `${day3} &middot; ${hours2}:${minutes2}`;
+      dateStr = `${date2}.${month2}.${year4}`;
+    }
+
+    return {
+      dayTimeStr,
+      dateStr
     };
   }
 

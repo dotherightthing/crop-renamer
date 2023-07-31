@@ -232,6 +232,16 @@ img {
   margin: .1rem 0;
 }
 
+.thumb-meta-day-time,
+.thumb-meta-date {
+  display: block;
+}
+
+.thumb-meta-date {
+  opacity: .9;
+  font-size: .95em;
+}
+
 /* .image-meta */
 
 .image-meta {
