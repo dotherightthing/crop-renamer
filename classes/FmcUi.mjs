@@ -364,6 +364,7 @@ export class FmcUi {
     } = this;
 
     const thumbsButtons = fmcThumbsUiInstance.getButtons();
+    let exportedCount = 0;
 
     for (let b = 0; b < thumbsButtons.length; b += 1) {
       const buttonEl = thumbsButtons[b];
@@ -372,6 +373,7 @@ export class FmcUi {
 
       if ((imagePercentX !== '') && (imagePercentY !== '')) {
         buttonEl.click();
+        exportedCount += 1;
 
         await new Promise(resolve => {
           // timeout prevents generic crops
@@ -383,6 +385,11 @@ export class FmcUi {
         });
       }
     }
+
+    FmcUi.emitElementEvent(window, 'message', {
+      msg: `Generated crops and sizes for ${exportedCount} thumbnails`,
+      type: 'success'
+    });
   }
 
   /**
