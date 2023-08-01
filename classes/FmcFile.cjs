@@ -756,7 +756,18 @@ module.exports = class FmcFile {
         const dataCopy = { ...data }; // #30
 
         // imagesData retrieved separately to accommodate file renaming in the interim
-        dataCopy.imagesData = await FmcFile.getImagesData(imageFiles);
+        const imagesData = await FmcFile.getImagesData(imageFiles);
+
+        // sort images in date order, ascending
+        imagesData.sort((a, b) => {
+          // '2015:08:14 18:29:23' -> 20150814182923
+          const numA = Number((a.dateTimeOriginal).replace(/[: ]+/g, ''));
+          const numB = Number((b.dateTimeOriginal).replace(/[: ]+/g, ''));
+
+          return numA - numB;
+        });
+
+        dataCopy.imagesData = imagesData;
 
         return dataCopy;
       }
