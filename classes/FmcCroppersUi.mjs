@@ -645,14 +645,13 @@ export class FmcCroppersUi {
     imagePercentYUi
   }) {
     const {
-      croppersId,
       masterCropper
     } = this;
 
     const { src } = masterCropper.cropperInstance.element;
 
-    let state;
     let msg;
+    let state;
     let type;
 
     const {
@@ -660,30 +659,32 @@ export class FmcCroppersUi {
       imagePercentY: savedImagePercentY // string
     } = this.getImagePercentXYFromImage(src);
 
-    if ((imagePercentXUi === '50') && (imagePercentYUi === '50')) {
-      state = 'default';
+    const isDefaultFocalpoint = this.isDefaultFocalpoint({ imagePercentX: imagePercentXUi, imagePercentY: imagePercentYUi });
+    const isSavedFocalpoint = ((imagePercentXUi === savedImagePercentX) && (imagePercentYUi === savedImagePercentY));
+
+    if (isDefaultFocalpoint) {
       msg = 'Default focalpoint';
-    } else if ((imagePercentXUi === savedImagePercentX) && (imagePercentYUi === savedImagePercentY)) {
-      if (thumbIndexPrevious !== thumbIndex) {
-        state = 'saved';
+      state = 'default';
+    } else if (isSavedFocalpoint) {
+      state = 'saved';
+
+      if (thumbIndex !== thumbIndexPrevious) {
         msg = 'Focalpoint loaded';
         type = 'success';
       } else if (focalpointReset) {
-        state = 'saved';
         msg = 'Focalpoint reloaded';
         type = 'success';
       } else {
-        state = 'saved';
         msg = 'Focalpoint saved';
         type = 'success';
       }
     } else {
-      state = 'dirty';
       msg = 'Focalpoint changed but not saved';
+      state = 'dirty';
       type = 'warning';
     }
 
-    document.getElementById(croppersId).dataset.cropperFocalpointSaveStatus = state;
+    this.setSaveState(state);
 
     FmcUi.emitElementEvent(window, 'message', {
       msg,
@@ -1300,6 +1301,21 @@ export class FmcCroppersUi {
     } else {
       delete croppersEl.dataset.cropperFocalpointLoading;
     }
+  }
+
+  /**
+   * @function setSaveState
+   * @param {string} state - State (default|dirty|saved)
+   * @memberof FmcCroppersUi
+   */
+  setSaveState(state) {
+    const {
+      croppersId
+    } = this;
+
+    const croppersEl = document.getElementById(croppersId);
+
+    croppersEl.dataset.cropperFocalpointSaveStatus = state;
   }
 
   /**
