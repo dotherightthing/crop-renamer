@@ -16,6 +16,7 @@ export class FmcUi {
     const {
       debounceDelay,
       elements,
+      exportDelay,
       fmcCroppersUiInstance,
       fmcThumbsUiInstance,
       selectors
@@ -24,6 +25,7 @@ export class FmcUi {
     Object.assign(this, {
       debounceDelay,
       elements,
+      exportDelay,
       fmcCroppersUiInstance,
       fmcThumbsUiInstance,
       selectors
@@ -43,6 +45,33 @@ export class FmcUi {
 
   set debounceDelay(debounceDelay) {
     this._debounceDelay = dtrtValidate.validate(debounceDelay, 'number', 'FmcUi.debounceDelay');
+  }
+
+  /**
+   * elements
+   * @type {object}
+   * @memberof FmcUi
+   */
+  get elements() {
+    return this._elements;
+  }
+
+  set elements(elements) {
+    this._elements = dtrtValidate.validate(elements, 'object', 'FmcUi.elements');
+  }
+
+  /**
+   * exportDelay
+   * @summary Time to wait between each export when exporting multiple images.
+   * @type {number}
+   * @memberof FmcUi
+   */
+  get exportDelay() {
+    return this._exportDelay;
+  }
+
+  set exportDelay(exportDelay) {
+    this._exportDelay = dtrtValidate.validate(exportDelay, 'number', 'FmcUi.exportDelay');
   }
 
   /**
@@ -69,19 +98,6 @@ export class FmcUi {
 
   set fmcThumbsUiInstance(fmcThumbsUiInstance) {
     this._fmcThumbsUiInstance = dtrtValidate.validate(fmcThumbsUiInstance, 'object', 'FmcUi.fmcThumbsUiInstance');
-  }
-
-  /**
-   * elements
-   * @type {object}
-   * @memberof FmcUi
-   */
-  get elements() {
-    return this._elements;
-  }
-
-  set elements(elements) {
-    this._elements = dtrtValidate.validate(elements, 'object', 'FmcUi.elements');
   }
 
   /**
@@ -358,10 +374,11 @@ export class FmcUi {
   /**
    * @function handleExportAll
    * @memberof FmcUi
-   * @todo Replace timeout workaround with more robust check
+   * @todo Replace exportDelay with more robust check
    */
   async handleExportAll() {
     const {
+      exportDelay,
       fmcThumbsUiInstance
     } = this;
 
@@ -383,7 +400,7 @@ export class FmcUi {
             await this.handleExportSelected();
 
             resolve();
-          }, 500);
+          }, exportDelay);
         });
       }
     }

@@ -97,6 +97,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       filterSubmitButton: document.getElementById('thumb-filename-filter-submit'),
       window: window
     },
+    exportDelay: 750,
     fmcCroppersUiInstance,
     fmcThumbsUiInstance,
     selectors: {
