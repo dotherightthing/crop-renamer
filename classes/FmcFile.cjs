@@ -366,7 +366,7 @@ module.exports = class FmcFile {
    * @param {event} event - FmcFile:deleteImagePercentXYFromImage event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.fileName - Filename
-   * @returns {string} newFileName
+   * @returns {object} { msg, type }
    * @memberof FmcFile
    * @static
    */
@@ -391,7 +391,10 @@ module.exports = class FmcFile {
       });
     }
 
-    return newFileName;
+    return {
+      msg: newFileName,
+      type: 'success'
+    };
   }
 
   /**

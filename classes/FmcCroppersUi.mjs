@@ -651,6 +651,7 @@ export class FmcCroppersUi {
 
     let state;
     let msg;
+    let type;
 
     const {
       imagePercentX: savedImagePercentX, // string
@@ -664,19 +665,23 @@ export class FmcCroppersUi {
       if ((typeof imagePercentXUiPrevious === 'undefined') && (typeof imagePercentYUiPrevious === 'undefined')) {
         state = 'saved';
         msg = 'Focalpoint loaded';
+        type = 'success';
       } else {
         state = 'saved';
         msg = 'Focalpoint saved';
+        type = 'success';
       }
     } else {
       state = 'dirty';
-      msg = 'Warning: Focalpoint changed but not saved';
+      msg = 'Focalpoint changed but not saved';
+      type = 'warning';
     }
 
     document.getElementById(croppersId).dataset.cropperFocalpointSaveStatus = state;
 
     FmcUi.emitElementEvent(window, 'message', {
-      msg
+      msg,
+      type
     });
 
     return state;
@@ -794,7 +799,8 @@ export class FmcCroppersUi {
 
     if (!this.croppers.length) {
       FmcUi.emitElementEvent(window, 'message', {
-        msg: 'Croppers could not be initialised'
+        msg: 'Croppers could not be initialised',
+        type: 'warning'
       });
 
       return;
@@ -1157,7 +1163,8 @@ export class FmcCroppersUi {
     });
 
     FmcUi.emitElementEvent(window, 'message', {
-      msg: `Deleted ${counts.deletions} matching files. Generated ${counts.crops} crops and ${counts.resizes} sizes`
+      msg: `Deleted ${counts.deletions} matching files. Generated ${counts.crops} crops and ${counts.resizes} sizes`,
+      type: 'success'
     });
 
     return baseExportPath;
@@ -1325,7 +1332,7 @@ export class FmcCroppersUi {
    * @param {object} args - Arguments
    * @param {string} args.imagePercentX - Image percentage X
    * @param {string} args.imagePercentY - Image percentage Y
-   * @returns {Promise<string>} msg
+   * @returns {Promise<string>} { msg, type }
    * @memberof FmcCroppersUi
    */
   async writeImagePercentXYToImage({ imagePercentX, imagePercentY }) {
@@ -1356,7 +1363,10 @@ export class FmcCroppersUi {
 
     return new Promise(resolve => {
       if (errorMsg !== '') {
-        resolve(errorMsg);
+        resolve({
+          msg: errorMsg,
+          type: 'warning'
+        });
       } else if (newFileName !== oldFileName) {
         // timeout prevents broken image
         setTimeout(() => {
@@ -1368,10 +1378,15 @@ export class FmcCroppersUi {
             newFileName
           });
 
-          resolve('Saved focalpoint to filename');
+          resolve({
+            msg: 'Saved focalpoint to filename',
+            type: 'success'
+          });
         }, 500);
       } else {
-        resolve('Focalpoint already saved to filename');
+        resolve({
+          msg: 'Focalpoint already saved to filename'
+        });
       }
     });
   }

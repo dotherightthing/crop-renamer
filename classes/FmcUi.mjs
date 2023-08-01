@@ -299,7 +299,8 @@ export class FmcUi {
 
     if (typeof window.electronAPI === 'undefined') {
       FmcUi.emitElementEvent(window, 'message', {
-        msg: 'Error: Clipboard operations require Electron'
+        msg: 'Error: Clipboard operations require Electron',
+        type: 'warning'
       });
 
       return;
@@ -682,7 +683,8 @@ export class FmcUi {
 
     if (typeof window.electronAPI === 'undefined') {
       FmcUi.emitElementEvent(window, 'message', {
-        msg: 'Error: Finder links require Electron'
+        msg: 'Error: Finder links require Electron',
+        type: 'warning'
       });
 
       return;
@@ -820,12 +822,19 @@ export class FmcUi {
     } = this;
 
     const {
-      consoleContainer
+      consoleContainer,
+      consoleType
     } = elements;
 
-    const { msg } = event.detail;
+    const {
+      msg,
+      type = 'message' // message|success|warning
+    } = event.detail;
 
     consoleContainer.textContent = (msg !== '') ? `${msg}.` : msg;
+    consoleType.classList.remove('msg-info', 'msg-success', 'msg-warning');
+    consoleType.classList.add(`msg-${type}`);
+    consoleType.textContent = type;
 
     // ensure each message is displayed
     await new Promise(resolve => {
@@ -912,20 +921,18 @@ export class FmcUi {
       focalpointYInput
     } = elements;
 
-    let msg;
+    let msgObj;
 
     // value is a string despite input being of type number
     if ((Number(focalpointXInput.value) === 50) && (Number(focalpointYInput.value) === 50)) {
-      msg = await fmcCroppersUiInstance.deleteImagePercentXYFromImage();
+      msgObj = await fmcCroppersUiInstance.deleteImagePercentXYFromImage();
     } else {
-      msg = await fmcCroppersUiInstance.writeImagePercentXYToImage({
+      msgObj = await fmcCroppersUiInstance.writeImagePercentXYToImage({
         imagePercentX: focalpointXInput.value,
         imagePercentY: focalpointYInput.value
       });
 
-      FmcUi.emitElementEvent(window, 'message', {
-        msg
-      });
+      FmcUi.emitElementEvent(window, 'message', msgObj);
     }
   }
 

@@ -24,3 +24,23 @@
 .cropper-console-heading::after {
   content: " >";
 }
+
+.console-type:not(:empty)::before {
+  content: "> ";
+  color: var(--color-tertiary);
+}
+
+.console-type.msg-message {
+  color: var(--color-primary);
+  text-transform: capitalize;
+}
+
+.console-type.msg-success {
+  color: var(--color-success);
+  text-transform: capitalize;
+}
+
+.console-type.msg-warning {
+  color: var(--color-warning);
+  text-transform: capitalize;
+}

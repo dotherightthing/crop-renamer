@@ -68,6 +68,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     debounceDelay: 500,
     elements: {
       consoleContainer: document.getElementById('console'),
+      consoleType: document.getElementById('console-type'),
       copyPathInButton: document.getElementById('copy-path-in'),
       copyPathOutButton: document.getElementById('copy-path-out'),
       copyPathWebEmbedButton: document.getElementById('copy-path-web-embed'),
