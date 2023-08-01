@@ -31,7 +31,6 @@
 }
 
 .console-type.msg-message {
-  color: var(--color-primary);
   text-transform: capitalize;
 }
 

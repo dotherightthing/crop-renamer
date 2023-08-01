@@ -629,16 +629,18 @@ export class FmcCroppersUi {
    * @function setFocalpointSaveState
    * @summary Determine whether the current focalpoint settings have been saved to the current image
    * @param {object} args - Arguments
-   * @param {string} args.imagePercentXUiPrevious - Previous value for Image Percent X as shown in the UI controls
-   * @param {string} args.imagePercentYUiPrevious - Previous value for Image Percent Y as shown in the UI controls
+   * @param {boolean} args.focalpointReset - Focalpoint was reset to previously stored values
+   * @param {string} args.thumbIndexPrevious - The index of the previously selected thumbnail
+   * @param {string} args.thumbIndex - The index of the currently selected thumbnail
    * @param {string} args.imagePercentXUi - Image Percent X as shown in the UI controls
    * @param {string} args.imagePercentYUi - Image Percent Y as shown in the UI controls
    * @returns {string} state
    * @memberof FmcCroppersUi
    */
   setFocalpointSaveState({
-    imagePercentXUiPrevious,
-    imagePercentYUiPrevious,
+    focalpointReset,
+    thumbIndexPrevious,
+    thumbIndex,
     imagePercentXUi,
     imagePercentYUi
   }) {
@@ -662,9 +664,13 @@ export class FmcCroppersUi {
       state = 'default';
       msg = 'Default focalpoint';
     } else if ((imagePercentXUi === savedImagePercentX) && (imagePercentYUi === savedImagePercentY)) {
-      if ((typeof imagePercentXUiPrevious === 'undefined') && (typeof imagePercentYUiPrevious === 'undefined')) {
+      if (thumbIndexPrevious !== thumbIndex) {
         state = 'saved';
         msg = 'Focalpoint loaded';
+        type = 'success';
+      } else if (focalpointReset) {
+        state = 'saved';
+        msg = 'Focalpoint reloaded';
         type = 'success';
       } else {
         state = 'saved';
@@ -1241,15 +1247,11 @@ export class FmcCroppersUi {
       imagePercentY = 50
     } = this.getImagePercentXYFromImage(src);
 
-    const msg = this.isDefaultFocalpoint({ imagePercentX, imagePercentY }) ? 'Reset focalpoint' : 'Loaded focalpoint from image';
-
     document.getElementById(focalpointXInputId).value = imagePercentX;
     document.getElementById(focalpointYInputId).value = imagePercentY;
 
-    FmcUi.emitEvent(focalpointYInputId, 'change');
-
-    FmcUi.emitElementEvent(window, 'message', {
-      msg
+    FmcUi.emitEvent(focalpointYInputId, 'change', {
+      focalpointReset: !(this.isDefaultFocalpoint({ imagePercentX, imagePercentY }))
     });
 
     setTimeout(() => {

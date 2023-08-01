@@ -225,6 +225,8 @@ export class FmcThumbsUi {
 
     let str = '';
 
+    el.dataset.thumbIndex = thumbIndex;
+
     // store for later access
     if (typeof thumbTotal !== 'undefined') {
       el.dataset.thumbTotal = thumbTotal;
@@ -402,6 +404,24 @@ export class FmcThumbsUi {
       clickedButton,
       clickedButtonIndex
     };
+  }
+
+  /**
+   * @function getSelectedThumbIndex
+   * @returns {string} thumbIndex
+   * @memberof FmcThumbsUi
+   */
+  getSelectedThumbIndex() {
+    const {
+      thumbsCountId
+    } = this;
+
+    const countEl = document.getElementById(thumbsCountId);
+    const {
+      thumbIndex = ''
+    } = countEl.dataset;
+
+    return thumbIndex;
   }
 
   /**

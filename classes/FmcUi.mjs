@@ -264,7 +264,8 @@ export class FmcUi {
   async handleAutosaveRadioChange(event) {
     const {
       elements,
-      fmcCroppersUiInstance
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance
     } = this;
 
     const {
@@ -278,12 +279,13 @@ export class FmcUi {
     });
 
     const autosaveOn = event.target.value;
+    const thumbIndex = fmcThumbsUiInstance.getSelectedThumbIndex();
 
     await this.autosaveFocalpoint(autosaveOn === 'on');
 
     fmcCroppersUiInstance.setFocalpointSaveState({
-      imagePercentXUiPrevious: focalpointXInput.dataset.previousValue,
-      imagePercentYUiPrevious: focalpointYInput.dataset.previousValue,
+      thumbIndexPrevious: focalpointXInput.dataset.thumbIndexPrevious,
+      thumbIndex,
       imagePercentXUi: focalpointXInput.value,
       imagePercentYUi: focalpointYInput.value
     });
@@ -506,7 +508,8 @@ export class FmcUi {
   async handleFocalpointInputChange(event) {
     const {
       elements,
-      fmcCroppersUiInstance
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance
     } = this;
 
     const {
@@ -514,6 +517,10 @@ export class FmcUi {
       focalpointXInput,
       focalpointYInput
     } = elements;
+
+    const {
+      focalpointReset = false
+    } = event.detail;
 
     // move cropbox
     fmcCroppersUiInstance.displayImagePercentXY({
@@ -523,18 +530,20 @@ export class FmcUi {
 
     if ((event.isTrusted) || (event.target === focalpointYInput)) {
       const autosaveOn = [ ...focalpointAutoSaveRadios ].filter(radio => radio.checked)[0].value;
+      const thumbIndex = fmcThumbsUiInstance.getSelectedThumbIndex();
 
       await this.autosaveFocalpoint(autosaveOn === 'on');
 
       fmcCroppersUiInstance.setFocalpointSaveState({
-        imagePercentXUiPrevious: focalpointXInput.dataset.previousValue,
-        imagePercentYUiPrevious: focalpointYInput.dataset.previousValue,
+        focalpointReset,
+        thumbIndexPrevious: focalpointXInput.dataset.thumbIndexPrevious,
+        thumbIndex,
         imagePercentXUi: focalpointXInput.value,
         imagePercentYUi: focalpointYInput.value
       });
 
-      focalpointXInput.dataset.previousValue = focalpointXInput.value;
-      focalpointYInput.dataset.previousValue = focalpointYInput.value;
+      focalpointXInput.dataset.thumbIndexPrevious = thumbIndex;
+      focalpointYInput.dataset.thumbIndexPrevious = thumbIndex;
     }
   }
 
@@ -559,7 +568,8 @@ export class FmcUi {
   async handleFocalpointSave() {
     const {
       elements,
-      fmcCroppersUiInstance
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance
     } = this;
 
     const {
@@ -567,11 +577,13 @@ export class FmcUi {
       focalpointYInput
     } = elements;
 
+    const thumbIndex = fmcThumbsUiInstance.getSelectedThumbIndex();
+
     await this.saveFocalpoint();
 
     fmcCroppersUiInstance.setFocalpointSaveState({
-      imagePercentXUiPrevious: focalpointXInput.dataset.previousValue,
-      imagePercentYUiPrevious: focalpointYInput.dataset.previousValue,
+      thumbIndexPrevious: focalpointXInput.dataset.thumbIndexPrevious,
+      thumbIndex,
       imagePercentXUi: focalpointXInput.value,
       imagePercentYUi: focalpointYInput.value
     });
