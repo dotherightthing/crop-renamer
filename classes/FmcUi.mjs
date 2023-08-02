@@ -536,8 +536,12 @@ export class FmcUi {
     } = elements;
 
     const {
+      detail = {}
+    } = event;
+
+    const {
       focalpointReset = false
-    } = event.detail;
+    } = detail;
 
     // move cropbox
     fmcCroppersUiInstance.displayImagePercentXY({
