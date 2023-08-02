@@ -1191,9 +1191,13 @@ export class FmcCroppersUi {
 
     const fileName = masterCropper.cropperInstance.element.src;
 
-    const newFileName = await window.electronAPI.deleteImagePercentXYFromImage({
+    const msgObj = await window.electronAPI.deleteImagePercentXYFromImage({
       fileName
     });
+
+    const {
+      msg: newFileName
+    } = msgObj;
 
     return new Promise(resolve => {
       if (fileName === newFileName) {
