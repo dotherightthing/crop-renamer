@@ -131,7 +131,7 @@
 
 .l-page {
   display: grid;
-  grid-template-rows: 2rem calc(66vh - 2rem) 34vh;
+  grid-template-rows: var(--height-title) var(--height-editor) var(--height-thumbnails);
   height: 100vh;
 }
 

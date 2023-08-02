@@ -45,9 +45,12 @@
   --height-controls-inner: 5rem;
   --height-controls-outer: calc(var(--height-controls-inner) + var(--gutter-half) + var(--gutter-half));
   --height-cropper-console: 1.3rem;
-  --height-cropper-master: calc(70vh - var(--height-controls-outer));
-  --height-cropper-slave: calc((70vh - var(--height-controls-outer) - var(--gutter)) / 2);
+  --height-cropper-master: calc(var(--height-editor) - var(--height-controls-outer));
+  --height-cropper-slave: calc((var(--height-editor) - var(--height-controls-outer) - var(--gutter)) / 2);
+  --height-editor: calc(66vh - var(--height-title));
   --height-image-meta: 5.6rem;
+  --height-thumbnails: 34vh;
+  --height-title: 2rem;
 
   --image-percent-x: 50%;
   --image-percent-y: 50%;

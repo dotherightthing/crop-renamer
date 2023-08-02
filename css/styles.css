@@ -116,6 +116,7 @@ img {
 }
 
 .title {
+  height: var(--height-title);
   background-color: var(--color-bg-secondary);
   color: var(--color-primary);
   padding: var(--gutter);
