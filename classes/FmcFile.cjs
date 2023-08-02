@@ -429,17 +429,21 @@ module.exports = class FmcFile {
    */
   static getFileNameParts(fileName) {
     const fileNameAndExt = path.basename(fileName); // Filename.ext | Filename__[nn%,nn%].ext
+    const fileNameAndExtClean = fileNameAndExt.replace(/%20/g, ' ');
     const extName = path.extname(fileName); // .ext
     const fileNameOnly = fileNameAndExt.replace(extName, ''); // Filename | Filename__[nn%,nn%]
+    const fileNameOnlyClean = fileNameOnly.replace(/%20/g, ' ');
     const fileNameClean = fileName.replace('file://', '').replace(/%20/g, ' '); // /Volumes/Foo/Bar/Baz/Filename.ext
     const folderPath = path.dirname(fileNameClean); // /Volumes/Foo/Bar/Baz
 
     return {
       extName,
       fileNameAndExt,
+      fileNameAndExtClean,
+      fileNameClean,
       fileNameOnly,
-      folderPath,
-      fileNameClean
+      fileNameOnlyClean,
+      folderPath
     };
   }
 
@@ -886,17 +890,17 @@ module.exports = class FmcFile {
 
     const {
       extName,
-      fileNameAndExt,
-      fileNameOnly,
+      fileNameAndExtClean,
+      fileNameOnlyClean,
       folderPath
     } = FmcFile.getFileNameParts(fileName);
 
     const regex = FmcFile.getFocalpointRegex();
 
-    const fileNameOnlyNoRegex = fileNameOnly.replace(regex, ''); // foo
+    const fileNameOnlyCleanNoRegex = fileNameOnlyClean.replace(regex, ''); // foo
 
-    const oldFileName = `${folderPath}/${fileNameAndExt}`;
-    const newFileName = `${folderPath}/${fileNameOnlyNoRegex}__[${imagePercentX}%,${imagePercentY}%]${extName}`;
+    const oldFileName = `${folderPath}/${fileNameAndExtClean}`;
+    const newFileName = `${folderPath}/${fileNameOnlyCleanNoRegex}__[${imagePercentX}%,${imagePercentY}%]${extName}`;
 
     if (newFileName !== oldFileName) {
       fs.rename(oldFileName, newFileName, (error) => {
