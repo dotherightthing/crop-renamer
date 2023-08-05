@@ -8,16 +8,11 @@ const fs = require('fs');
 const gm = require('gm').subClass({ imageMagick: '7+' });
 const path = require('path');
 const process = require('process');
-const Store = require('./store.js');
+const Store = require('./Store.cjs');
 
 const { clipboard, dialog, shell } = require('electron');
 const { promises: Fs } = require('fs');
 const { spawn } = require('child_process');
-
-const store = new Store({
-  configName: 'user-preferences',
-  defaults: {}
-});
 
 module.exports = class FmcFile {
   /**
@@ -610,27 +605,24 @@ module.exports = class FmcFile {
     restore,
     storeKey
   }) {
+    // start TODO move to selectFile method
+
+    let fileName;
     let filePath;
     let folderPath;
 
-    let data = await FmcFile.storeGet(null, {
-      key: storeKey
-    });
-
-    if (typeof data !== 'undefined') {
-      ({
-        filePath,
-        folderPath
-      } = data);
-    }
+    const preset = await Store.getActivePreset(null) || {};
+    const storedData = preset[storeKey] || {};
 
     if (restore) {
-      if (typeof data === 'undefined') {
-        return {};
-      }
-
-      return data;
+      return {
+        fileName: storedData.value || '',
+        filePath: storedData.targetFile || '',
+        folderPath: storedData.targetFolder || ''
+      };
     }
+
+    // end TODO
 
     const { canceled, filePaths } = await dialog.showOpenDialog({
       buttonLabel: dialogButtonLabel,
@@ -647,25 +639,39 @@ module.exports = class FmcFile {
       filePath = filePaths[0];
 
       const pathSeparator = filePath.lastIndexOf('/');
-      const fileName = filePath.slice(pathSeparator + 1);
+
+      fileName = filePath.slice(pathSeparator + 1);
 
       folderPath = path.dirname(filePath);
 
-      data = {
+      return {
         fileName,
         filePath,
         folderPath
       };
-
-      FmcFile.storeSet(null, {
-        key: storeKey,
-        value: data
-      });
-
-      return data;
     }
 
     return {};
+  }
+
+  /**
+   * @function sortDateOrderAscending
+   * @summary Sort images in date order, ascending
+   * @param {Array} imagesData - Images data
+   * @returns {Array} imagesDataSorted
+   * @memberof FmcFile
+   * @static
+   */
+  static sortDateOrderAscending(imagesData) {
+    const imagesDataSorted = imagesData.sort((a, b) => {
+      // '2015:08:14 18:29:23' -> 20150814182923
+      const numA = Number((a.dateTimeOriginal).replace(/[: ]+/g, ''));
+      const numB = Number((b.dateTimeOriginal).replace(/[: ]+/g, ''));
+
+      return numA - numB;
+    });
+
+    return imagesDataSorted;
   }
 
   /**
@@ -674,9 +680,11 @@ module.exports = class FmcFile {
    * @param {object} data - Data
    * @param {string} data.dialogTitle - Title for the dialog
    * @param {boolean} data.retrieveImagesData - Get information about images in the folder
+   *  (The UI contains multiple folder 'Browse' buttons, but only the 'folderIn' needs access to imagesData.)
    * @param {boolean} data.restore - Restore setting if it was previously stored
    * @param {string} data.storeKey - Key under which to persist the folder path in the JSON file
-   * @returns { object } { folderName, folderPath }
+   * @returns {object} { folderName, folderPath, imagesData }
+   * @todo Can slice() operation be merged into getFileNameParts() ?
    * @memberof FmcFile
    * @static
    */
@@ -688,184 +696,80 @@ module.exports = class FmcFile {
       storeKey
     } = data;
 
-    // if getImagesData
-    if (retrieveImagesData) {
-      const { folderName, folderPath, imagesData } = await FmcFile.selectFolderDialog({
-        dialogTitle,
-        dialogButtonLabel: 'Select folder',
-        retrieveImagesData,
-        restore,
-        storeKey
-      });
+    const preset = await Store.getActivePreset(null) || {};
+    const retrievedData = {};
+    const storedData = preset[storeKey] || {};
 
-      if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
-        return {};
-      }
-
-      return { folderName, folderPath, imagesData };
-    }
-
-    // if !getImagesData
-    const { folderName, folderPath } = await FmcFile.selectFolderDialog({
-      dialogTitle,
-      dialogButtonLabel: 'Select folder',
-      retrieveImagesData,
-      restore,
-      storeKey
-    });
-
-    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
-      return {};
-    }
-
-    return { folderName, folderPath };
-  }
-
-  /**
-   * @function selectFolderDialog
-   * @param {object} args - Arguments
-   * @param {string} args.dialogTitle - Dialog title
-   * @param {string} args.dialogButtonLabel - Dialog button label
-   * @param {string} args.restore - Restore previously stored return
-   * @param {string} args.storeKey - Store return value with this key
-   * @param {boolean} args.retrieveImagesData - Return imagesData
-   * @returns {object} { folderName, folderPath, imagesData }
-   * @memberof FmcFile
-   * @static
-   */
-  static async selectFolderDialog({
-    dialogTitle,
-    dialogButtonLabel,
-    retrieveImagesData,
-    restore,
-    storeKey
-  }) {
-    let folderPath;
-
-    let data = await FmcFile.storeGet(null, {
-      key: storeKey
-    });
-
-    if (typeof data !== 'undefined') {
-      ({
-        folderPath = '~/' // default
-      } = data);
-    }
+    const {
+      targetFolder, // folderPath
+      value // folderName
+    } = storedData;
 
     if (restore) {
-      if (typeof data === 'undefined') {
-        return {};
+      if ((typeof value === 'undefined') || (typeof targetFolder === 'undefined')) {
+        return {
+          folderName: storedData.value,
+          folderPath: storedData.targetFolder
+        };
       }
 
       if (retrieveImagesData) {
-        const imageFiles = await FmcFile.getImageFiles(data.folderPath);
-
-        const dataCopy = { ...data }; // #30
+        const imageFiles = await FmcFile.getImageFiles(targetFolder);
 
         // imagesData retrieved separately to accommodate file renaming in the interim
         const imagesData = await FmcFile.getImagesData(imageFiles);
 
-        // sort images in date order, ascending
-        imagesData.sort((a, b) => {
-          // '2015:08:14 18:29:23' -> 20150814182923
-          const numA = Number((a.dateTimeOriginal).replace(/[: ]+/g, ''));
-          const numB = Number((b.dateTimeOriginal).replace(/[: ]+/g, ''));
+        // note: no point in storing imagesData in dataset as could change between loads
+        // see also #30
+        retrievedData.imagesData = FmcFile.sortDateOrderAscending(imagesData);
+        retrievedData.folderName = value;
+        retrievedData.folderPath = targetFolder;
 
-          return numA - numB;
-        });
-
-        dataCopy.imagesData = imagesData;
-
-        return dataCopy;
+        return retrievedData;
       }
 
-      return data; // !retrieveImagesData
-    }
-
-    const { canceled, filePaths } = await dialog.showOpenDialog({
-      buttonLabel: dialogButtonLabel,
-      defaultPath: folderPath,
-      message: dialogTitle,
-      properties: [
-        'createDirectory',
-        'openDirectory',
-        'showHiddenFiles'
-      ],
-      title: dialogTitle
-    });
-
-    if (!canceled && filePaths.length) {
-      let imagesData = [];
-
-      folderPath = filePaths[0];
-
-      if (retrieveImagesData) {
-        const imageFiles = await FmcFile.getImageFiles(folderPath);
-
-        imagesData = await FmcFile.getImagesData(imageFiles);
-      }
-
-      const pathSeparator = folderPath.lastIndexOf('/');
-      const folderName = folderPath.slice(pathSeparator + 1);
-
-      data = {
-        folderName,
-        folderPath,
-        imagesData
+      // don't open dialog
+      return {
+        folderName: storedData.value,
+        folderPath: storedData.targetFolder
       };
-
-      FmcFile.storeSet(null, {
-        key: storeKey,
-        value: {
-          folderName,
-          folderPath
-        }
+    } else { // eslint-disable-line no-else-return
+      const { canceled, filePaths } = await dialog.showOpenDialog({
+        buttonLabel: 'Select folder',
+        defaultPath: targetFolder,
+        message: dialogTitle,
+        properties: [
+          'createDirectory',
+          'openDirectory',
+          'showHiddenFiles'
+        ],
+        title: dialogTitle
       });
 
-      return data;
+      if (!canceled && filePaths.length) {
+        let imagesData = [];
+
+        retrievedData.folderPath = filePaths[0];
+
+        if (retrieveImagesData) {
+          const imageFiles = await FmcFile.getImageFiles(retrievedData.folderPath);
+
+          imagesData = await FmcFile.getImagesData(imageFiles);
+          retrievedData.imagesData = FmcFile.sortDateOrderAscending(imagesData);
+        }
+
+        const pathSeparator = retrievedData.folderPath.lastIndexOf('/');
+
+        retrievedData.folderName = retrievedData.folderPath.slice(pathSeparator + 1);
+
+        return retrievedData;
+      }
     }
 
-    return {};
-  }
-
-  /**
-   * @function storeGet
-   * @param {event|null} event - FmcFile:storeGet event captured by ipcMain.handle
-   * @param {object} data - Data
-   * @param {string} data.key - Key
-   * @returns {*} value
-   * @memberof FmcFile
-   * @static
-   */
-  static async storeGet(event, data) {
-    const { key } = data;
-
-    const value = await store.get(key, (error) => {
-      if (error) {
-        throw error;
-      }
-    });
-
-    return value;
-  }
-
-  /**
-   * @function storeSet
-   * @param {event|null} event - FmcFile:storeSet event captured by ipcMain.handle
-   * @param {object} data - Data
-   * @param {string} data.key - Key
-   * @param {*} data.value - Value
-   * @memberof FmcFile
-   * @static
-   */
-  static storeSet(event, data) {
-    const { key, value } = data;
-
-    store.set(key, value, (error) => {
-      if (error) {
-        throw error;
-      }
-    });
+    return {
+      folderName: storedData.value,
+      folderPath: storedData.targetFolder
+    };
   }
 
   /**
@@ -911,5 +815,22 @@ module.exports = class FmcFile {
     }
 
     return newFileName;
+  }
+
+  /**
+   * @function isEmptyObject
+   * @summary Determine whether an object is empty ({})
+   * @param {object} obj - Object
+   * @returns {boolean} is empty
+   * @see {@link https://stackoverflow.com/a/49729848}
+   * @memberof FmcFile
+   * @static
+   */
+  static isEmptyObject(obj) {
+    return (
+      Object.getPrototypeOf(obj) === Object.prototype
+      && Object.getOwnPropertyNames(obj).length === 0
+      && Object.getOwnPropertySymbols(obj).length === 0
+    );
   }
 };

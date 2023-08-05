@@ -6,51 +6,26 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'" />
     <link rel="stylesheet" href="./node_modules/cropperjs/dist/cropper.css">
     <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/dialog.css">
     <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/select.css">
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="./css/cropper-console.css">
   </head>
   <body>
     <div class="l-page">
-      <div class="l-title title">
-        <div class="l-cols-2">
-          <h1 class="h-title">Focalpoint Multi-Cropper tool</h1>
-          <h2 class="h-title">Settings</h2>
+      <div class="l-title title l-cols-3-2">
+        <h1 class="h-title">Focalpoint Multi-Cropper tool</h1>
+        <div>
+          <button type="button" class="control-action" id="settings-open">
+            <span class="control-hint">Open Settings</span>
+          </button>
         </div>
       </div>
       <div class="editor">
-        <div class="controls l-cols-2 l-cols-2-reverse" id="controls">
+        <div class="controls l-cols-3-2 l-cols-3-2-reverse" id="controls">
           <div class="l-horz-list">
-            <fieldset>
-              <legend>
-                <span class="h-small uc l-horz-list-header">Import</span>
-              </legend>
-              <div class="l-horz-list">
-                <button type="button" class="control-action" id="folder-in">
-                  <span class="label">Source folder</span>
-                  <span class="control-hint"></span>
-                </button>
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend>
-                <span class="h-small uc l-horz-list-header">Export</span>
-              </legend>
-              <div class="l-horz-list">
-                <button type="button" class="control-action" id="folder-website">
-                  <span class="label">Website folder</span>
-                  <span class="control-hint"></span>
-                </button>
-                <button type="button" class="control-action" id="file-webpage">
-                  <span class="label">Webpage file</span>
-                  <span class="control-hint"></span>
-                </button>
-                <button type="button" class="control-action" id="folder-out">
-                  <span class="label">Export folder</span>
-                  <span class="control-hint"></span>
-                </button>
-              </div>
-            </fieldset>
+            <!-- -->
           </div>
           <div class="l-horz-list">
             <h2 class="l-visually-hidden">Focalpoint</h2>
@@ -180,7 +155,7 @@
           ></div>
         </div>
       </div>
-      <div class="thumbs" aria-labelledby="thumbs-heading">
+      <div class="thumbs" aria-labelledby="thumbs-heading" id="thumbs-container">
         <h2 class="l-visually-hidden" id="thumbs-heading">Image thumbnails</h2>
         <ol class="thumbs-list" id="thumbs">
           <!-- loaded by Load images -->
@@ -235,12 +210,85 @@
             </fieldset>
           </div>
         </div>
-        <div class="cropper-console l-cropper-console">
+        <div class="cropper-console l-cropper-console" id="console-container">
           <h2 class="cropper-console-heading">Status <span class="console-type" id="console-type"></span></h2>
           <p class="cropper-console-output" id="console" aria-live="polite"></p>
         </div>
       </div>
     </div>
+    <dialog id="settings">
+      <div class="l-title title l-cols-1-1">
+        <h2 class="h-title">Settings</h2>
+        <div>
+          <button class="control-action control-close" value="cancel" formmethod="dialog" id="settings-close">
+            <span class="control-hint">Close</span>
+          </button>
+        </div>
+      </div>
+      <form>
+        <fieldset>
+          <legend>
+            <span class="h-small uc l-horz-list-header">Load Preset</span>
+          </legend>
+          <div class="l-label-input-button">
+            <label for="preset-names" class="label">Presets</label>
+            <div class="select control-action">
+              <select id="preset-names">
+                <option value="default">Choose</option>
+              </select>
+            </div>
+            <button type="button" class="control-action" id="settings-load" value="load">
+              <span class="control-hint">Load</span>
+            </button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>
+            <span class="h-small uc l-horz-list-header">Add / Edit Settings</span>
+          </legend>
+          <div class="l-label-input-button">
+            <label for="folder-in">Source folder</label>
+            <input type="text" class="control-action control-source" id="folder-in" readonly>
+            <button type="button" class="control-action" id="folder-in-button">
+              <span class="control-hint">Browse</span>
+            </button>
+          </div>
+          <div class="l-label-input-button">
+            <label for="folder-out">Target folder</label>
+            <input type="text" class="control-action control-source" id="folder-out" readonly>
+            <button type="button" class="control-action" id="folder-out-button">
+              <span class="control-hint">Browse</span>
+            </button>
+          </div>
+          <div class="l-label-input-button">
+            <label for="folder-website">Website folder</label>
+            <input type="text" class="control-action control-source" id="folder-website" readonly>
+            <button type="button" class="control-action" id="folder-website-button">
+              <span class="control-hint">Browse</span>
+            </button>
+          </div>
+          <div class="l-label-input-button">
+            <label for="file-webpage">Webpage file</label>
+            <input type="text" class="control-action control-source" id="file-webpage" readonly>
+            <button type="button" class="control-action" id="file-webpage-button">
+              <span class="control-hint">Browse</span>
+            </button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>
+            <span class="h-small uc l-horz-list-header">Save as preset</span>
+          </legend>
+          <div class="l-label-input-button">
+            <label for="save-name" class="label">Preset name</label>
+            <input type="text" class="control-action control-source" id="settings-preset-name" data-required-on="save">
+            <button type="button" class="control-action" id="settings-save" value="save">
+              <span class="control-hint">Save</span>
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </dialog>
     <script type="importmap">
       {
         "imports": {

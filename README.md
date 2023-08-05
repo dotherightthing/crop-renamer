@@ -10,6 +10,7 @@
 * **Set focalpoint** - Click the master cropper image or use the number inputs to set a focalpoint, slave croppers' crop boxes will automatically follow
 * **Rounding** - Initial focalpoint uses unrounded values, after a visual pause these are rounded to integers for easier storage
 * **Storage** - Toggle on auto-save to write a non-default focalpoint to the image filename as a resolution-independent percentage of its width and height (integers), e.g. `foo__[40%,37%].jpg`
+* **Presets** - Store multiple locations in userData (macOS: `/Users/NAME/Library/Application Support/focalpoint-multi-cropper/user-preferences.json`)
 * **Reset** - Remove user changes and reapply the focalpoint stored in the image filename, or the defaults
 * **Delete** - Delete the focalpoint and remove non-default focalpoint from the image filename
 * **Resize & Crop** - Use [gm](https://github.com/aheckmann/gm) to `resizeAndCrop` from the slave croppers' crop boxes, and `resize` from the hidden non-cropper inclusions

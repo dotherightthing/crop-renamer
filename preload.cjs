@@ -29,6 +29,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveImagePercentXYToImage: (data) => ipcRenderer.invoke('FmcFile:saveImagePercentXYToImage', data),
   resizeImage: (data) => ipcRenderer.invoke('FmcFile:resizeImage', data),
   resizeAndCropImage: (data) => ipcRenderer.invoke('FmcFile:resizeAndCropImage', data),
-  storeGet: (data) => ipcRenderer.invoke('FmcFile:storeGet', data),
-  storeSet: (data) => ipcRenderer.invoke('FmcFile:storeSet', data)
+  getActivePreset: (data) => ipcRenderer.invoke('Store:getActivePreset', data),
+  getKeys: (data) => ipcRenderer.invoke('Store:getKeys', data),
+  getPreset: (data) => ipcRenderer.invoke('Store:getPreset', data),
+  getPresetNames: (data) => ipcRenderer.invoke('Store:getPresetNames', data),
+  setActivePresetName: (data) => ipcRenderer.invoke('Store:setActivePresetName', data),
+  setKeys: (data) => ipcRenderer.invoke('Store:setKeys', data),
+  setPreset: (data) => ipcRenderer.invoke('Store:setPreset', data)
 });

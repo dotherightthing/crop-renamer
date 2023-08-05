@@ -1,0 +1,50 @@
+.control-action.select {
+  font-size: .8rem;
+}
+
+select {
+  z-index: 1;
+  width: 100%;
+  background-color: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  padding: 0 1em 0 0;
+  border: none;
+  margin: 0;
+  outline: none;
+  cursor: inherit;
+  appearance: none;
+}
+
+.select {
+  display: grid;
+  grid-template-areas: "select";
+  position: relative;
+  align-items: center;
+  cursor: pointer;
+}
+
+.select::after {
+  content: "";
+  justify-self: end;
+  width: 0.8em;
+  height: 0.5em;
+  background-color: currentColor;
+  clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+}
+
+.select select,
+.select::after {
+  grid-area: select;
+}
+
+.select:focus-within {
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 1px var(--color-focus);
+}
+
+.select + label {
+  margin-top: 2rem;
+}

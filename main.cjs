@@ -14,6 +14,7 @@ const args = process.argv.slice(3);
 const showDevTools = args.indexOf('devtools') !== -1;
 
 const FmcFile = require('./classes/FmcFile.cjs');
+const Store = require('./classes/Store.cjs');
 
 const path = require('path');
 const contextMenu = require('electron-context-menu');
@@ -96,8 +97,13 @@ app.whenReady().then(() => {
   ipcMain.handle('FmcFile:deleteImagePercentXYFromImage', FmcFile.deleteImagePercentXYFromImage);
   ipcMain.handle('FmcFile:saveImagePercentXYToImage', FmcFile.saveImagePercentXYToImage);
   ipcMain.handle('FmcFile:resizeAndCropImage', FmcFile.resizeAndCropImage);
-  ipcMain.handle('FmcFile:storeGet', FmcFile.storeGet);
-  ipcMain.handle('FmcFile:storeSet', FmcFile.storeSet);
+  ipcMain.handle('Store:setKeys', Store.setKeys);
+  ipcMain.handle('Store:getActivePreset', Store.getActivePreset);
+  ipcMain.handle('Store:getKeys', Store.getKeys);
+  ipcMain.handle('Store:getPreset', Store.getPreset);
+  ipcMain.handle('Store:getPresetNames', Store.getPresetNames);
+  ipcMain.handle('Store:setActivePresetName', Store.setActivePresetName);
+  ipcMain.handle('Store:setPreset', Store.setPreset);
 
   createWindow();
 

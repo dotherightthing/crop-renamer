@@ -36,7 +36,7 @@ fieldset {
 
 .h-title {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  font-size: var(--text-small);
+  font-size: var(--text-medium);
   font-weight: normal;
   margin: 0;
 }
@@ -116,7 +116,6 @@ img {
 }
 
 .title {
-  height: var(--height-title);
   background-color: var(--color-bg-secondary);
   color: var(--color-primary);
   padding: var(--gutter);
@@ -302,7 +301,8 @@ img {
   padding: var(--gutter);
 }
 
-.controls .h-small {
+.controls .h-small,
+dialog .h-small {
   display: block;
   color: var(--color-secondary);
   margin-bottom: var(--gutter);
@@ -324,11 +324,6 @@ img {
 
 .l-horz-list > .control-action {
   margin: 0;
-}
-
-.control-action[data-hint] {
-  font-size: 0.8rem;
-  text-align: left;
 }
 
 .control-action:focus,
@@ -375,6 +370,7 @@ img {
 }
 
 .control-action.control-filter,
+.control-action.control-source,
 .control-hint {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 0.7em;
@@ -384,7 +380,12 @@ img {
   width: 19.15rem;
 }
 
+.control-source {
+  width: 19.15rem;
+}
+
 .control-label {
+  white-space: nowrap;
   margin-right: var(--gutter-half);
 }
 
@@ -428,6 +429,7 @@ img {
 }
 
 .radios-label {
+  white-space: nowrap;
   margin-right: var(--gutter);
 }
 
@@ -471,6 +473,19 @@ input[type='radio']:checked::before {
 input[type='radio']:focus {
   outline: max(2px, 0.15em) solid var(--color-focus);
   outline-offset: max(2px, 0.15em);
+}
+
+select {
+  width: 100%;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  padding: 0 1em 0 0;
+  border: none;
+  margin: 0;
+  cursor: inherit;
+  appearance: none;
 }
 
 /* .btn-thumb */

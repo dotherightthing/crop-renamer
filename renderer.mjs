@@ -68,6 +68,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     debounceDelay: 500,
     elements: {
       consoleContainer: document.getElementById('console'),
+      consoleContainerOuter: document.getElementById('console-container'),
       consoleType: document.getElementById('console-type'),
       copyPathInButton: document.getElementById('copy-path-in'),
       copyPathOutButton: document.getElementById('copy-path-out'),
@@ -76,25 +77,37 @@ window.addEventListener('DOMContentLoaded', async () => {
       editWebpageButton: document.getElementById('edit-webpage'),
       exportAllButton: document.getElementById('crop-all'),
       exportSelectedButton: document.getElementById('crop-selected'),
+      fileWebpageButton: document.getElementById('file-webpage-button'),
+      fileWebpageInput: document.getElementById('file-webpage'),
+      filter: document.getElementById('thumb-filename-filter'),
+      filterClearButton: document.getElementById('thumb-filename-filter-clear'),
+      filterSubmitButton: document.getElementById('thumb-filename-filter-submit'),
       focalpointAutoSaveRadios: document.getElementsByName('focalpoint-autosave'),
       focalpointDeleteButton: document.getElementById('delete-focalpoint'),
       focalpointResetButton: document.getElementById('reset-focalpoint'),
       focalpointSaveButton: document.getElementById('save-focalpoint'),
       focalpointXInput: document.getElementById(focalpointXInputId),
       focalpointYInput: document.getElementById(focalpointYInputId),
-      folderInButton: document.getElementById('folder-in'),
-      folderOutButton: document.getElementById('folder-out'),
-      folderOutButtonDependent: document.querySelector('[data-dependent="folder-out"]'),
-      fileWebpageButton: document.getElementById('file-webpage'),
-      folderWebsiteButton: document.getElementById('folder-website'),
+      folderInButton: document.getElementById('folder-in-button'),
+      folderInInput: document.getElementById('folder-in'),
+      folderOutButton: document.getElementById('folder-out-button'),
+      folderOutInput: document.getElementById('folder-out'),
+      folderOutInputDependent: document.querySelector('[data-dependent="folder-out"]'),
+      folderWebsiteButton: document.getElementById('folder-website-button'),
+      folderWebsiteInput: document.getElementById('folder-website'),
       lastCropperImg: document.querySelector('#croppers .img-container-last img'),
       pathInLink: document.getElementById('link-path-in'),
       pathOutLink: document.getElementById('link-path-out'),
+      presetNamesSelect: document.getElementById('preset-names'),
+      settings: document.getElementById('settings'),
+      settingsCloseButton: document.getElementById('settings-close'),
+      settingsOpenButton: document.getElementById('settings-open'),
+      settingsLoadButton: document.getElementById('settings-load'),
+      settingsSaveButton: document.getElementById('settings-save'),
+      presetNameInput: document.getElementById('settings-preset-name'),
       thumbsContainer: document.getElementById('thumbs'),
+      thumbsContainerOuter: document.getElementById('thumbs-container'),
       thumbFileName: document.getElementById('thumb-filename'),
-      filter: document.getElementById('thumb-filename-filter'),
-      filterClearButton: document.getElementById('thumb-filename-filter-clear'),
-      filterSubmitButton: document.getElementById('thumb-filename-filter-submit'),
       window: window
     },
     exportDelay: 750,
@@ -144,6 +157,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       lastCropperImg,
       pathInLink,
       pathOutLink,
+      settingsCloseButton,
+      settingsLoadButton,
+      settingsOpenButton,
+      settingsSaveButton,
       thumbsContainer,
       window
     } = elements;
@@ -165,7 +182,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     exportSelectedButton
       .addEventListener('click', _this.handleExportSelected.bind(_this));
     fileWebpageButton
-      .addEventListener('click', _this.handleFileWebpageChange.bind(_this));
+      .addEventListener('click', _this.handleFileWebpageBrowse.bind(_this));
     filterClearButton
       .addEventListener('click', _this.handleFilterClear.bind(_this));
     filterSubmitButton
@@ -183,13 +200,21 @@ window.addEventListener('DOMContentLoaded', async () => {
     focalpointYInput
       .addEventListener('change', handleFocalpointInputDebounced.bind(_this));
     folderInButton
-      .addEventListener('click', _this.handleFolderInChange.bind(_this));
+      .addEventListener('click', _this.handleFolderInBrowse.bind(_this));
     folderOutButton
-      .addEventListener('click', _this.handleFolderOutChange.bind(_this));
+      .addEventListener('click', _this.handleFolderOutBrowse.bind(_this));
     folderWebsiteButton
-      .addEventListener('click', _this.handleFolderWebsiteChange.bind(_this));
+      .addEventListener('click', _this.handleFolderWebsiteBrowse.bind(_this));
     lastCropperImg
       .addEventListener('ready', _this.handleLastCropperImgReady.bind(_this));
+    settingsOpenButton
+      .addEventListener('click', _this.handleSettingsOpen.bind(_this));
+    settingsCloseButton
+      .addEventListener('click', _this.handleSettingsClose.bind(_this));
+    settingsLoadButton
+      .addEventListener('click', _this.handleSettingsLoad.bind(_this));
+    settingsSaveButton
+      .addEventListener('click', _this.handleSettingsSave.bind(_this));
     pathInLink
       .addEventListener('click', _this.handleLinkToPath.bind(_this));
     pathOutLink

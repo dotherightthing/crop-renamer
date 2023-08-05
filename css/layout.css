@@ -5,20 +5,29 @@
   align-content: center;
 }
 
-/* .l-cols-2 */
+/* .l-cols-3-2 */
 
-.l-cols-2 {
+.l-cols-3-2 {
   display: grid;
   grid-template-columns: auto calc(40% + var(--gutter));
   column-gap: var(--gutter);
 }
 
-.l-cols-2-reverse > *:first-child {
+.l-cols-3-2-reverse > *:first-child {
   order: 2;
 }
 
-.l-cols-2-reverse > *:last-child {
+.l-cols-3-2-reverse > *:last-child {
   order: 1;
+}
+
+/* .l-cols-1-1 */
+
+.l-cols-1-1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--gutter);
+  gap: calc(var(--gutter) * 3);
 }
 
 /* .l-cropper-console */
@@ -124,7 +133,36 @@
 /* .l-title */
 
 .l-title {
-  height: 2rem;
+  height: var(--height-title);
+  align-items: center;
+}
+
+.l-title > :last-child {
+  text-align: right;
+}
+
+/* .l-label-input-button */
+
+.l-label-input-button {
+  display: grid;
+  grid-template-areas:
+    'label label'
+    'input button';
+  grid-template-columns: auto 4rem;
+  gap: var(--gutter);
+}
+
+.l-label-input-button > label {
+  grid-area: label;
+}
+
+.l-label-input-button > input {
+  grid-area: input;
+  width: 100%;
+}
+
+.l-label-input-button > button {
+  grid-area: button;
 }
 
 /* .l-page */

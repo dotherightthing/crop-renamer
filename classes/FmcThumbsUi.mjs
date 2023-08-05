@@ -310,7 +310,7 @@ export class FmcThumbsUi {
 
   /**
    * @function generateThumbsHtml
-   * @summary Inject the thumb images and their scaffolding, then select the first thumb
+   * @summary Inject the thumb images and their scaffolding, then select the selected thumb
    * @param {Array} imagesData - Images data
    * @param {number} selectedThumbIndex - Selected thumb index
    * @memberof FmcThumbsUi
@@ -354,12 +354,7 @@ export class FmcThumbsUi {
       if (i === imagesData.length - 1) {
         document.getElementById(thumbsId).innerHTML = html;
 
-        const thumbsButtons = this.getButtons();
-        const selectedThumb = thumbsButtons[selectedThumbIndex - 1];
-
-        selectedThumb.setAttribute('tabindex', '-1');
-        selectedThumb.focus();
-        FmcUi.emitElementEvent(selectedThumb, 'click', {});
+        this.clickSelectedThumb(selectedThumbIndex);
       }
     });
 
@@ -367,6 +362,22 @@ export class FmcThumbsUi {
       thumbTotal: imagesData.length,
       thumbIndex: selectedThumbIndex - 1
     });
+  }
+
+  /**
+   * @function clickSelectedThumb
+   * @summary Click the selected thumb
+   * @param {number} selectedThumbIndex - Selected thumb index
+   * @memberof FmcThumbsUi
+   */
+  clickSelectedThumb(selectedThumbIndex) {
+    const thumbsButtons = this.getButtons();
+    const selectedThumb = thumbsButtons[selectedThumbIndex - 1];
+
+    selectedThumb.setAttribute('tabindex', '-1');
+    selectedThumb.focus();
+
+    FmcUi.emitElementEvent(selectedThumb, 'click', {});
   }
 
   /**

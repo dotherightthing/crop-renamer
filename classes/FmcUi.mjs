@@ -196,24 +196,22 @@ export class FmcUi {
   /**
    * @function getPathOut
    * @summary Set the target path in the footer
+   * @param {string} imgSrc = Cropper image src
    * @returns {string} pathOut
    * @memberof FmcUi
    */
-  getPathOut() {
+  getPathOut(imgSrc) {
     const {
-      fmcCroppersUiInstance,
       elements
     } = this;
 
     const {
-      folderOutButton
+      folderOutInput
     } = elements;
 
-    const { croppers } = fmcCroppersUiInstance;
-    const { targetFolder } = folderOutButton.dataset;
-    const { src: cropperSrc } = croppers[0].cropperInstance.element;
+    const { targetFolder } = folderOutInput.dataset;
 
-    const fileName = FmcUi.getFileNameFromPath(cropperSrc);
+    const fileName = FmcUi.getFileNameFromPath(imgSrc);
     const pathOut = `${targetFolder}/${fileName}`;
 
     return pathOut;
@@ -241,23 +239,22 @@ export class FmcUi {
   /**
    * @function getPathWebEmbed
    * @summary Set the web embed path in the footer
+   * @param {string} pathOut - Path out
    * @returns {string} pathWebEmbed
    * @memberof FmcUi
    */
-  async getPathWebEmbed() {
+  async getPathWebEmbed(pathOut) {
     const {
       elements
     } = this;
 
     const {
-      fileWebpageButton,
-      folderWebsiteButton
+      fileWebpageInput,
+      folderWebsiteInput
     } = elements;
 
-    const { targetFolder: pathWebEmbed } = fileWebpageButton.dataset;
-    const { targetFolder: pathWebsite } = folderWebsiteButton.dataset;
-
-    const pathOut = this.getPathOut();
+    const { targetFolder: pathWebEmbed } = fileWebpageInput.dataset;
+    const { targetFolder: pathWebsite } = folderWebsiteInput.dataset;
 
     let path = '';
 
@@ -289,9 +286,12 @@ export class FmcUi {
       focalpointYInput
     } = elements;
 
-    window.electronAPI.storeSet({
-      key: 'focalpointAutoSave',
-      value: event.target.value === 'on'
+    await window.electronAPI.setKeys({
+      keyValuePairs: [
+        {
+          focalpointAutoSave: event.target.value === 'on'
+        }
+      ]
     });
 
     const autosaveOn = event.target.value;
@@ -343,21 +343,12 @@ export class FmcUi {
     } = this;
 
     const {
-      fileWebpageButton,
-      folderWebsiteButton
+      fileWebpageInput,
+      folderWebsiteInput
     } = elements;
 
-    const {
-      dataset: {
-        targetFolder
-      }
-    } = folderWebsiteButton;
-
-    const {
-      dataset: {
-        targetFile
-      }
-    } = fileWebpageButton;
+    const { targetFolder } = folderWebsiteInput.dataset;
+    const { targetFile } = fileWebpageInput.dataset;
 
     const msg = await window.electronAPI.openInEditor({
       editorCommand: 'code', // see https://code.visualstudio.com/docs/editor/command-line
@@ -423,31 +414,50 @@ export class FmcUi {
     } = this;
 
     const {
-      folderOutButton
+      folderOutInput
     } = elements;
 
-    const { dataset } = folderOutButton;
-    const { targetFolder } = dataset;
+    const { croppers } = fmcCroppersUiInstance;
+    const { src } = croppers[0].cropperInstance.element;
+    const { targetFolder } = folderOutInput.dataset;
 
     const baseExportPath = await fmcCroppersUiInstance.resizeAndCropImage(targetFolder);
+    const pathOut = this.getPathOut(src);
 
-    this.setPaths(baseExportPath, false);
+    await this.setPaths(baseExportPath, pathOut, false);
 
     return baseExportPath;
   }
 
   /**
-   * @function handleFileWebpageChange
+   * @function handleFileWebpageBrowse
+   * @param {object|null} event - Click event
+   * @param {boolean} restore - Restore settings from store
    * @memberof FmcUi
    */
-  async handleFileWebpageChange() {
+  async handleFileWebpageBrowse(event, restore = false) {
+    const {
+      elements
+    } = this;
+
+    const {
+      fileWebpageInput
+    } = elements;
+
     const { fileName, filePath, folderPath } = await window.electronAPI.selectFile({
       dialogTitle: 'Webpage file',
-      restore: false,
+      restore,
       storeKey: 'fileWebpage'
     });
 
-    this.setFileWebpage({ fileName, filePath, folderPath });
+    // if folder select was cancelled
+    if ((typeof fileName === 'undefined') || (typeof filePath === 'undefined')) {
+      return;
+    }
+
+    fileWebpageInput.dataset.targetFile = filePath;
+    fileWebpageInput.dataset.targetFolder = folderPath;
+    fileWebpageInput.value = fileName;
   }
 
   /**
@@ -611,48 +621,137 @@ export class FmcUi {
   }
 
   /**
-   * @function handleFolderInChange
+   * @function handleFolderInBrowse
+   * @summary Called on 'Browse' click, handleSettingsLoad, restoreSettings
+   * @param {object|null} event - Click event
+   * @param {boolean} restore - Restore settings from store
    * @memberof FmcUi
    */
-  async handleFolderInChange() {
+  async handleFolderInBrowse(event, restore = false) {
+    const {
+      fmcCroppersUiInstance,
+      fmcThumbsUiInstance,
+      elements,
+      selectors
+    } = this;
+
+    const {
+      folderInInput
+    } = elements;
+
+    const {
+      thumbImgClass
+    } = selectors;
+
+    // folderPath = targetFolder
     const { folderName, folderPath, imagesData } = await window.electronAPI.selectFolder({
       dialogTitle: 'Source folder',
       retrieveImagesData: true,
-      restore: false,
+      restore, // loads folderName and folderPath from preset
       storeKey: 'folderIn'
     });
 
-    this.setFolderIn({ folderName, folderPath, imagesData });
+    // if folder select was cancelled
+    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
+      return;
+    }
+
+    // if 'Browse' was clicked
+    // capture data with the field (inside the 'Open Settings' dialog) until it is saved to a preset
+    if (!restore) {
+      folderInInput.dataset.targetFolder = folderPath;
+      folderInInput.value = folderName;
+    }
+
+    // add thumbs to UI
+    fmcThumbsUiInstance.generateThumbsHtml(imagesData, 1);
+
+    const thumbButtons = fmcThumbsUiInstance.getButtons();
+    const thumbImgs = document.querySelectorAll(`.${thumbImgClass}`);
+
+    // add focalpoint overlays to thumbs
+    setTimeout(() => {
+      thumbButtons.forEach((thumbButton, index) => {
+        const thumbImg = thumbImgs[index];
+        const { src } = thumbImg;
+        const { imagePercentX, imagePercentY } = fmcCroppersUiInstance.getImagePercentXYFromImage(src);
+
+        fmcThumbsUiInstance.setCssImagePercentXY({
+          thumbButton,
+          thumbImg,
+          thumbIndex: index + 1,
+          imagePercentX,
+          imagePercentY
+        });
+      });
+    }, 500);
   }
 
   /**
-   * @function handleFolderOutChange
+   * @function handleFolderOutBrowse
+   * @param {object|null} event - Click event
+   * @param {boolean} restore - Restore settings from store
    * @memberof FmcUi
    */
-  async handleFolderOutChange() {
+  async handleFolderOutBrowse(event, restore = false) {
+    const {
+      elements
+    } = this;
+
+    const {
+      folderOutInput,
+      folderOutInputDependent
+    } = elements;
+
     const { folderName, folderPath } = await window.electronAPI.selectFolder({
       dialogTitle: 'Export folder',
       retrieveImagesData: false,
-      restore: false,
+      restore,
       storeKey: 'folderOut'
     });
 
-    this.setFolderOut({ folderName, folderPath });
+    // if folder select was cancelled
+    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
+      return;
+    }
+
+    folderOutInput.dataset.targetFolder = folderPath;
+    folderOutInput.value = folderName;
+
+    // enables focalpoint controls
+    // TODO controls are enabled before cropper is ready
+    folderOutInputDependent.removeAttribute('disabled');
   }
 
   /**
-   * @function handleFolderWebsiteChange
+   * @function handleFolderWebsiteBrowse
+   * @param {object|null} event - Click event
+   * @param {boolean} restore - Restore settings from store
    * @memberof FmcUi
    */
-  async handleFolderWebsiteChange() {
+  async handleFolderWebsiteBrowse(event, restore = false) {
+    const {
+      elements
+    } = this;
+
+    const {
+      folderWebsiteInput
+    } = elements;
+
     const { folderName, folderPath } = await window.electronAPI.selectFolder({
       dialogTitle: 'Website folder',
       retrieveImagesData: false,
-      restore: false,
+      restore,
       storeKey: 'folderWebsite'
     });
 
-    this.setFolderWebsite({ folderName, folderPath });
+    // if folder select was cancelled
+    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
+      return;
+    }
+
+    folderWebsiteInput.dataset.targetFolder = folderPath;
+    folderWebsiteInput.value = folderName;
   }
 
   /**
@@ -660,7 +759,7 @@ export class FmcUi {
    * @param {object} event - imageRenamed event
    * @memberof FmcUi
    */
-  handleImageRenamed(event) {
+  async handleImageRenamed(event) {
     const {
       fmcCroppersUiInstance,
       fmcThumbsUiInstance,
@@ -695,7 +794,9 @@ export class FmcUi {
       imagePercentY
     });
 
-    this.setPaths(src);
+    const pathOut = this.getPathOut(src);
+
+    await this.setPaths(src, pathOut);
   }
 
   /**
@@ -739,6 +840,224 @@ export class FmcUi {
         href
       });
     }
+  }
+
+  /**
+   * @function handleSettingsClose
+   * @memberof FmcUi
+   */
+  handleSettingsClose() {
+    const {
+      elements
+    } = this;
+
+    const {
+      consoleContainerOuter,
+      settings,
+      thumbsContainerOuter
+    } = elements;
+
+    thumbsContainerOuter.appendChild(consoleContainerOuter);
+
+    settings.close();
+  }
+
+  /**
+   * @function handleSettingsLoad
+   * @memberof FmcUi
+   */
+  async handleSettingsLoad() {
+    const {
+      elements,
+      fmcThumbsUiInstance
+    } = this;
+
+    const {
+      fileWebpageInput,
+      folderInInput,
+      folderOutInput,
+      folderWebsiteInput,
+      presetNameInput,
+      presetNamesSelect
+    } = elements;
+
+    let presetName = presetNamesSelect.value;
+
+    if (presetName !== '') {
+      await window.electronAPI.setActivePresetName({
+        presetName
+      });
+    }
+
+    try {
+      // gets the active preset set above or one previously set
+      const preset = await window.electronAPI.getActivePreset(null);
+
+      ({ name: presetName } = preset);
+
+      const {
+        fileWebpage,
+        folderIn,
+        folderOut,
+        folderWebsite,
+        name
+      } = preset;
+
+      fileWebpageInput.dataset.targetFile = fileWebpage.targetFile;
+      fileWebpageInput.dataset.targetFolder = fileWebpage.targetFolder;
+      fileWebpageInput.value = fileWebpage.value;
+
+      folderInInput.dataset.targetFolder = folderIn.targetFolder;
+      folderInInput.value = folderIn.value;
+
+      folderOutInput.dataset.targetFolder = folderOut.targetFolder; // aka handleFolderOutBrowse folderPath
+      folderOutInput.value = folderOut.value; // aka handleFolderOutBrowse folderName
+      // folderOutInputDependent.removeAttribute('disabled');
+
+      folderWebsiteInput.dataset.targetFolder = folderWebsite.targetFolder;
+      folderWebsiteInput.value = folderWebsite.value;
+
+      presetNameInput.value = name;
+
+      const restore = true;
+
+      await this.handleFolderInBrowse(null, restore);
+      await this.handleFolderOutBrowse(null, restore);
+      await this.handleFolderWebsiteBrowse(null, restore);
+      await this.handleFileWebpageBrowse(null, restore);
+
+      const { focalpointAutoSave: storedFocalpointAutoSave } = await window.electronAPI.getKeys({
+        keys: [ 'focalpointAutoSave' ]
+      });
+
+      this.setAutoSave(storedFocalpointAutoSave);
+
+      fmcThumbsUiInstance.clickSelectedThumb(1);
+
+      FmcUi.emitElementEvent(window, 'message', {
+        msg: `Loaded preset ${name}`,
+        type: 'success'
+      });
+    } catch (error) {
+      FmcUi.emitElementEvent(window, 'message', {
+        msg: 'No active preset to load',
+        type: 'info'
+      });
+    }
+  }
+
+  /**
+   * @function handleSettingsOpen
+   * @memberof FmcUi
+   */
+  async handleSettingsOpen() {
+    const {
+      elements
+    } = this;
+
+    const {
+      consoleContainerOuter,
+      settings
+    } = elements;
+
+    await this.populateSettingsPresets();
+    await this.selectActivePreset();
+
+    settings.appendChild(consoleContainerOuter);
+
+    settings.showModal();
+  }
+
+  /**
+   * @function selectActivePreset
+   * @summary Select the active preset from the dropdown in the Settings modal
+   * @todo Consider renaming to selectStoredActivePreset ?
+   * @memberof FmcUi
+   */
+  async selectActivePreset() {
+    const {
+      elements
+    } = this;
+
+    const {
+      presetNamesSelect
+    } = elements;
+
+    const preset = await window.electronAPI.getActivePreset(null);
+
+    if (typeof preset === 'undefined') {
+      FmcUi.emitElementEvent(window, 'message', {
+        msg: 'No active preset to select',
+        type: 'info'
+      });
+
+      return;
+    }
+
+    const { name } = preset;
+
+    // select the preset
+    presetNamesSelect.value = name;
+  }
+
+  /**
+   * @function handleSettingsSave
+   * @memberof FmcUi
+   */
+  async handleSettingsSave() {
+    const {
+      elements,
+      fmcThumbsUiInstance
+    } = this;
+
+    const {
+      fileWebpageInput,
+      folderInInput,
+      folderOutInput,
+      folderWebsiteInput,
+      presetNameInput
+    } = elements;
+
+    const fileWebpage = {
+      targetFile: fileWebpageInput.dataset.targetFile,
+      targetFolder: fileWebpageInput.dataset.targetFolder,
+      value: fileWebpageInput.value
+    };
+
+    const folderIn = {
+      targetFolder: folderInInput.dataset.targetFolder,
+      value: folderInInput.value // folderName
+    };
+
+    const folderOut = {
+      targetFolder: folderOutInput.dataset.targetFolder,
+      value: folderOutInput.value
+    };
+
+    const folderWebsite = {
+      targetFolder: folderWebsiteInput.dataset.targetFolder,
+      value: folderWebsiteInput.value
+    };
+
+    const name = presetNameInput.value;
+
+    const msgObj = await window.electronAPI.setPreset({
+      fileWebpage,
+      folderIn,
+      folderOut,
+      folderWebsite,
+      name
+    });
+
+    FmcUi.emitElementEvent(window, 'message', msgObj);
+
+    await window.electronAPI.setActivePresetName({
+      presetName: name
+    });
+
+    fmcThumbsUiInstance.clickSelectedThumb(1);
+
+    await this.populateSettingsPresets(name);
   }
 
   /**
@@ -789,18 +1108,19 @@ export class FmcUi {
     clickedButton.setAttribute('tabindex', '0');
     clickedButton.focus();
 
-    setTimeout(() => {
-      fmcThumbsUiInstance.displayCount({
-        thumbIndex: clickedButtonIndex
-      });
+    await new Promise(resolve => {
+      setTimeout(async () => {
+        fmcThumbsUiInstance.displayCount({
+          thumbIndex: clickedButtonIndex
+        });
 
-      window.electronAPI.storeSet({
-        key: 'thumbIndex',
-        value: clickedButtonIndex
-      });
-    }, 500);
+        resolve();
+      }, 500);
+    });
 
-    this.setPaths(newImageSrc);
+    const pathOut = this.getPathOut(newImageSrc);
+
+    await this.setPaths(newImageSrc, pathOut);
 
     // calls fmcCroppersUiInstance.init
     fmcCroppersUiInstance.changeSourceImage(newImageSrc);
@@ -903,47 +1223,37 @@ export class FmcUi {
   }
 
   /**
+   * @function populateSettingsPresets
+   * @param {string} selectName - Name of preset to select
+   * @memberof FmcUi
+   */
+  async populateSettingsPresets(selectName = 'default') {
+    const {
+      elements
+    } = this;
+
+    const {
+      presetNamesSelect
+    } = elements;
+
+    const presetNames = await window.electronAPI.getPresetNames();
+
+    const optionsHtml = presetNames.map(item => `<option value="${item}">${item}</option>`).join('');
+
+    presetNamesSelect.innerHTML = '<option value="default">Select a preset</option>' + optionsHtml;
+
+    // select item
+    presetNamesSelect.value = selectName;
+  }
+
+  /**
    * @function restoreSettings
    * @summary Restore previous stored settings if they exist
    * @memberof FmcUi
    */
   async restoreSettings() {
-    const storedFolderIn = await window.electronAPI.selectFolder({
-      dialogTitle: 'Source folder',
-      retrieveImagesData: true,
-      restore: true,
-      storeKey: 'folderIn'
-    });
-
-    const storedFolderOut = await window.electronAPI.selectFolder({
-      dialogTitle: 'Export folder',
-      retrieveImagesData: false,
-      restore: true,
-      storeKey: 'folderOut'
-    });
-
-    const storedFileWebpage = await window.electronAPI.selectFile({
-      dialogTitle: 'Webpage folder',
-      restore: true,
-      storeKey: 'fileWebpage'
-    });
-
-    const storedFolderWebsite = await window.electronAPI.selectFolder({
-      dialogTitle: 'Website folder',
-      retrieveImagesData: false,
-      restore: true,
-      storeKey: 'folderWebsite'
-    });
-
-    const storedFocalpointAutoSave = await window.electronAPI.storeGet({
-      key: 'focalpointAutoSave'
-    });
-
-    this.setAutoSave(storedFocalpointAutoSave);
-    this.setFolderIn(storedFolderIn);
-    this.setFolderOut(storedFolderOut);
-    this.setFileWebpage(storedFileWebpage);
-    this.setFolderWebsite(storedFolderWebsite);
+    await this.selectActivePreset();
+    await this.handleSettingsLoad();
   }
 
   /**
@@ -999,176 +1309,14 @@ export class FmcUi {
   }
 
   /**
-   * @function setFileWebpage
-   * @summary Set the webpage file
-   * @param {object} args - Arguments
-   * @param {string} args.fileName - File name
-   * @param {string} args.filePath - File path
-   * @param {string} args.folderPath - Folder path
-   * @memberof FmcUi
-   */
-  setFileWebpage({ fileName, filePath, folderPath }) {
-    const {
-      elements,
-      selectors
-    } = this;
-
-    const {
-      fileWebpageButton
-    } = elements;
-
-    const {
-      controlHintClass
-    } = selectors;
-
-    // if folder select was cancelled
-    if ((typeof fileName === 'undefined') || (typeof filePath === 'undefined')) {
-      return;
-    }
-
-    fileWebpageButton.dataset.targetFile = filePath;
-    fileWebpageButton.dataset.targetFolder = folderPath;
-    fileWebpageButton.dataset.hint = true;
-    fileWebpageButton.querySelector(`.${controlHintClass}`).textContent = fileName;
-  }
-
-  /**
-   * @function setFolderIn
-   * @summary Set the source folder
-   * @param {object} args - Arguments
-   * @param {string} args.folderName - Folder name
-   * @param {string} args.folderPath - Folder path
-   * @param {Array} args.imagesData - Images data
-   * @memberof FmcUi
-   */
-  async setFolderIn({ folderName, folderPath, imagesData }) {
-    const {
-      fmcCroppersUiInstance,
-      fmcThumbsUiInstance,
-      elements,
-      selectors
-    } = this;
-
-    const {
-      folderInButton
-    } = elements;
-
-    const {
-      controlHintClass,
-      thumbImgClass
-    } = selectors;
-
-    // if folder select was cancelled
-    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined') || (typeof imagesData === 'undefined')) {
-      return;
-    }
-
-    folderInButton.dataset.hint = true;
-    folderInButton.querySelector(`.${controlHintClass}`).textContent = folderName;
-
-    const storedThumbIndex = await window.electronAPI.storeGet({
-      key: 'thumbIndex'
-    });
-
-    const thumbIndex = (typeof storedThumbIndex !== 'undefined') ? storedThumbIndex : 1;
-
-    fmcThumbsUiInstance.generateThumbsHtml(imagesData, thumbIndex);
-
-    const thumbButtons = fmcThumbsUiInstance.getButtons();
-    const thumbImgs = document.querySelectorAll(`.${thumbImgClass}`);
-
-    setTimeout(() => {
-      thumbButtons.forEach((thumbButton, index) => {
-        const thumbImg = thumbImgs[index];
-        const { src } = thumbImg;
-        const { imagePercentX, imagePercentY } = fmcCroppersUiInstance.getImagePercentXYFromImage(src);
-
-        fmcThumbsUiInstance.setCssImagePercentXY({
-          thumbButton,
-          thumbImg,
-          thumbIndex: index + 1,
-          imagePercentX,
-          imagePercentY
-        });
-      });
-    }, 500);
-  }
-
-  /**
-   * @function setFolderOut
-   * @summary Set the target folder
-   * @param {object} args - Arguments
-   * @param {string} args.folderName - Folder name
-   * @param {string} args.folderPath - Folder path
-   * @memberof FmcUi
-   */
-  setFolderOut({ folderName, folderPath }) {
-    const {
-      elements,
-      selectors
-    } = this;
-
-    const {
-      folderOutButton,
-      folderOutButtonDependent
-    } = elements;
-
-    const {
-      controlHintClass
-    } = selectors;
-
-    // if folder select was cancelled
-    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
-      return;
-    }
-
-    folderOutButton.dataset.targetFolder = folderPath;
-    folderOutButton.dataset.hint = true;
-    folderOutButton.querySelector(`.${controlHintClass}`).textContent = folderName;
-
-    folderOutButtonDependent.removeAttribute('disabled');
-  }
-
-  /**
-   * @function setFolderWebsite
-   * @summary Set the webpage folder
-   * @param {object} args - Arguments
-   * @param {string} args.folderName - Folder name
-   * @param {string} args.folderPath - Folder path
-   * @memberof FmcUi
-   */
-  setFolderWebsite({ folderName, folderPath }) {
-    const {
-      elements,
-      selectors
-    } = this;
-
-    const {
-      folderWebsiteButton
-    } = elements;
-
-    const {
-      controlHintClass
-    } = selectors;
-
-    // if folder select was cancelled
-    if ((typeof folderName === 'undefined') || (typeof folderPath === 'undefined')) {
-      return;
-    }
-
-    folderWebsiteButton.dataset.targetFolder = folderPath;
-    folderWebsiteButton.dataset.hint = true;
-    folderWebsiteButton.querySelector(`.${controlHintClass}`).textContent = folderName;
-  }
-
-  /**
    * @function setPaths
    * @summary Update attributes in the path links and buttons
    * @param {string} src - Image src
+   * @param {string} pathOut - Path out
    * @param {boolean} checkPathExists - Check whether the baseExport path exists
    * @memberof FmcUi
    */
-  setPaths(src, checkPathExists = true) {
+  async setPaths(src, pathOut, checkPathExists = true) {
     const {
       elements
     } = this;
@@ -1178,7 +1326,7 @@ export class FmcUi {
       copyPathOutButton,
       copyPathWebEmbedButton,
       pathInLink,
-      pathOutLink,
+      pathOutLink, // "Copy base export path"
       thumbFileName
     } = elements;
 
@@ -1196,36 +1344,39 @@ export class FmcUi {
 
     thumbFileName.textContent = fileName;
 
-    setTimeout(async () => {
-      const pathOut = this.getPathOut();
+    await new Promise(resolve => {
+      // timeout prevents generic crops
+      setTimeout(async () => {
+        const pathOutExists = checkPathExists ? await window.electronAPI.pathExists({
+          path: pathOut
+        }) : true;
 
-      const pathOutExists = checkPathExists ? await window.electronAPI.pathExists({
-        path: pathOut
-      }) : true;
+        if (pathOutExists) {
+          const pathOutSafe = this.srcSafe(pathOut);
+          const pathWebEmbed = await this.getPathWebEmbed(pathOut);
+          const pathWebEmbedSafe = this.srcSafe(pathWebEmbed);
 
-      if (pathOutExists) {
-        const pathOutSafe = this.srcSafe(pathOut);
-        const pathWebEmbed = await this.getPathWebEmbed();
-        const pathWebEmbedSafe = this.srcSafe(pathWebEmbed);
+          this.enable(copyPathOutButton, {
+            title: pathOutSafe
+          });
 
-        this.enable(copyPathOutButton, {
-          title: pathOutSafe
-        });
+          this.enable(copyPathWebEmbedButton, {
+            title: pathWebEmbedSafe
+          });
 
-        this.enable(copyPathWebEmbedButton, {
-          title: pathWebEmbedSafe
-        });
+          this.enable(pathOutLink, {
+            href: pathOutSafe,
+            title: pathOutSafe
+          });
+        } else {
+          this.disable(copyPathOutButton);
+          this.disable(copyPathWebEmbedButton);
+          this.disable(pathOutLink);
+        }
 
-        this.enable(pathOutLink, {
-          href: pathOutSafe,
-          title: pathOutSafe
-        });
-      } else {
-        this.disable(copyPathOutButton);
-        this.disable(copyPathWebEmbedButton);
-        this.disable(pathOutLink);
-      }
-    }, 500);
+        resolve();
+      }, 500);
+    });
   }
 
   /**
