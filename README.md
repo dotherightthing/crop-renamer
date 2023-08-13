@@ -2,21 +2,23 @@
 
 <img src="screenshot-1.png">
 
+<img src="screenshot-2.png">
+
 ## Features
 
 * **Preview** - Single window containing multiple instances of [cropperjs](https://github.com/fengyuanchen/cropperjs) - one master cropper and one or more slave croppers with user-defined `exportWidth` and `exportHeight` proportions
 * **Load** - Leverage [Electron](https://www.electronjs.org/) to allow for loading of folders of images
 * **Filter** - Filter thumbnails by partial filename
 * **Set focalpoint** - Click the master cropper image or use the number inputs to set a focalpoint, slave croppers' crop boxes will automatically follow
-* **Rounding** - Initial focalpoint uses unrounded values, after a visual pause these are rounded to integers for easier storage
+* **Rounding** - Round focalpoint XY to integers for easier storage
 * **Storage** - Toggle on auto-save to write a non-default focalpoint to the image filename as a resolution-independent percentage of its width and height (integers), e.g. `foo__[40%,37%].jpg`
-* **Presets** - Store multiple locations in userData (macOS: `/Users/NAME/Library/Application Support/focalpoint-multi-cropper/user-preferences.json`)
 * **Reset** - Remove user changes and reapply the focalpoint stored in the image filename, or the defaults
 * **Delete** - Delete the focalpoint and remove non-default focalpoint from the image filename
 * **Resize & Crop** - Use [gm](https://github.com/aheckmann/gm) to `resizeAndCrop` from the slave croppers' crop boxes, and `resize` from the hidden non-cropper inclusions
 * **Locate** - Easily open the source and target image folders to keep track of where files are
 * **Embed** - Copy paths including a relative link suitable for pasting into a Markdown document or webpage, optionally output a target cross on the image
-* **Restore** - State is restored when reopening the Electron app
+* **Restore** - Settings are restored when reopening the Electron app
+* **Presets** - Store a batch of settings in userData (macOS: `/Users/NAME/Library/Application Support/focalpoint-multi-cropper/user-preferences.json`)
 
 ## Usage
 
@@ -70,7 +72,7 @@ document.getElementById('croppers').fmcCroppersUi
 
 I needed a tool to art-direct thousands of images for my bicycle touring blog.
 
-Previously I've used WordPress with Imgix. I am moving to non-subscription based systems as I no longer have the income to support these.
+Previously I've used WordPress with Imgix. I'm now moving away from subscription-based systems.
 
 I will use this app to generate image URLs for the next version of my blog which runs on Vuepress.
 
