@@ -8,7 +8,7 @@ const fs = require('fs');
 const gm = require('gm').subClass({ imageMagick: '7+' });
 const path = require('path');
 const process = require('process');
-const Store = require('./Store.cjs');
+const FmcStore = require('./FmcStore.cjs');
 
 const { clipboard, dialog, shell } = require('electron');
 const { promises: Fs } = require('fs');
@@ -611,7 +611,7 @@ module.exports = class FmcFile {
     let filePath;
     let folderPath;
 
-    const preset = await Store.getActivePreset(null) || {};
+    const preset = await FmcStore.getActivePreset(null) || {};
     const storedData = preset[storeKey] || {};
 
     if (restore) {
@@ -696,7 +696,7 @@ module.exports = class FmcFile {
       storeKey
     } = data;
 
-    const preset = await Store.getActivePreset(null) || {};
+    const preset = await FmcStore.getActivePreset(null) || {};
     const retrievedData = {};
     const storedData = preset[storeKey] || {};
 
