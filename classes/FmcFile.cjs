@@ -597,6 +597,7 @@ module.exports = class FmcFile {
    * @param {string} args.storeKey - Store return value with this key
    * @returns {object} { fileName, filePath, folderPath }
    * @memberof FmcFile
+   * @todo Merge with selectFile
    * @static
    */
   static async selectFileDialog({
@@ -605,28 +606,26 @@ module.exports = class FmcFile {
     restore,
     storeKey
   }) {
-    // start TODO move to selectFile method
-
-    let fileName;
-    let filePath;
-    let folderPath;
-
     const preset = await FmcStore.getActivePreset(null) || {};
+    const retrievedData = {};
     const storedData = preset[storeKey] || {};
 
+    const {
+      targetFolder // folderPath
+    } = storedData;
+
     if (restore) {
+      // don't open dialog
       return {
-        fileName: storedData.value || '',
-        filePath: storedData.targetFile || '',
-        folderPath: storedData.targetFolder || ''
+        fileName: storedData.value,
+        filePath: storedData.targetFile,
+        folderPath: storedData.targetFolder
       };
     }
 
-    // end TODO
-
     const { canceled, filePaths } = await dialog.showOpenDialog({
       buttonLabel: dialogButtonLabel,
-      defaultPath: filePath,
+      defaultPath: targetFolder,
       message: dialogTitle,
       properties: [
         'openFile',
@@ -636,22 +635,21 @@ module.exports = class FmcFile {
     });
 
     if (!canceled && filePaths.length) {
-      filePath = filePaths[0];
+      retrievedData.filePath = filePaths[0];
 
-      const pathSeparator = filePath.lastIndexOf('/');
+      const pathSeparator = retrievedData.filePath.lastIndexOf('/');
 
-      fileName = filePath.slice(pathSeparator + 1);
+      retrievedData.fileName = retrievedData.filePath.slice(pathSeparator + 1);
+      retrievedData.folderPath = path.dirname(retrievedData.filePath);
 
-      folderPath = path.dirname(filePath);
-
-      return {
-        fileName,
-        filePath,
-        folderPath
-      };
+      return retrievedData;
     }
 
-    return {};
+    return {
+      fileName: storedData.value,
+      filePath: storedData.targetFile,
+      folderPath: storedData.targetFolder
+    };
   }
 
   /**
@@ -706,6 +704,7 @@ module.exports = class FmcFile {
     } = storedData;
 
     if (restore) {
+      // TODO merge into conditional below?
       if ((typeof value === 'undefined') || (typeof targetFolder === 'undefined')) {
         return {
           folderName: storedData.value,
