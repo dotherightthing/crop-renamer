@@ -21,6 +21,7 @@
   --color-checked-off: rgba(255, 0, 0, 1);
   --color-focus: rgba(255, 200, 0, 1);
   --color-input: var(--color-primary);
+  --color-input-readonly: var(--color-secondary);
 
   --color-bg-darker: rgba(0, 0, 0, .1);
   --color-bg-image: rgba(134, 134, 134, 1);

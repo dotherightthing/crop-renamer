@@ -102,6 +102,7 @@ app.whenReady().then(() => {
   ipcMain.handle('FmcStore:getKeys', FmcStore.getKeys);
   ipcMain.handle('FmcStore:getPreset', FmcStore.getPreset);
   ipcMain.handle('FmcStore:getPresetNames', FmcStore.getPresetNames);
+  ipcMain.handle('FmcStore:getStoreFilePath', FmcStore.getStoreFilePath);
   ipcMain.handle('FmcStore:setActivePresetName', FmcStore.setActivePresetName);
   ipcMain.handle('FmcStore:setPreset', FmcStore.setPreset);
 

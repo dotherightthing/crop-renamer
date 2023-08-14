@@ -334,6 +334,35 @@ export class FmcUi {
   }
 
   /**
+   * @function handleEditPresets
+   * @memberof FmcUi
+   */
+  async handleEditPresets() {
+    const {
+      elements
+    } = this;
+
+    const {
+      openPresetsInput
+    } = elements;
+
+    const filePath = openPresetsInput.value;
+    const pathSeparator = filePath.lastIndexOf('/');
+    const folderPath = filePath.slice(0, pathSeparator);
+
+    const msg = await window.electronAPI.openInEditor({
+      editorCommand: 'code', // see https://code.visualstudio.com/docs/editor/command-line
+      fileDescription: 'webpage',
+      folderPath,
+      filePath
+    });
+
+    FmcUi.emitElementEvent(window, 'message', {
+      msg
+    });
+  }
+
+  /**
    * @function handleEditWebpage
    * @memberof FmcUi
    */
@@ -957,11 +986,14 @@ export class FmcUi {
 
     const {
       consoleContainerOuter,
+      openPresetsInput,
       settings
     } = elements;
 
     await this.populateSettingsPresets();
     await this.selectActivePreset();
+
+    openPresetsInput.value = await window.electronAPI.getStoreFilePath();
 
     settings.appendChild(consoleContainerOuter);
 

@@ -33,6 +33,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getKeys: (data) => ipcRenderer.invoke('FmcStore:getKeys', data),
   getPreset: (data) => ipcRenderer.invoke('FmcStore:getPreset', data),
   getPresetNames: (data) => ipcRenderer.invoke('FmcStore:getPresetNames', data),
+  getStoreFilePath: (data) => ipcRenderer.invoke('FmcStore:getStoreFilePath', data),
   setActivePresetName: (data) => ipcRenderer.invoke('FmcStore:setActivePresetName', data),
   setKeys: (data) => ipcRenderer.invoke('FmcStore:setKeys', data),
   setPreset: (data) => ipcRenderer.invoke('FmcStore:setPreset', data)

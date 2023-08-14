@@ -16,7 +16,7 @@ class FmcStore {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData'); // Users/NAME/Library/Application\ Support/focalpoint-multi-cropper
 
     // We'll use the `configName` property to set the file name and path.join to bring it all together as a string
-    this.path = path.join(userDataPath, opts.configName + '.json');
+    this.path = path.join(userDataPath, `${opts.configName}.json`);
 
     this.data = FmcStore.parseDataFile(this.path, opts.defaults);
   }
@@ -179,6 +179,17 @@ class FmcStore {
     }
 
     return presetNames;
+  }
+
+  /**
+   * @function getStoreFilePath
+   * @param {event|null} event - FmcStore:getStoreFilePath event captured by ipcMain.handle
+   * @returns {string} storeFilePath
+   * @memberof FmcStore
+   * @static
+   */
+  static async getStoreFilePath(event) { // eslint-disable-line no-unused-vars
+    return store.path;
   }
 
   /**
@@ -345,9 +356,11 @@ class FmcStore {
   }
 }
 
+// used internally to set and get data
 const store = new FmcStore({
   configName: 'user-preferences',
   defaults: {}
 });
 
+// used externally to access static methods
 module.exports = FmcStore;

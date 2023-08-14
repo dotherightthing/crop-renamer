@@ -77,6 +77,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       editWebpageButton: document.getElementById('edit-webpage'),
       exportAllButton: document.getElementById('crop-all'),
       exportSelectedButton: document.getElementById('crop-selected'),
+      openPresetsButton: document.getElementById('open-presets-button'),
+      openPresetsInput: document.getElementById('open-presets'),
       fileWebpageButton: document.getElementById('file-webpage-button'),
       fileWebpageInput: document.getElementById('file-webpage'),
       filter: document.getElementById('thumb-filename-filter'),
@@ -142,6 +144,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       editWebpageButton,
       exportAllButton,
       exportSelectedButton,
+      openPresetsButton,
       fileWebpageButton,
       filterClearButton,
       filterSubmitButton,
@@ -177,6 +180,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       .addEventListener('imageRenamed', _this.handleImageRenamed.bind(_this));
     editWebpageButton
       .addEventListener('click', _this.handleEditWebpage.bind(_this));
+    openPresetsButton
+      .addEventListener('click', _this.handleEditPresets.bind(_this));
     exportAllButton
       .addEventListener('click', _this.handleExportAll.bind(_this));
     exportSelectedButton
