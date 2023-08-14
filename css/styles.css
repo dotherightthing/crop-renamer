@@ -41,6 +41,17 @@ fieldset {
   margin: 0;
 }
 
+.h-preset-name {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: var(--text-small);
+  font-weight: normal;
+  margin: 0;
+}
+
+.h-preset-name > span {
+  color: var(--color-secondary);
+}
+
 .h-medium {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: var(--text-medium);

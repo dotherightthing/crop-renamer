@@ -67,6 +67,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const fmcUi = new FmcUi({
     debounceDelay: 500,
     elements: {
+      activePresetName: document.getElementById('active-preset-name'),
       consoleContainer: document.getElementById('console'),
       consoleContainerOuter: document.getElementById('console-container'),
       consoleType: document.getElementById('console-type'),

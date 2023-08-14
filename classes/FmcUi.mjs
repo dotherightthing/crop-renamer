@@ -902,6 +902,7 @@ export class FmcUi {
     } = this;
 
     const {
+      activePresetName,
       fileWebpageInput,
       folderInInput,
       folderOutInput,
@@ -916,6 +917,8 @@ export class FmcUi {
       await window.electronAPI.setActivePresetName({
         presetName
       });
+
+      activePresetName.textContent = presetName;
     }
 
     try {
@@ -923,6 +926,8 @@ export class FmcUi {
       const preset = await window.electronAPI.getActivePreset(null);
 
       ({ name: presetName } = preset);
+
+      activePresetName.textContent = presetName;
 
       const {
         fileWebpage,

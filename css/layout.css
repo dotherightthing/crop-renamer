@@ -141,6 +141,10 @@
   text-align: right;
 }
 
+.l-title > :last-child .control-action {
+  margin-left: auto;
+}
+
 /* .l-label-input-button */
 
 .l-label-input-button {
