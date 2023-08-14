@@ -574,38 +574,6 @@ module.exports = class FmcFile {
       storeKey
     } = data;
 
-    const { fileName, filePath, folderPath } = await FmcFile.selectFileDialog({
-      dialogTitle,
-      dialogButtonLabel: 'Select file',
-      restore,
-      storeKey
-    });
-
-    if ((typeof fileName === 'undefined') || (typeof filePath === 'undefined') || (typeof folderPath === 'undefined')) {
-      return {};
-    }
-
-    return { fileName, filePath, folderPath };
-  }
-
-  /**
-   * @function selectFileDialog
-   * @param {object} args - Arguments
-   * @param {string} args.dialogTitle - Dialog title
-   * @param {string} args.dialogButtonLabel - Dialog button label
-   * @param {string} args.restore - Restore previously stored return
-   * @param {string} args.storeKey - Store return value with this key
-   * @returns {object} { fileName, filePath, folderPath }
-   * @memberof FmcFile
-   * @todo Merge with selectFile
-   * @static
-   */
-  static async selectFileDialog({
-    dialogTitle,
-    dialogButtonLabel,
-    restore,
-    storeKey
-  }) {
     const preset = await FmcStore.getActivePreset(null) || {};
     const retrievedData = {};
     const storedData = preset[storeKey] || {};
@@ -614,36 +582,33 @@ module.exports = class FmcFile {
       targetFolder // folderPath
     } = storedData;
 
-    if (restore) {
-      // don't open dialog
-      return {
-        fileName: storedData.value,
-        filePath: storedData.targetFile,
-        folderPath: storedData.targetFolder
-      };
+    if (!restore) {
+      const { canceled, filePaths } = await dialog.showOpenDialog({
+        buttonLabel: 'Select file',
+        defaultPath: targetFolder,
+        message: dialogTitle,
+        properties: [
+          'openFile',
+          'showHiddenFiles'
+        ],
+        title: dialogTitle
+      });
+
+      if (!canceled && filePaths.length) {
+        retrievedData.filePath = filePaths[0];
+
+        const pathSeparator = retrievedData.filePath.lastIndexOf('/');
+
+        retrievedData.fileName = retrievedData.filePath.slice(pathSeparator + 1);
+        retrievedData.folderPath = path.dirname(retrievedData.filePath);
+
+        return retrievedData;
+      }
     }
 
-    const { canceled, filePaths } = await dialog.showOpenDialog({
-      buttonLabel: dialogButtonLabel,
-      defaultPath: targetFolder,
-      message: dialogTitle,
-      properties: [
-        'openFile',
-        'showHiddenFiles'
-      ],
-      title: dialogTitle
-    });
-
-    if (!canceled && filePaths.length) {
-      retrievedData.filePath = filePaths[0];
-
-      const pathSeparator = retrievedData.filePath.lastIndexOf('/');
-
-      retrievedData.fileName = retrievedData.filePath.slice(pathSeparator + 1);
-      retrievedData.folderPath = path.dirname(retrievedData.filePath);
-
-      return retrievedData;
-    }
+    // if ((typeof fileName === 'undefined') || (typeof filePath === 'undefined') || (typeof folderPath === 'undefined')) {
+    //   return {};
+    // }
 
     return {
       fileName: storedData.value,
