@@ -37,7 +37,7 @@ class FmcStore {
     // we might lose that data.
 
     try {
-      fs.writeFileSync(this.path, JSON.stringify(this.data));
+      fs.writeFileSync(this.path, JSON.stringify(this.data, null, 2));
     } catch (error) {
       throw new Error(`Cannot write to FmcStore: ${error}`);
     }
