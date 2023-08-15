@@ -1048,6 +1048,7 @@ export class FmcUi {
     } = this;
 
     const {
+      activePresetName,
       fileWebpageInput,
       folderInInput,
       folderOutInput,
@@ -1091,6 +1092,8 @@ export class FmcUi {
     await window.electronAPI.setActivePresetName({
       presetName: name
     });
+
+    activePresetName.textContent = name;
 
     fmcThumbsUiInstance.clickSelectedThumb(1);
 
