@@ -482,20 +482,25 @@ module.exports = class FmcFile {
 
     for (let i = 0; i < imageFiles.length; i += 1) {
       const image = imageFiles[i];
-      const tags = await ExifReader.load(image);
 
-      const {
-        DateTimeOriginal = {}
-      } = tags; // object: { id: number, value: Array of strings, description: string }
+      try {
+        const tags = await ExifReader.load(image);
 
-      const {
-        description = ''
-      } = DateTimeOriginal;
+        const {
+          DateTimeOriginal = {}
+        } = tags; // object: { id: number, value: Array of strings, description: string }
 
-      imagesData.push({
-        src: image,
-        dateTimeOriginal: description
-      });
+        const {
+          description = ''
+        } = DateTimeOriginal;
+
+        imagesData.push({
+          src: image,
+          dateTimeOriginal: description
+        });
+      } catch (error) {
+        console.log(`ExifReader could not load ${image}`, error);
+      }
     }
 
     return imagesData;
