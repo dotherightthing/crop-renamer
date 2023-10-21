@@ -55,6 +55,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const fmcThumbsUiInstance = new FmcThumbsUi({
     hideClass,
     selectedClass: 'btn-selected',
+    thumbAutoSelectFilteredName: 'thumbs-autoselect-filtered',
     thumbButtonClass,
     thumbClass,
     thumbImgClass,
@@ -110,6 +111,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       presetNameInput: document.getElementById('settings-preset-name'),
       thumbsContainer: document.getElementById('thumbs'),
       thumbsContainerOuter: document.getElementById('thumbs-container'),
+      thumbsAutoSelectFilteredRadios: document.getElementsByName('thumbs-autoselect-filtered'),
       thumbFileName: document.getElementById('thumb-filename'),
       window: window
     },
@@ -165,6 +167,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       settingsLoadButton,
       settingsOpenButton,
       settingsSaveButton,
+      thumbsAutoSelectFilteredRadios,
       thumbsContainer,
       window
     } = elements;
@@ -225,6 +228,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       .addEventListener('click', _this.handleLinkToPath.bind(_this));
     pathOutLink
       .addEventListener('click', _this.handleLinkToPath.bind(_this));
+    thumbsAutoSelectFilteredRadios.forEach(el => el
+      .addEventListener('change', _this.handleAutoSelectFilteredRadioChange.bind(_this)));
     thumbsContainer
       .addEventListener('click', _this.handleThumbClick.bind(_this));
     window

@@ -17,6 +17,7 @@ export class FmcThumbsUi {
     const {
       hideClass,
       selectedClass,
+      thumbAutoSelectFilteredName,
       thumbButtonClass,
       thumbClass,
       thumbImgClass,
@@ -29,6 +30,7 @@ export class FmcThumbsUi {
     Object.assign(this, {
       hideClass,
       selectedClass,
+      thumbAutoSelectFilteredName,
       thumbButtonClass,
       thumbClass,
       thumbImgClass,
@@ -65,6 +67,19 @@ export class FmcThumbsUi {
 
   set selectedClass(selectedClass) {
     this._selectedClass = dtrtValidate.validate(selectedClass, 'string', 'FmcThumbsUi.selectedClass');
+  }
+
+  /**
+   * thumbAutoSelectFilteredName
+   * @type {string}
+   * @memberof FmcThumbsUi
+   */
+  get thumbAutoSelectFilteredName() {
+    return this._thumbAutoSelectFilteredName;
+  }
+
+  set thumbAutoSelectFilteredName(thumbAutoSelectFilteredName) {
+    this._thumbAutoSelectFilteredName = dtrtValidate.validate(thumbAutoSelectFilteredName, 'string', 'FmcThumbsUi.thumbAutoSelectFilteredName');
   }
 
   /**
@@ -251,11 +266,14 @@ export class FmcThumbsUi {
   filterByFilename(searchStr) {
     const {
       hideClass,
+      thumbAutoSelectFilteredName,
       thumbClass,
+      thumbButtonClass,
       thumbImgClass,
       thumbsId
     } = this;
 
+    const thumbsShown = [];
     const thumbs = document.querySelectorAll(`#${thumbsId} .${thumbClass}`);
     const thumbImages = document.querySelectorAll(`#${thumbsId} .${thumbImgClass}`);
 
@@ -268,11 +286,22 @@ export class FmcThumbsUi {
 
         if (filename.match(searchStr)) {
           thumbs[index].classList.remove(hideClass);
+          thumbsShown.push(thumbs[index]);
         } else {
           thumbs[index].classList.add(hideClass);
         }
       }
     });
+
+    const thumbsAutoSelectFilteredRadios = document.getElementsByName(thumbAutoSelectFilteredName);
+    const autoSelectFiltered = [ ...thumbsAutoSelectFilteredRadios ].filter(radio => radio.checked)[0].value;
+
+    if (thumbsShown.length && (autoSelectFiltered === 'on')) {
+      const target = thumbsShown[0].querySelector(`.${thumbButtonClass}`);
+
+      target.focus();
+      target.click();
+    }
   }
 
   /**

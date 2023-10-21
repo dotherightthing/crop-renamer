@@ -308,6 +308,31 @@ export class FmcUi {
   }
 
   /**
+   * @function handleAutoSelectFilteredRadioChange
+   * @param {object} event - Change event
+   * @memberof FmcUi
+   */
+  async handleAutoSelectFilteredRadioChange(event) {
+    const {
+      elements
+    } = this;
+
+    const {
+      filterSubmitButton
+    } = elements;
+
+    await window.electronAPI.setKeys({
+      keyValuePairs: [
+        {
+          thumbsAutoSelectFiltered: event.target.value === 'on'
+        }
+      ]
+    });
+
+    FmcUi.emitElementEvent(filterSubmitButton, 'click', {});
+  }
+
+  /**
    * @function handleCopyPath
    * @param {object} event - Click event
    * @memberof FmcUi
@@ -964,7 +989,12 @@ export class FmcUi {
         keys: [ 'focalpointAutoSave' ]
       });
 
+      const { thumbsAutoSelectFiltered: storedThumbsAutoSelectFiltered } = await window.electronAPI.getKeys({
+        keys: [ 'thumbsAutoSelectFiltered' ]
+      });
+
       this.setAutoSave(storedFocalpointAutoSave);
+      this.setAutoSelectFiltered(storedThumbsAutoSelectFiltered);
 
       fmcThumbsUiInstance.clickSelectedThumb(1);
 
@@ -1344,6 +1374,28 @@ export class FmcUi {
     const autoSaveSetting = enabled ? 'on' : 'off';
 
     focalpointAutoSaveRadios.forEach(radio => {
+      radio.checked = (radio.value === autoSaveSetting);
+    });
+  }
+
+  /**
+   * @function setAutoSelectFiltered
+   * @summary Turn auto save on or off
+   * @param {boolean} enabled - On
+   * @memberof FmcUi
+   */
+  setAutoSelectFiltered(enabled) {
+    const {
+      elements
+    } = this;
+
+    const {
+      thumbsAutoSelectFilteredRadios
+    } = elements;
+
+    const autoSaveSetting = enabled ? 'on' : 'off';
+
+    thumbsAutoSelectFilteredRadios.forEach(radio => {
       radio.checked = (radio.value === autoSaveSetting);
     });
   }
