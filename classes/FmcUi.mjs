@@ -468,6 +468,7 @@ export class FmcUi {
     } = this;
 
     const {
+      copyPathWebEmbedButton,
       folderOutInput
     } = elements;
 
@@ -479,6 +480,9 @@ export class FmcUi {
     const pathOut = this.getPathOut(src);
 
     await this.setPaths(baseExportPath, pathOut, false);
+
+    copyPathWebEmbedButton.focus();
+    copyPathWebEmbedButton.click();
 
     return baseExportPath;
   }
