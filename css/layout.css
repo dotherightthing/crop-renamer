@@ -141,8 +141,8 @@
   text-align: right;
 }
 
-.l-title > :last-child .control-action {
-  margin-left: auto;
+.l-title > :last-child h2 + .control-action {
+  margin-left: auto; /* right align */
 }
 
 /* .l-label-input-button */

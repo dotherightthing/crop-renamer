@@ -901,6 +901,45 @@ export class FmcUi {
   }
 
   /**
+   * @function handleOptionsClose
+   * @memberof FmcUi
+   */
+  handleOptionsClose() {
+    const {
+      elements
+    } = this;
+
+    const {
+      consoleContainerOuter,
+      options,
+      thumbsContainerOuter
+    } = elements;
+
+    thumbsContainerOuter.appendChild(consoleContainerOuter);
+
+    options.close();
+  }
+
+  /**
+   * @function handleOptionsOpen
+   * @memberof FmcUi
+   */
+  async handleOptionsOpen() {
+    const {
+      elements
+    } = this;
+
+    const {
+      consoleContainerOuter,
+      options
+    } = elements;
+
+    options.appendChild(consoleContainerOuter);
+
+    options.showModal();
+  }
+
+  /**
    * @function handleSettingsClose
    * @memberof FmcUi
    */

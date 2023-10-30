@@ -100,6 +100,9 @@ window.addEventListener('DOMContentLoaded', async () => {
       folderWebsiteButton: document.getElementById('folder-website-button'),
       folderWebsiteInput: document.getElementById('folder-website'),
       lastCropperImg: document.querySelector('#croppers .img-container-last img'),
+      options: document.getElementById('options'),
+      optionsCloseButton: document.getElementById('options-close'),
+      optionsOpenButton: document.getElementById('options-open'),
       pathInLink: document.getElementById('link-path-in'),
       pathOutLink: document.getElementById('link-path-out'),
       presetNamesSelect: document.getElementById('preset-names'),
@@ -161,6 +164,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       folderOutButton,
       folderWebsiteButton,
       lastCropperImg,
+      optionsCloseButton,
+      optionsOpenButton,
       pathInLink,
       pathOutLink,
       settingsCloseButton,
@@ -216,6 +221,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       .addEventListener('click', _this.handleFolderWebsiteBrowse.bind(_this));
     lastCropperImg
       .addEventListener('ready', _this.handleLastCropperImgReady.bind(_this));
+    optionsOpenButton
+      .addEventListener('click', _this.handleOptionsOpen.bind(_this));
+    optionsCloseButton
+      .addEventListener('click', _this.handleOptionsClose.bind(_this));
     settingsOpenButton
       .addEventListener('click', _this.handleSettingsOpen.bind(_this));
     settingsCloseButton

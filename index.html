@@ -21,6 +21,9 @@
           <button type="button" class="control-action" id="settings-open">
             <span class="control-hint">Manage folder paths</span>
           </button>
+          <button type="button" class="control-action" id="options-open">
+            <span class="control-hint">Manage options</span>
+          </button>
         </div>
       </div>
       <div class="editor">
@@ -43,28 +46,6 @@
                   <input type="number" min="0" max="100" value="" id="focalpoint-y">
                   <label for="focalpoint-y" class="control-label">% Y</label>
                 </div> 
-                <div class="control-param">
-                  <label for="focalpoint-autosave-off focalpoint-autosave-on" class="radios-label">Auto-Save</label>
-                  <label class="l-radio-label">
-                    <input type="radio" name="focalpoint-autosave" value="off" id="focalpoint-autosave-off" checked>
-                    Off
-                  </label>
-                  <label class="l-radio-label">
-                    <input type="radio" name="focalpoint-autosave" value="on" id="focalpoint-autosave-on">
-                    On
-                  </label>
-                </div>
-                <div class="control-param">
-                  <label for="thumbs-autoselect-filtered-off thumbs-autoselect-filtered-on" class="radios-label">Auto-Select First Filter Result</label>
-                  <label class="l-radio-label">
-                    <input type="radio" name="thumbs-autoselect-filtered" value="off" id="thumbs-autoselect-filtered-off" checked>
-                    Off
-                  </label>
-                  <label class="l-radio-label">
-                    <input type="radio" name="thumbs-autoselect-filtered" value="on" id="thumbs-autoselect-filtered-on">
-                    On
-                  </label>
-                </div>
                 <button type="button" class="control-action" id="save-focalpoint">
                   <span class="label">Save</span>
                 </button>
@@ -228,6 +209,45 @@
         </div>
       </div>
     </div>
+    <dialog id="options">
+      <div class="l-title title l-cols-1-1">
+        <h2 class="h-title">Manage options</h2>
+        <div>
+          <button class="control-action control-close" value="cancel" formmethod="dialog" id="options-close">
+            <span class="control-hint">Close</span>
+          </button>
+        </div>
+      </div>
+      <form>
+        <fieldset>
+          <legend>
+            <span class="h-small uc l-horz-list-header">Options</span>
+          </legend>
+          <div class="control-param plain">
+            <label for="focalpoint-autosave-off focalpoint-autosave-on" class="radios-label">Auto-Save</label>
+            <label class="l-radio-label">
+              <input type="radio" name="focalpoint-autosave" value="off" id="focalpoint-autosave-off" checked>
+              Off
+            </label>
+            <label class="l-radio-label">
+              <input type="radio" name="focalpoint-autosave" value="on" id="focalpoint-autosave-on">
+              On
+            </label>
+          </div>
+          <div class="control-param plain">
+            <label for="thumbs-autoselect-filtered-off thumbs-autoselect-filtered-on" class="radios-label">Auto-Select First Filter Result</label>
+            <label class="l-radio-label">
+              <input type="radio" name="thumbs-autoselect-filtered" value="off" id="thumbs-autoselect-filtered-off" checked>
+              Off
+            </label>
+            <label class="l-radio-label">
+              <input type="radio" name="thumbs-autoselect-filtered" value="on" id="thumbs-autoselect-filtered-on">
+              On
+            </label>
+          </div>
+        </fieldset>
+      </form>
+    </dialog>
     <dialog id="settings">
       <div class="l-title title l-cols-1-1">
         <h2 class="h-title">Manage folder paths</h2>
