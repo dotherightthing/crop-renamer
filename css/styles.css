@@ -42,10 +42,14 @@ fieldset {
 }
 
 .h-preset-name {
+  display: block;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: var(--text-small);
   font-weight: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   margin: 0;
+  overflow: hidden;
 }
 
 .h-preset-name > span {
