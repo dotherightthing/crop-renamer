@@ -20,6 +20,7 @@ export class FmcCroppersUi {
       cropperImageClass,
       croppersId,
       croppersOptions,
+      focalpointProportionsRadiosName,
       focalpointXInputId,
       focalpointYInputId,
       updateDelay
@@ -31,6 +32,7 @@ export class FmcCroppersUi {
       cropperImageClass,
       croppersId,
       croppersOptions,
+      focalpointProportionsRadiosName,
       focalpointXInputId,
       focalpointYInputId,
       updateDelay
@@ -122,6 +124,19 @@ export class FmcCroppersUi {
 
   set croppersOptions(croppersOptions) {
     this._croppersOptions = dtrtValidate.validate(croppersOptions, 'object', 'FmcCroppersUi.croppersOptions');
+  }
+
+  /**
+   * focalpointProportionsRadiosName
+   * @type {string}
+   * @memberof FmcCroppersUi
+   */
+  get focalpointProportionsRadiosName() {
+    return this._focalpointProportionsRadiosName;
+  }
+
+  set focalpointProportionsRadiosName(focalpointProportionsRadiosName) {
+    this._focalpointProportionsRadiosName = dtrtValidate.validate(focalpointProportionsRadiosName, 'string', 'FmcCroppersUi.focalpointProportionsRadiosName');
   }
 
   /**
@@ -634,6 +649,7 @@ export class FmcCroppersUi {
    * @param {string} args.thumbIndex - The index of the currently selected thumbnail
    * @param {string} args.imagePercentXUi - Image Percent X as shown in the UI controls
    * @param {string} args.imagePercentYUi - Image Percent Y as shown in the UI controls
+   * @param {string} args.imageProportionsUi - Image Proportions setting as shown in the UI controls
    * @returns {string} state
    * @memberof FmcCroppersUi
    */
@@ -642,7 +658,8 @@ export class FmcCroppersUi {
     thumbIndexPrevious,
     thumbIndex,
     imagePercentXUi,
-    imagePercentYUi
+    imagePercentYUi,
+    imageProportionsUi
   }) {
     const {
       masterCropper
@@ -659,8 +676,21 @@ export class FmcCroppersUi {
       imagePercentY: savedImagePercentY // string
     } = this.getImagePercentXYFromImage(src);
 
-    const isDefaultFocalpoint = this.isDefaultFocalpoint({ imagePercentX: imagePercentXUi, imagePercentY: imagePercentYUi });
-    const isSavedFocalpoint = ((imagePercentXUi === savedImagePercentX) && (imagePercentYUi === savedImagePercentY));
+    const {
+      panorama: savedPanorama = false
+    } = this.getFlagsFromImage(src);
+
+    const isDefaultFocalpoint = this.isDefaultFocalpoint({
+      imagePercentX: imagePercentXUi,
+      imagePercentY: imagePercentYUi,
+      imageProportions: imageProportionsUi
+    });
+
+    const isSavedFocalpoint = (
+      (imagePercentXUi === savedImagePercentX)
+      && (imagePercentYUi === savedImagePercentY)
+      && (((imageProportionsUi === 'panorama') && savedPanorama) || ((imageProportionsUi === 'default') && !savedPanorama))
+    );
 
     if (isDefaultFocalpoint) {
       msg = 'Default focalpoint';
@@ -704,7 +734,7 @@ export class FmcCroppersUi {
   getImagePercentXYFromImage(src) {
     let imagePercentXY = {};
 
-    const regexp = /\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
+    const regexp = /\[([0-9]+)%,([0-9]+)%(,P)?\]/g; // filename__[20%,30%].ext / filename__[20%,30%,P].ext
     const matches = src.matchAll(regexp);
     const matchesArr = [ ...matches ];
 
@@ -716,6 +746,29 @@ export class FmcCroppersUi {
     }
 
     return imagePercentXY;
+  }
+
+  /**
+   * @function getFlagsFromImage
+   * @summary Get any flags stored in the filename
+   * @param {string} src - Image src
+   * @returns {object} imageFlags
+   * @memberof FmcCroppersUi
+   */
+  getFlagsFromImage(src) {
+    let imageFlags = {};
+
+    const regexp = /\[([0-9]+)%,([0-9]+)%,?(P)?\]/g; // filename__[20%,30%].ext / filename__[20%,30%,P].ext
+    const matches = src.matchAll(regexp);
+    const matchesArr = [ ...matches ];
+
+    if (matchesArr.length) {
+      imageFlags = {
+        panorama: matchesArr[0][3] ? true : false // eslint-disable-line no-unneeded-ternary
+      };
+    }
+
+    return imageFlags;
   }
 
   /**
@@ -838,6 +891,7 @@ export class FmcCroppersUi {
       cropperAction: action,
       cropperExportWidth, // undefined for role="master"
       cropperExportHeight, // undefined for role="master"
+      cropperExportIf: exportIf,
       cropperExportMarker = 'false',
       cropperExportSuffix: exportSuffix,
       cropperLabel: label,
@@ -860,6 +914,7 @@ export class FmcCroppersUi {
       action,
       exportWidth,
       exportHeight,
+      exportIf,
       exportSuffix,
       label,
       marker: cropperExportMarker === 'true',
@@ -885,6 +940,7 @@ export class FmcCroppersUi {
       cropperAction: action,
       cropperExportWidth,
       cropperExportHeight,
+      cropperExportIf: exportIf,
       cropperExportMarker = 'false',
       cropperExportSuffix: exportSuffix,
       cropperLabel: label,
@@ -903,6 +959,7 @@ export class FmcCroppersUi {
       action,
       exportWidth,
       exportHeight,
+      exportIf,
       exportSuffix,
       label,
       marker: cropperExportMarker === 'true',
@@ -1085,14 +1142,28 @@ export class FmcCroppersUi {
 
     const cropsAndSizes = [];
     const fileName = masterCropper.cropperInstance.element.src;
+    const flags = this.getFlagsFromImage(fileName);
+
+    const {
+      panorama = false
+    } = flags;
 
     slaveCroppers.forEach(cropper => {
       const {
         exportWidth: resizeW,
         exportHeight: resizeH,
+        exportIf,
         exportSuffix: fileNameSuffix,
         marker
       } = cropper;
+
+      if ((exportIf === 'panorama') && !panorama) {
+        return; // skip forEach iteration
+      }
+
+      if ((exportIf === '!panorama') && panorama) {
+        return; // skip forEach iteration
+      }
 
       const {
         x: cropX,
@@ -1132,9 +1203,18 @@ export class FmcCroppersUi {
       const {
         exportWidth: resizeW,
         exportHeight: resizeH,
+        exportIf,
         exportSuffix: fileNameSuffix,
         marker
       } = resizer;
+
+      if ((exportIf === 'panorama') && !panorama) {
+        return; // skip forEach iteration
+      }
+
+      if ((exportIf === '!panorama') && panorama) {
+        return; // skip forEach iteration
+      }
 
       let centerX;
       let centerY;
@@ -1224,14 +1304,15 @@ export class FmcCroppersUi {
    * @param {object} args - Arguments
    * @param {string|number} args.imagePercentX - Image percent X
    * @param {string|number} args.imagePercentY - Image percent Y
+   * @param {string} args.imageProportions - Image proportions
    * @returns {boolean} isDefaultFocalpoint
    * @memberof FmcCroppersUi
    */
-  isDefaultFocalpoint({ imagePercentX, imagePercentY }) {
+  isDefaultFocalpoint({ imagePercentX, imagePercentY, imageProportions }) {
     const nX = Number(imagePercentX);
     const nY = Number(imagePercentY);
 
-    return ((nX === 50) && (nY === 50));
+    return ((nX === 50) && (nY === 50) && (imageProportions === 'default'));
   }
 
   /**
@@ -1240,6 +1321,7 @@ export class FmcCroppersUi {
    */
   reinstateImagePercentXYFromImage() {
     const {
+      focalpointProportionsRadiosName,
       focalpointXInputId,
       focalpointYInputId,
       masterCropper
@@ -1252,8 +1334,18 @@ export class FmcCroppersUi {
       imagePercentY = 50
     } = this.getImagePercentXYFromImage(src);
 
+    const {
+      panorama = false
+    } = this.getFlagsFromImage(src);
+
     document.getElementById(focalpointXInputId).value = imagePercentX;
     document.getElementById(focalpointYInputId).value = imagePercentY;
+
+    const proportionsSetting = panorama ? 'panorama' : 'default';
+
+    document.getElementsByName(focalpointProportionsRadiosName).forEach(radio => {
+      radio.checked = (radio.value === proportionsSetting);
+    });
 
     FmcUi.emitEvent(focalpointYInputId, 'change', {
       focalpointReset: !(this.isDefaultFocalpoint({ imagePercentX, imagePercentY }))
@@ -1352,12 +1444,13 @@ export class FmcCroppersUi {
    * @function writeImagePercentXYToImage
    * @summary Save the values to the image filename
    * @param {object} args - Arguments
+   * @param {string} args.imageFlags - Image flags (comma separated)
    * @param {string} args.imagePercentX - Image percentage X
    * @param {string} args.imagePercentY - Image percentage Y
    * @returns {Promise<string>} { msg, type }
    * @memberof FmcCroppersUi
    */
-  async writeImagePercentXYToImage({ imagePercentX, imagePercentY }) {
+  async writeImagePercentXYToImage({ imageFlags, imagePercentX, imagePercentY }) {
     const {
       croppersId,
       croppers,
@@ -1378,6 +1471,7 @@ export class FmcCroppersUi {
       // cannot place await inside promise
       newFileName = await window.electronAPI.saveImagePercentXYToImage({
         fileName,
+        imageFlags,
         imagePercentY,
         imagePercentX
       });

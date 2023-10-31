@@ -46,6 +46,17 @@
                   <input type="number" min="0" max="100" value="" id="focalpoint-y">
                   <label for="focalpoint-y" class="control-label">% Y</label>
                 </div> 
+                <div class="control-param">
+                  <label for="focalpoint-proportions-default focalpoint-proportions-panorama" class="radios-label">Proportions</label>
+                  <label class="l-radio-label">
+                    <input type="radio" name="focalpoint-proportions" value="default" id="focalpoint-proportions-default" checked>
+                    Regular
+                  </label>
+                  <label class="l-radio-label">
+                    <input type="radio" name="focalpoint-proportions" value="panorama" id="focalpoint-proportions-panorama">
+                    Panorama
+                  </label>
+                </div>
                 <button type="button" class="control-action" id="save-focalpoint">
                   <span class="label">Save</span>
                 </button>
@@ -83,6 +94,7 @@
               data-cropper-action="resizeAndCrop"
               data-cropper-export-width="3088"
               data-cropper-export-height="748"
+              data-cropper-export-if="any"
               data-cropper-export-suffix="stack-banner-bg"
               data-cropper-label="Stack Banner bg"
               data-cropper-role="slave"
@@ -96,6 +108,7 @@
               data-cropper-action="resizeAndCrop"
               data-cropper-export-width="865"
               data-cropper-export-height="368"
+              data-cropper-export-if="!panorama"
               data-cropper-export-suffix="gallery-collapsed"
               data-cropper-label="Gallery Collapsed"
               data-cropper-role="slave"
@@ -110,6 +123,7 @@
               data-cropper-action="resizeAndCrop"
               data-cropper-export-width="320"
               data-cropper-export-height="320"
+              data-cropper-export-if="any"
               data-cropper-export-suffix="gallery-thumbnail"
               data-cropper-label="Thumbnail"
               data-cropper-role="slave"
@@ -121,6 +135,7 @@
             data-cropper-action="resize"
             data-cropper-export-width="480"
             data-cropper-export-height="null"
+            data-cropper-export-if="any"
             data-cropper-export-marker="true"
             data-cropper-export-suffix=""
             data-cropper-label="Base"
@@ -132,6 +147,7 @@
             data-cropper-action="resize"
             data-cropper-export-width="320"
             data-cropper-export-height="null"
+            data-cropper-export-if="any"
             data-cropper-export-suffix="stack-banner"
             data-cropper-label="Stack Banner"
             data-cropper-role="slave"
@@ -142,8 +158,20 @@
             data-cropper-action="resize"
             data-cropper-export-width="865"
             data-cropper-export-height="null"
+            data-cropper-export-if="!panorama"
             data-cropper-export-suffix="gallery-expanded"
             data-cropper-label="Gallery Expanded"
+            data-cropper-role="slave"
+          ></div>
+          <!-- image will be resized to whatever x 368 -->
+          <div
+            class="cropper-image cropper-hide"
+            data-cropper-action="resize"
+            data-cropper-export-width="null"
+            data-cropper-export-height="368"
+            data-cropper-export-if="panorama"
+            data-cropper-export-suffix="gallery-panorama"
+            data-cropper-label="Gallery Panorama"
             data-cropper-role="slave"
           ></div>
         </div>

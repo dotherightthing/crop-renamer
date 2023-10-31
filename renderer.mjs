@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // instantiate classes
 
   const controlHintClass = 'control-hint';
+  const focalpointProportionsRadiosName = 'focalpoint-proportions';
   const focalpointXInputId = 'focalpoint-x';
   const focalpointYInputId = 'focalpoint-y';
   const hideClass = 'cropper-hide';
@@ -47,6 +48,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       zoomOnTouch: false, // Enable to zoom the image by dragging touch
       zoomOnWheel: false // Enable to zoom the image by mouse wheeling
     },
+    focalpointProportionsRadiosName,
     focalpointXInputId,
     focalpointYInputId,
     updateDelay: (typeof Cypress === 'undefined') ? 1000 : 0
@@ -88,6 +90,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       filterSubmitButton: document.getElementById('thumb-filename-filter-submit'),
       focalpointAutoSaveRadios: document.getElementsByName('focalpoint-autosave'),
       focalpointDeleteButton: document.getElementById('delete-focalpoint'),
+      focalpointProportionsRadios: document.getElementsByName(focalpointProportionsRadiosName),
       focalpointResetButton: document.getElementById('reset-focalpoint'),
       focalpointSaveButton: document.getElementById('save-focalpoint'),
       focalpointXInput: document.getElementById(focalpointXInputId),
@@ -156,6 +159,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       filterSubmitButton,
       focalpointAutoSaveRadios,
       focalpointDeleteButton,
+      focalpointProportionsRadios,
       focalpointResetButton,
       focalpointSaveButton,
       focalpointXInput,
@@ -205,6 +209,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       .addEventListener('change', _this.handleAutosaveRadioChange.bind(_this)));
     focalpointDeleteButton
       .addEventListener('click', _this.handleFocalpointDelete.bind(_this));
+    focalpointProportionsRadios.forEach(el => el
+      .addEventListener('change', _this.handleFocalpointInputChange.bind(_this)));
     focalpointResetButton
       .addEventListener('click', _this.handleFocalpointReset.bind(_this));
     focalpointSaveButton

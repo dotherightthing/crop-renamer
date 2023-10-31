@@ -282,6 +282,7 @@ export class FmcUi {
     } = this;
 
     const {
+      focalpointProportionsRadios,
       focalpointXInput,
       focalpointYInput
     } = elements;
@@ -303,7 +304,8 @@ export class FmcUi {
       thumbIndexPrevious: focalpointXInput.dataset.thumbIndexPrevious,
       thumbIndex,
       imagePercentXUi: focalpointXInput.value,
-      imagePercentYUi: focalpointYInput.value
+      imagePercentYUi: focalpointYInput.value,
+      imageProportionsUi: [ ...focalpointProportionsRadios ].filter(radio => radio.checked)[0].value
     });
   }
 
@@ -567,9 +569,14 @@ export class FmcUi {
     } = this;
 
     const {
+      focalpointProportionsRadios,
       focalpointXInput,
       focalpointYInput
     } = elements;
+
+    focalpointProportionsRadios.forEach(radio => {
+      radio.checked = (radio.value === 'default');
+    });
 
     const msg = await fmcCroppersUiInstance.deleteImagePercentXYFromImage();
 
@@ -599,6 +606,7 @@ export class FmcUi {
 
     const {
       focalpointAutoSaveRadios,
+      focalpointProportionsRadios,
       focalpointXInput,
       focalpointYInput
     } = elements;
@@ -628,7 +636,8 @@ export class FmcUi {
         thumbIndexPrevious: focalpointXInput.dataset.thumbIndexPrevious,
         thumbIndex,
         imagePercentXUi: focalpointXInput.value,
-        imagePercentYUi: focalpointYInput.value
+        imagePercentYUi: focalpointYInput.value,
+        imageProportionsUi: [ ...focalpointProportionsRadios ].filter(radio => radio.checked)[0].value
       });
 
       focalpointXInput.dataset.thumbIndexPrevious = thumbIndex;
@@ -662,6 +671,7 @@ export class FmcUi {
     } = this;
 
     const {
+      focalpointProportionsRadios,
       focalpointXInput,
       focalpointYInput
     } = elements;
@@ -674,7 +684,8 @@ export class FmcUi {
       thumbIndexPrevious: focalpointXInput.dataset.thumbIndexPrevious,
       thumbIndex,
       imagePercentXUi: focalpointXInput.value,
-      imagePercentYUi: focalpointYInput.value
+      imagePercentYUi: focalpointYInput.value,
+      imageProportionsUi: [ ...focalpointProportionsRadios ].filter(radio => radio.checked)[0].value
     });
   }
 
@@ -1380,17 +1391,27 @@ export class FmcUi {
     } = this;
 
     const {
+      focalpointProportionsRadios,
       focalpointXInput,
       focalpointYInput
     } = elements;
 
     let msgObj;
 
+    let flags = [];
+
+    const imageProportions = [ ...focalpointProportionsRadios ].filter(radio => radio.checked)[0].value;
+
+    if (imageProportions === 'panorama') {
+      flags.push('P');
+    }
+
     // value is a string despite input being of type number
     if ((Number(focalpointXInput.value) === 50) && (Number(focalpointYInput.value) === 50)) {
       msgObj = await fmcCroppersUiInstance.deleteImagePercentXYFromImage();
     } else {
       msgObj = await fmcCroppersUiInstance.writeImagePercentXYToImage({
+        imageFlags: flags.join(','),
         imagePercentX: focalpointXInput.value,
         imagePercentY: focalpointYInput.value
       });

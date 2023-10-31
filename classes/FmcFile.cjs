@@ -61,7 +61,7 @@ module.exports = class FmcFile {
    * @static
    */
   static getFocalpointRegex() {
-    return /__\[([0-9]+)%,([0-9]+)%\]/g; // filename__[20%,30%].ext
+    return /__\[([0-9]+)%,([0-9]+)%,?(P)?\]/g; // filename__[20%,30%].ext / filename__[20%,30%,P].ext
   }
 
   /**
@@ -746,6 +746,7 @@ module.exports = class FmcFile {
    * @param {event} event - FmcFile:saveImagePercentXYToImage event captured by ipcMain.handle
    * @param {object} data - Data
    * @param {string} data.fileName - File name
+   * @param {string} data.imageFlags - Image flags
    * @param {number} data.imagePercentX - Image percent X
    * @param {number} data.imagePercentY - Image percent Y
    * @returns {string} newFileName
@@ -757,6 +758,7 @@ module.exports = class FmcFile {
   static async saveImagePercentXYToImage(event, data) {
     const {
       fileName,
+      imageFlags,
       imagePercentY,
       imagePercentX
     } = data;
@@ -772,8 +774,10 @@ module.exports = class FmcFile {
 
     const fileNameOnlyCleanNoRegex = fileNameOnlyClean.replace(regex, ''); // foo
 
+    const imageFlagsPrefix = imageFlags.length ? ',' : '';
+
     const oldFileName = `${folderPath}/${fileNameAndExtClean}`;
-    const newFileName = `${folderPath}/${fileNameOnlyCleanNoRegex}__[${imagePercentX}%,${imagePercentY}%]${extName}`;
+    const newFileName = `${folderPath}/${fileNameOnlyCleanNoRegex}__[${imagePercentX}%,${imagePercentY}%${imageFlagsPrefix}${imageFlags}]${extName}`;
 
     if (newFileName !== oldFileName) {
       fs.rename(oldFileName, newFileName, (error) => {
