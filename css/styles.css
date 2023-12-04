@@ -262,13 +262,19 @@ img {
 }
 
 .thumb-meta-day-time,
-.thumb-meta-date {
+.thumb-meta-date,
+.thumb-meta-filesize {
   display: block;
 }
 
 .thumb-meta-date {
   opacity: .9;
   font-size: .95em;
+}
+
+.thumb-meta-filesize {
+  opacity: .8;
+  font-size: .9em;
 }
 
 /* .image-meta */

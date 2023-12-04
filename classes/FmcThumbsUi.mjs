@@ -360,6 +360,7 @@ export class FmcThumbsUi {
       const {
         src,
         dateTimeOriginal,
+        filesize,
         latitude,
         longitude
       } = loadedThumb;
@@ -382,6 +383,7 @@ export class FmcThumbsUi {
     <p class="${thumbMetaClass}">
       <span class="thumb-meta-day-time">${dayTimeStr}</span>
       <span class="thumb-meta-date">${dateStr}</span>
+      <span class="thumb-meta-filesize">${filesize}</span>
     </p>  
   </button>
 </li>`;

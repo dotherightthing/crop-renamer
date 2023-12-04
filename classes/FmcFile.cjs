@@ -14,6 +14,8 @@ const { clipboard, dialog, shell } = require('electron');
 const { promises: Fs } = require('fs');
 const { spawn } = require('child_process');
 
+const { filesize } = require('filesize');
+
 module.exports = class FmcFile {
   /**
    * @class FmcFile
@@ -514,6 +516,15 @@ module.exports = class FmcFile {
         };
       } catch (error) {
         console.log(`ExifReader could not load ${image}`, error);
+      }
+
+      try {
+        const stats = await Fs.stat(image);
+        const fileSizeInBytes = stats.size;
+
+        imageData.filesize = filesize(fileSizeInBytes, { base: 10, standard: 'jedec' });
+      } catch (error) {
+        console.log(`Fs could not get ${image} stats`, error);
       }
 
       imagesData.push(imageData);
