@@ -359,8 +359,13 @@ export class FmcThumbsUi {
     imagesData.forEach((loadedThumb, i) => {
       const {
         src,
-        dateTimeOriginal
+        dateTimeOriginal,
+        latitude,
+        longitude
       } = loadedThumb;
+
+      const latLongStr = ((latitude !== '') && (longitude !== '')) ? `${latitude},${longitude}` : '';
+      const latLongIcon = (latLongStr !== '') ? '<div class="thumb-lat-long"><abbr title="Location">L</abbr></div>' : '';
 
       const {
         dayTimeStr,
@@ -369,7 +374,8 @@ export class FmcThumbsUi {
 
       html += `<li class="${thumbClass}">
   <div class="thumb-index">${i + 1}</div>
-  <button type="button" class="${thumbButtonClass}" tabindex="-1">
+  ${latLongIcon}
+  <button type="button" class="${thumbButtonClass}" tabindex="-1" data-lat-long="${latLongStr}">
     <div class="${thumbImgWrapperClass}">
       <img src="${src}" class="${thumbImgClass}">
     </div>

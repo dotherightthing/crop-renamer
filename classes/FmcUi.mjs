@@ -1244,6 +1244,9 @@ export class FmcUi {
 
     const pathOut = this.getPathOut(newImageSrc);
 
+    const { latLong } = clickedButton.dataset;
+
+    await this.setLatLong(latLong);
     await this.setPaths(newImageSrc, pathOut);
 
     // calls fmcCroppersUiInstance.init
@@ -1462,6 +1465,30 @@ export class FmcUi {
     thumbsAutoSelectFilteredRadios.forEach(radio => {
       radio.checked = (radio.value === autoSaveSetting);
     });
+  }
+
+  /**
+   * @function setLatLong
+   * @summary Update attributes in the button
+   * @param {string} latLong - Lat/Long
+   * @memberof FmcUi
+   */
+  async setLatLong(latLong) {
+    const {
+      elements
+    } = this;
+
+    const {
+      copyLatLongButton
+    } = elements;
+
+    if (latLong !== '') {
+      this.enable(copyLatLongButton, {
+        title: latLong
+      });
+    } else {
+      this.disable(copyLatLongButton);
+    }
   }
 
   /**

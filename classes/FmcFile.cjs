@@ -483,24 +483,40 @@ module.exports = class FmcFile {
     for (let i = 0; i < imageFiles.length; i += 1) {
       const image = imageFiles[i];
 
+      let imageData = {};
+
       try {
         const tags = await ExifReader.load(image);
 
         const {
-          DateTimeOriginal = {}
+          DateTimeOriginal = {},
+          GPSLatitude = '',
+          GPSLongitude = ''
         } = tags; // object: { id: number, value: Array of strings, description: string }
 
         const {
-          description = ''
+          description: dateTimeOriginalDescription = ''
         } = DateTimeOriginal;
 
-        imagesData.push({
+        const {
+          description: latitudeDescription = ''
+        } = GPSLatitude;
+
+        const {
+          description: longitudeDescription = ''
+        } = GPSLongitude;
+
+        imageData = {
           src: image,
-          dateTimeOriginal: description
-        });
+          dateTimeOriginal: dateTimeOriginalDescription,
+          latitude: latitudeDescription,
+          longitude: longitudeDescription
+        };
       } catch (error) {
         console.log(`ExifReader could not load ${image}`, error);
       }
+
+      imagesData.push(imageData);
     }
 
     return imagesData;

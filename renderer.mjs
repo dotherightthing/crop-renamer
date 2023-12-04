@@ -74,6 +74,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       consoleContainer: document.getElementById('console'),
       consoleContainerOuter: document.getElementById('console-container'),
       consoleType: document.getElementById('console-type'),
+      copyLatLongButton: document.getElementById('copy-lat-long'),
       copyPathInButton: document.getElementById('copy-path-in'),
       copyPathOutButton: document.getElementById('copy-path-out'),
       copyPathWebEmbedButton: document.getElementById('copy-path-web-embed'),
@@ -146,6 +147,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     } = _this;
 
     const {
+      copyLatLongButton,
       copyPathInButton,
       copyPathOutButton,
       copyPathWebEmbedButton,
@@ -183,6 +185,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const handleFocalpointInputDebounced = FmcUi.debounce(_this.handleFocalpointInputChange, debounceDelay);
 
+    copyLatLongButton
+      .addEventListener('click', _this.handleCopyPath.bind(_this));
     copyPathInButton
       .addEventListener('click', _this.handleCopyPath.bind(_this));
     copyPathOutButton

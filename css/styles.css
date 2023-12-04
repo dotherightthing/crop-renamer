@@ -188,11 +188,10 @@ img {
   background-color: var(--color-bg-thumb); /* fill below image */
 }
 
-.thumb-index {
+.thumb-index,
+.thumb-lat-long {
   display: block;
   position: absolute;
-  top: 0;
-  right: 0;
   z-index: 1;
   /* same as h2 */
   background-color: rgba(0, 0, 0, .7);
@@ -201,6 +200,21 @@ img {
   padding: var(--gutter-half);
   margin: var(--gutter-half);
   pointer-events: none;
+}
+
+.thumb-index {
+  top: 0;
+  right: 0;
+}
+
+.thumb-lat-long {
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, .4);
+}
+
+.thumb-lat-long abbr {
+  text-decoration: none;
 }
 
 .thumb-img {
