@@ -4,6 +4,10 @@
 
 <img src="screenshot-2.png">
 
+<img src="screenshot-3.png">
+
+<img src="screenshot-4.png">
+
 ## Features
 
 * **Preview** - Single window containing multiple instances of [cropperjs](https://github.com/fengyuanchen/cropperjs) - one master cropper and one or more slave croppers with user-defined `exportWidth` and `exportHeight` proportions
@@ -11,12 +15,13 @@
 * **Filter** - Filter thumbnails by partial filename
 * **Set focalpoint** - Click the master cropper image or use the number inputs to set a focalpoint, slave croppers' crop boxes will automatically follow
 * **Rounding** - Round focalpoint XY to integers for easier storage
-* **Storage** - Toggle on auto-save to write a non-default focalpoint to the image filename as a resolution-independent percentage of its width and height (integers), e.g. `foo__[40%,37%].jpg`
+* **Storage** - Toggle on auto-save to write a non-default focalpoint to the image filename as a resolution-independent percentage of its width and height (integers), e.g. `foo__[40%,37%].jpg` (regular) or `bar__[40%,37%,P].jpg` (panorama)
 * **Reset** - Remove user changes and reapply the focalpoint stored in the image filename, or the defaults
 * **Delete** - Delete the focalpoint and remove non-default focalpoint from the image filename
 * **Resize & Crop** - Use [gm](https://github.com/aheckmann/gm) to `resizeAndCrop` from the slave croppers' crop boxes, and `resize` from the hidden non-cropper inclusions
 * **Locate** - Easily open the source and target image folders to keep track of where files are
 * **Embed** - Copy paths including a relative link suitable for pasting into a Markdown document or webpage, optionally output a target cross on the image
+* **Geotag** - Copy latitude/longitude information if available
 * **Restore** - Settings are restored when reopening the Electron app
 * **Presets** - Store a batch of settings in userData (macOS: `/Users/NAME/Library/Application Support/focalpoint-multi-cropper/user-preferences.json`)
 
