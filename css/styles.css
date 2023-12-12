@@ -151,6 +151,10 @@ img {
   max-width: 100%;
 }
 
+.croppers > .img-container:hover h2 {
+  display: none;
+}
+
 .cropper-modal {
   opacity: var(--opacity-modal-overlay);
 }
