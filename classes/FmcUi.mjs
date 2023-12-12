@@ -521,6 +521,23 @@ export class FmcUi {
   }
 
   /**
+   * @function handleFilterUncroppedRadioChange
+   * @param {object} event - Change event
+   * @memberof FmcUi
+   */
+  async handleFilterUncroppedRadioChange(event) {
+    await window.electronAPI.setKeys({
+      keyValuePairs: [
+        {
+          thumbsFilterUncropped: event.target.value === 'on'
+        }
+      ]
+    });
+
+    this.handleFilterSubmit();
+  }
+
+  /**
    * @function handleFilterClear
    * @memberof FmcUi
    */
@@ -536,7 +553,7 @@ export class FmcUi {
 
     filter.value = '';
 
-    fmcThumbsUiInstance.filterByFilename('');
+    fmcThumbsUiInstance.filterByFilenameAndCropped('');
   }
 
   /**
@@ -555,7 +572,7 @@ export class FmcUi {
 
     const searchStr = filter.value;
 
-    fmcThumbsUiInstance.filterByFilename(searchStr);
+    fmcThumbsUiInstance.filterByFilenameAndCropped(searchStr);
   }
 
   /**
@@ -1047,8 +1064,13 @@ export class FmcUi {
         keys: [ 'thumbsAutoSelectFiltered' ]
       });
 
+      const { thumbsFilterUncropped: storedThumbsFilterUncropped } = await window.electronAPI.getKeys({
+        keys: [ 'thumbsFilterUncropped' ]
+      });
+
       this.setAutoSave(storedFocalpointAutoSave);
       this.setAutoSelectFiltered(storedThumbsAutoSelectFiltered);
+      this.setFilterUncropped(storedThumbsFilterUncropped);
 
       fmcThumbsUiInstance.clickSelectedThumb(1);
 
@@ -1464,6 +1486,32 @@ export class FmcUi {
 
     thumbsAutoSelectFilteredRadios.forEach(radio => {
       radio.checked = (radio.value === autoSaveSetting);
+    });
+  }
+
+  /**
+   * @function setFilterUncropped
+   * @summary Turn filter uncropped thumbs on or off
+   * @param {boolean} enabled - On
+   * @memberof FmcUi
+   */
+  setFilterUncropped(enabled) {
+    const {
+      elements
+    } = this;
+
+    const {
+      thumbsFilterUncroppedRadios
+    } = elements;
+
+    const filterUncroppedSetting = enabled ? 'on' : 'off';
+
+    thumbsFilterUncroppedRadios.forEach(radio => {
+      radio.checked = (radio.value === filterUncroppedSetting);
+
+      if (radio.value === 'on') {
+        FmcUi.emitElementEvent(radio, 'change');
+      }
     });
   }
 

@@ -12,7 +12,7 @@
 
 * **Preview** - Single window containing multiple instances of [cropperjs](https://github.com/fengyuanchen/cropperjs) - one master cropper and one or more slave croppers with user-defined `exportWidth` and `exportHeight` proportions
 * **Load** - Leverage [Electron](https://www.electronjs.org/) to allow for loading of folders of images
-* **Filter** - Filter thumbnails by partial filename
+* **Filter** - Filter thumbnails by partial filename, and whether they have been cropped
 * **Set focalpoint** - Click the master cropper image or use the number inputs to set a focalpoint, slave croppers' crop boxes will automatically follow
 * **Rounding** - Round focalpoint XY to integers for easier storage
 * **Storage** - Toggle on auto-save to write a non-default focalpoint to the image filename as a resolution-independent percentage of its width and height (integers), e.g. `foo__[40%,37%].jpg` (regular) or `bar__[40%,37%,P].jpg` (panorama)

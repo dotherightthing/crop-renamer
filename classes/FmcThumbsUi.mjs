@@ -17,26 +17,28 @@ export class FmcThumbsUi {
     const {
       hideClass,
       selectedClass,
-      thumbAutoSelectFilteredName,
       thumbButtonClass,
       thumbClass,
       thumbImgClass,
       thumbImgWrapperClass,
       thumbMetaClass,
+      thumbsAutoSelectFilteredName,
       thumbsCountId,
+      thumbsFilterUncroppedName,
       thumbsId
     } = config;
 
     Object.assign(this, {
       hideClass,
       selectedClass,
-      thumbAutoSelectFilteredName,
       thumbButtonClass,
       thumbClass,
       thumbImgClass,
       thumbImgWrapperClass,
       thumbMetaClass,
+      thumbsAutoSelectFilteredName,
       thumbsCountId,
+      thumbsFilterUncroppedName,
       thumbsId
     });
   }
@@ -67,19 +69,6 @@ export class FmcThumbsUi {
 
   set selectedClass(selectedClass) {
     this._selectedClass = dtrtValidate.validate(selectedClass, 'string', 'FmcThumbsUi.selectedClass');
-  }
-
-  /**
-   * thumbAutoSelectFilteredName
-   * @type {string}
-   * @memberof FmcThumbsUi
-   */
-  get thumbAutoSelectFilteredName() {
-    return this._thumbAutoSelectFilteredName;
-  }
-
-  set thumbAutoSelectFilteredName(thumbAutoSelectFilteredName) {
-    this._thumbAutoSelectFilteredName = dtrtValidate.validate(thumbAutoSelectFilteredName, 'string', 'FmcThumbsUi.thumbAutoSelectFilteredName');
   }
 
   /**
@@ -148,6 +137,19 @@ export class FmcThumbsUi {
   }
 
   /**
+   * thumbsAutoSelectFilteredName
+   * @type {string}
+   * @memberof FmcThumbsUi
+   */
+  get thumbsAutoSelectFilteredName() {
+    return this._thumbsAutoSelectFilteredName;
+  }
+
+  set thumbsAutoSelectFilteredName(thumbsAutoSelectFilteredName) {
+    this._thumbsAutoSelectFilteredName = dtrtValidate.validate(thumbsAutoSelectFilteredName, 'string', 'FmcThumbsUi.thumbsAutoSelectFilteredName');
+  }
+
+  /**
    * thumbsCountId
    * @type {string}
    * @memberof FmcThumbsUi
@@ -158,6 +160,19 @@ export class FmcThumbsUi {
 
   set thumbsCountId(thumbsCountId) {
     this._thumbsCountId = dtrtValidate.validate(thumbsCountId, 'string', 'FmcThumbsUi.thumbsCountId');
+  }
+
+  /**
+   * thumbsFilterUncroppedName
+   * @type {string}
+   * @memberof FmcThumbsUi
+   */
+  get thumbsFilterUncroppedName() {
+    return this._thumbsFilterUncroppedName;
+  }
+
+  set thumbsFilterUncroppedName(thumbsFilterUncroppedName) {
+    this._thumbsFilterUncroppedName = dtrtValidate.validate(thumbsFilterUncroppedName, 'string', 'FmcThumbsUi.thumbsFilterUncroppedName');
   }
 
   /* Instance methods */
@@ -259,41 +274,62 @@ export class FmcThumbsUi {
   }
 
   /**
-   * @function filterByFilename
+   * @function filterByFilenameAndCropped
    * @param {string} searchStr - Search string
    * @memberof FmcThumbsUi
    */
-  filterByFilename(searchStr) {
+  filterByFilenameAndCropped(searchStr) {
     const {
       hideClass,
-      thumbAutoSelectFilteredName,
+      thumbsAutoSelectFilteredName,
       thumbClass,
       thumbButtonClass,
       thumbImgClass,
+      thumbsFilterUncroppedName,
       thumbsId
     } = this;
 
-    const thumbsShown = [];
-    const thumbs = document.querySelectorAll(`#${thumbsId} .${thumbClass}`);
+    const thumbsFilterUncroppedRadios = document.getElementsByName(thumbsFilterUncroppedName);
+    const hideUncropped = [ ...thumbsFilterUncroppedRadios ].filter(radio => radio.checked)[0].value === 'on';
+    const thumbButtons = document.querySelectorAll(`#${thumbsId} .${thumbButtonClass}`);
     const thumbImages = document.querySelectorAll(`#${thumbsId} .${thumbImgClass}`);
+    const thumbs = document.querySelectorAll(`#${thumbsId} .${thumbClass}`);
+    const thumbsHidden = [];
+    const thumbsShown = [];
 
     thumbImages.forEach((thumbImg, index) => {
       if (searchStr === '') {
-        thumbs[index].classList.remove(hideClass);
+        if (hideUncropped && (!thumbButtons[index].style.getPropertyValue('--image-percent-x'))) {
+          // hide thumbs if uncropped
+          thumbsHidden.push(thumbs[index]);
+        } else {
+          // show thumbs by default
+          thumbsShown.push(thumbs[index]);
+        }
       } else {
         const { src } = thumbImg;
         const filename = FmcUi.getFileNameFromPath(src);
 
         if (filename.match(searchStr)) {
-          thumbs[index].classList.remove(hideClass);
+          // show thumbs that match the filename filter
           thumbsShown.push(thumbs[index]);
         } else {
-          thumbs[index].classList.add(hideClass);
+          // hide thumbs that don't match the filename filter
+          thumbsHidden.push(thumbs[index]);
         }
       }
     });
 
-    const thumbsAutoSelectFilteredRadios = document.getElementsByName(thumbAutoSelectFilteredName);
+    // reset
+    thumbsHidden.forEach(thumb => {
+      thumb.classList.add(hideClass);
+    });
+
+    thumbsShown.forEach(thumb => {
+      thumb.classList.remove(hideClass);
+    });
+
+    const thumbsAutoSelectFilteredRadios = document.getElementsByName(thumbsAutoSelectFilteredName);
     const autoSelectFiltered = [ ...thumbsAutoSelectFilteredRadios ].filter(radio => radio.checked)[0].value;
 
     if (thumbsShown.length && (autoSelectFiltered === 'on')) {
