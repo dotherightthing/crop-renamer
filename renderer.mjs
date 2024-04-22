@@ -255,7 +255,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     thumbsContainer
       .addEventListener('click', _this.handleThumbClick.bind(_this));
     thumbsFilterUncroppedRadios.forEach(el => el
-      .addEventListener('change', _this.handleFilterUncroppedRadioChange.bind(_this)));
+      .addEventListener('change', _this.handleFilterSubmit.bind(_this)));
     window
       .addEventListener('keydown', _this.handleWindowKeydown.bind(_this));
     window

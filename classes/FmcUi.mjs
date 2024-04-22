@@ -521,23 +521,6 @@ export class FmcUi {
   }
 
   /**
-   * @function handleFilterUncroppedRadioChange
-   * @param {object} event - Change event
-   * @memberof FmcUi
-   */
-  async handleFilterUncroppedRadioChange(event) {
-    await window.electronAPI.setKeys({
-      keyValuePairs: [
-        {
-          thumbsFilterUncropped: event.target.value === 'on'
-        }
-      ]
-    });
-
-    this.handleFilterSubmit();
-  }
-
-  /**
    * @function handleFilterClear
    * @memberof FmcUi
    */
@@ -989,6 +972,7 @@ export class FmcUi {
 
   /**
    * @function handleSettingsLoad
+   * @summary Run when the Presets 'Load' button is pressed
    * @memberof FmcUi
    */
   async handleSettingsLoad() {
@@ -1064,13 +1048,9 @@ export class FmcUi {
         keys: [ 'thumbsAutoSelectFiltered' ]
       });
 
-      const { thumbsFilterUncropped: storedThumbsFilterUncropped } = await window.electronAPI.getKeys({
-        keys: [ 'thumbsFilterUncropped' ]
-      });
-
       this.setAutoSave(storedFocalpointAutoSave);
       this.setAutoSelectFiltered(storedThumbsAutoSelectFiltered);
-      this.setFilterUncropped(storedThumbsFilterUncropped);
+      this.setFilterUncropped(false);
 
       fmcThumbsUiInstance.clickSelectedThumb(1);
 
