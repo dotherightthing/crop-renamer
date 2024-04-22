@@ -185,7 +185,7 @@ export class FmcUi {
    * @summary Get the index of the selected node in a nodelist
    * @param {HTMLElement} element = Element
    * @param {NodeList} nodeList = NodeList
-   * @returns {number} selectedIndex
+   * @returns {number} selectedIndex || -1
    * @memberof FmcUi
    * @static
    */
@@ -1202,7 +1202,8 @@ export class FmcUi {
     } = this;
 
     const {
-      croppersContainer
+      croppersContainer,
+      settings
     } = elements;
 
     const {
@@ -1235,7 +1236,12 @@ export class FmcUi {
     });
 
     clickedButton.setAttribute('tabindex', '0');
-    clickedButton.focus();
+
+    if (settings.hasAttribute('open')) {
+      clickedButton.scrollIntoView();
+    } else {
+      clickedButton.focus();
+    }
 
     await new Promise(resolve => {
       setTimeout(async () => {
