@@ -984,6 +984,7 @@ export class FmcUi {
     const {
       activePresetName,
       fileWebpageInput,
+      filter,
       folderInInput,
       folderOutInput,
       folderWebsiteInput,
@@ -1020,6 +1021,8 @@ export class FmcUi {
       fileWebpageInput.dataset.targetFile = fileWebpage.targetFile;
       fileWebpageInput.dataset.targetFolder = fileWebpage.targetFolder;
       fileWebpageInput.value = fileWebpage.value;
+
+      filter.value = '';
 
       folderInInput.dataset.targetFolder = folderIn.targetFolder;
       folderInInput.value = folderIn.value;
