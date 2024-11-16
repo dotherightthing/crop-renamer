@@ -7,6 +7,25 @@ const {
   Menu
 } = require('electron');
 
+let myWindow = null;
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (myWindow) {
+      if (myWindow.isMinimized()) {
+        myWindow.restore();
+      }
+
+      myWindow.focus();
+    }
+  });
+}
+
 // argv[0] = path to node
 // argv[1] = path to script
 // args[2] = -- separating npm arguments from app's arguments
@@ -38,6 +57,8 @@ const createWindow = () => {
   mainWindow.once('ready-to-show', () => {
     mainWindow.maximize();
   });
+
+  myWindow = mainWindow;
 
   // https://www.electronjs.org/docs/latest/api/webview-tag
   const template = [
